@@ -8,9 +8,11 @@
 >
 > Status: **initial draft** — the order and scope below are a starting proposal.
 
-## Phase 1 — Project scaffold & quality gates 📋
+## Phase 1 — Project scaffold & quality gates 🔨
 
 Goal: an empty but fully working, tested, deployable skeleton.
+
+Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/)
 
 - Vite + React + TypeScript (strict) + Tailwind; Bun scripts `dev`, `build`, `lint`, `test`.
 - Vitest with one sample test; `.gitignore`.
