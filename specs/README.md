@@ -37,27 +37,31 @@ Replan (between features)
 
 ### Which model for which step
 
-| Step | Model |
-|---|---|
-| 1. Spec | **Opus** (planning) |
+| Step         | Model                       |
+| ------------ | --------------------------- |
+| 1. Spec      | **Opus** (planning)         |
 | 2. Implement | **Sonnet** (implementation) |
-| 3. Validate | **Sonnet** |
-| 4. Replan | **Opus** (planning) |
+| 3. Validate  | **Sonnet**                  |
+| 4. Replan    | **Opus** (planning)         |
 
 Switch with `/model` before starting each step.
 
 ### Example prompts
 
 **1. Spec**
+
 > Use the `feature-spec` skill. Find the next 📋 phase in `specs/roadmap.md`, create a branch, and write the feature spec. Ask me clarifying questions first. Use `specs/mission.md` and `specs/tech-stack.md` as guidance.
 
 **2. Implement**
+
 > Implement `specs/<folder>/plan.md`, task group 1 only. Then stop for review.
 
 **3. Validate**
+
 > Run `specs/<folder>/validation.md`. Report each item as pass/fail and fix failures.
 
 **4. Replan**
+
 > Use the `replan` skill: update the roadmap after this feature, and suggest changes to the constitution.
 
 ### Rules of thumb

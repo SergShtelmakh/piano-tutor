@@ -22,7 +22,7 @@ The answers to the planning questions are in the **Decisions** table below. Two 
   1. A valid language saved in `localStorage`.
   2. Otherwise, the first entry in `navigator.languages` (or `navigator.language`) whose primary subtag is `uk`, `de`, `fr`, or `en`. For example, `de-AT` → `de` and `uk-UA` → `uk`.
   3. Otherwise, `en`.
-  The selection logic must be a pure function, with no DOM or React imports, and must be unit-tested.
+     The selection logic must be a pure function, with no DOM or React imports, and must be unit-tested.
 - **FR-9** A language selector must list each language by its own name (English, Українська, Deutsch, Français):
   - Picking a language updates all visible text immediately, without a reload.
   - The choice is saved to `localStorage` and still applies after a reload.
@@ -50,10 +50,10 @@ The answers to the planning questions are in the **Decisions** table below. Two 
 
 ## Decisions
 
-| Question | Decision | Reason |
-|---|---|---|
-| Package manager | **Bun** stays primary. The user installs Bun locally. CI uses `oven-sh/setup-bun`. Scripts are plain `package.json` scripts, so npm also works. | Keeps the tech-stack choice. |
-| Translations implementation | **In-house tiny module**: typed `t(key)` + React context, locales as TS objects, `en` defines the key type. | No new runtime dependency (tech-stack rules 5–6). Plurals/interpolation aren't needed yet. |
-| First-visit language | **Detect from browser** (`navigator.languages`, primary subtag matched against `uk`/`de`/`fr`/`en`), else English. A saved choice always wins. | User preference. `tech-stack.md` updated: English remains the source and fallback language. |
-| Code-quality tooling | **ESLint + Prettier** in addition to `tsc`. `lint` = tsc + ESLint. Prettier is checked by `format:check` in CI. | User preference. `tech-stack.md` quality gates updated. |
-| Dev server port | **3000** | Matches the validation template URL. |
+| Question                    | Decision                                                                                                                                        | Reason                                                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Package manager             | **Bun** stays primary. The user installs Bun locally. CI uses `oven-sh/setup-bun`. Scripts are plain `package.json` scripts, so npm also works. | Keeps the tech-stack choice.                                                                |
+| Translations implementation | **In-house tiny module**: typed `t(key)` + React context, locales as TS objects, `en` defines the key type.                                     | No new runtime dependency (tech-stack rules 5–6). Plurals/interpolation aren't needed yet.  |
+| First-visit language        | **Detect from browser** (`navigator.languages`, primary subtag matched against `uk`/`de`/`fr`/`en`), else English. A saved choice always wins.  | User preference. `tech-stack.md` updated: English remains the source and fallback language. |
+| Code-quality tooling        | **ESLint + Prettier** in addition to `tsc`. `lint` = tsc + ESLint. Prettier is checked by `format:check` in CI.                                 | User preference. `tech-stack.md` quality gates updated.                                     |
+| Dev server port             | **3000**                                                                                                                                        | Matches the validation template URL.                                                        |

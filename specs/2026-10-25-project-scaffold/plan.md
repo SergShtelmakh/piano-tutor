@@ -27,17 +27,17 @@ The repository becomes a working app: `bun run dev` opens a translated placehold
 ## Task groups
 
 1. **Tooling scaffold**
-   - [ ] `package.json` (name, `type: module`, scripts: `dev`, `build`, `preview`, `lint`, `format`, `format:check`, `test`), install deps with Bun, commit `bun.lock`
-   - [ ] `tsconfig.json` / `tsconfig.app.json` / `tsconfig.node.json` with `strict`
-   - [ ] `vite.config.ts`: React plugin, Tailwind plugin, `server.port = 3000` (`strictPort`), Vitest `test` block
-   - [ ] `index.html`, `src/main.tsx`, `src/index.css` (Tailwind import), minimal `src/App.tsx`
-   - [ ] `.gitignore`
-   - [ ] Verify: `bun run dev` serves on :3000 and `bun run build` succeeds
+   - [x] `package.json` (name, `type: module`, scripts: `dev`, `build`, `preview`, `lint`, `format`, `format:check`, `test`), install deps with Bun, commit `bun.lock`
+   - [x] `tsconfig.json` / `tsconfig.app.json` / `tsconfig.node.json` with `strict`
+   - [x] `vite.config.ts`: React plugin, Tailwind plugin, `server.port = 3000` (`strictPort`), Vitest `test` block
+   - [x] `index.html`, `src/main.tsx`, `src/index.css` (Tailwind import), minimal `src/App.tsx`
+   - [x] `.gitignore`
+   - [x] Verify: `bun run dev` serves on :3000 and `bun run build` succeeds
 2. **Lint, format, test gates**
-   - [ ] `eslint.config.js` (flat config as in Approach), `lint` script = type check + ESLint
-   - [ ] `.prettierrc` + `.prettierignore`, `format` / `format:check` scripts, run `format` once over the repo
-   - [ ] Sample Vitest test (`src/sample.test.ts`), `test` = `vitest run`
-   - [ ] Verify: all four gates pass locally
+   - [x] `eslint.config.js` (flat config as in Approach), `lint` script = type check + ESLint
+   - [x] `.prettierrc` + `.prettierignore`, `format` / `format:check` scripts, run `format` once over the repo
+   - [x] Sample Vitest test (`src/sample.test.ts`), `test` = `vitest run`
+   - [x] Verify: all four gates pass locally
 3. **Translations module (pure core + tests)**
    - [ ] `src/i18n/locales/en.ts` with the keys for this phase (app name, tagline, coming-soon text, language label, document title), plus `uk.ts`, `de.ts`, `fr.ts` with all keys translated
    - [ ] `src/i18n/core.ts`: `SUPPORTED_LOCALES`, `LOCALE_NAMES`, `isLocale`, `resolveInitialLocale`, `translate`
@@ -56,37 +56,39 @@ The repository becomes a working app: `bun run dev` opens a translated placehold
 
 ## Files touched
 
-| File | Change |
-|---|---|
-| `package.json`, `bun.lock` | new |
-| `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` | new |
-| `vite.config.ts` | new: React, Tailwind, port 3000, Vitest |
-| `eslint.config.js`, `.prettierrc`, `.prettierignore` | new |
-| `.gitignore` | new |
-| `index.html`, `src/main.tsx`, `src/index.css`, `src/App.tsx` | new |
-| `src/sample.test.ts` | new |
-| `src/i18n/core.ts`, `src/i18n/core.test.ts`, `src/i18n/storage.ts`, `src/i18n/I18nProvider.tsx` | new |
-| `src/i18n/locales/{en,uk,de,fr}.ts` | new |
-| `src/components/LanguageSelector.tsx` | new |
-| `.github/workflows/ci.yml` | new |
-| `CLAUDE.md`, `README.md` | update commands / setup |
-| `specs/tech-stack.md` | updated during planning (language detection, ESLint + Prettier) |
+| File                                                                                            | Change                                                          |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `package.json`, `bun.lock`                                                                      | new                                                             |
+| `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`                                      | new                                                             |
+| `vite.config.ts`                                                                                | new: React, Tailwind, port 3000, Vitest                         |
+| `eslint.config.js`, `.prettierrc`, `.prettierignore`                                            | new                                                             |
+| `.gitignore`                                                                                    | new                                                             |
+| `index.html`, `src/main.tsx`, `src/index.css`, `src/App.tsx`                                    | new                                                             |
+| `src/sample.test.ts`                                                                            | new                                                             |
+| `src/i18n/core.ts`, `src/i18n/core.test.ts`, `src/i18n/storage.ts`, `src/i18n/I18nProvider.tsx` | new                                                             |
+| `src/i18n/locales/{en,uk,de,fr}.ts`                                                             | new                                                             |
+| `src/components/LanguageSelector.tsx`                                                           | new                                                             |
+| `.github/workflows/ci.yml`                                                                      | new                                                             |
+| `CLAUDE.md`, `README.md`                                                                        | update commands / setup                                         |
+| `specs/tech-stack.md`                                                                           | updated during planning (language detection, ESLint + Prettier) |
 
 ## New dependencies
 
 Everything is listed in `tech-stack.md` or is standard tooling for it. Only `react` / `react-dom` ship to users.
 
-| Package | Kind | Why |
-|---|---|---|
-| `react`, `react-dom` | runtime | UI framework (tech-stack) |
-| `vite`, `@vitejs/plugin-react` | dev | Build / dev server (tech-stack) |
-| `typescript`, `@types/react`, `@types/react-dom` | dev | Language (tech-stack) |
-| `tailwindcss`, `@tailwindcss/vite` | dev | Styling (tech-stack) |
-| `vitest` | dev | Unit tests (tech-stack) |
-| `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals` | dev | Linting (Decision: ESLint) |
-| `prettier`, `eslint-config-prettier` | dev | Formatting, and stops ESLint/Prettier conflicts (Decision: Prettier) |
+| Package                                                                                                            | Kind    | Why                                                                  |
+| ------------------------------------------------------------------------------------------------------------------ | ------- | -------------------------------------------------------------------- |
+| `react`, `react-dom`                                                                                               | runtime | UI framework (tech-stack)                                            |
+| `vite`, `@vitejs/plugin-react`                                                                                     | dev     | Build / dev server (tech-stack)                                      |
+| `typescript`, `@types/react`, `@types/react-dom`                                                                   | dev     | Language (tech-stack)                                                |
+| `tailwindcss`, `@tailwindcss/vite`                                                                                 | dev     | Styling (tech-stack)                                                 |
+| `vitest`                                                                                                           | dev     | Unit tests (tech-stack)                                              |
+| `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals` | dev     | Linting (Decision: ESLint)                                           |
+| `prettier`, `eslint-config-prettier`                                                                               | dev     | Formatting, and stops ESLint/Prettier conflicts (Decision: Prettier) |
 
 ## Risks & open questions
+
+- **Implementation note:** `typescript` is pinned to `^6` because `typescript-eslint` does not yet support TypeScript 7 (tracked in typescript-eslint#10940). `@types/node` is also added as a dev dependency for typing `vite.config.ts`. Revisit the TypeScript pin when typescript-eslint supports 7.
 
 - **Bun must be installed locally** before task group 1. On Windows: `powershell -c "irm bun.sh/install.ps1 | iex"`.
 - Locale translations (uk/de/fr) are written by the agent. The user should skim them for a natural tone.
