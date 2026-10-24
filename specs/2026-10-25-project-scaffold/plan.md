@@ -39,19 +39,19 @@ The repository becomes a working app: `bun run dev` opens a translated placehold
    - [x] Sample Vitest test (`src/sample.test.ts`), `test` = `vitest run`
    - [x] Verify: all four gates pass locally
 3. **Translations module (pure core + tests)**
-   - [ ] `src/i18n/locales/en.ts` with the keys for this phase (app name, tagline, coming-soon text, language label, document title), plus `uk.ts`, `de.ts`, `fr.ts` with all keys translated
-   - [ ] `src/i18n/core.ts`: `SUPPORTED_LOCALES`, `LOCALE_NAMES`, `isLocale`, `resolveInitialLocale`, `translate`
-   - [ ] `src/i18n/core.test.ts`: saved valid locale wins, invalid saved value ignored, region subtags (`de-AT`, `uk-UA`), first match in list order, unsupported → `en`, empty list → `en`, missing key falls back to `en`
-   - [ ] `src/i18n/storage.ts` with try/catch wrappers
+   - [x] `src/i18n/locales/en.ts` with the keys for this phase (app name, tagline, coming-soon text, language label, document title), plus `uk.ts`, `de.ts`, `fr.ts` with all keys translated
+   - [x] `src/i18n/core.ts`: `SUPPORTED_LOCALES`, `LOCALE_NAMES`, `isLocale`, `resolveInitialLocale`, `translate`
+   - [x] `src/i18n/core.test.ts`: saved valid locale wins, invalid saved value ignored, region subtags (`de-AT`, `uk-UA`), first match in list order, unsupported → `en`, empty list → `en`, missing key falls back to `en`
+   - [x] `src/i18n/storage.ts` with try/catch wrappers
 4. **App shell & language selector**
-   - [ ] `src/i18n/I18nProvider.tsx` with `useT()` / `useLocale()`; syncs `<html lang>` and `document.title`
-   - [ ] `src/components/LanguageSelector.tsx` (native `<select>`, native language names, accessible label from translations)
-   - [ ] `src/App.tsx` placeholder screen (name, tagline, coming-soon, selector), responsive Tailwind layout
-   - [ ] Verify: switching language updates text, title, and `lang` instantly; a reload keeps the choice; the app still works with storage blocked
+   - [x] `src/i18n/I18nProvider.tsx` with `useT()` / `useLocale()`; syncs `<html lang>` and `document.title`
+   - [x] `src/components/LanguageSelector.tsx` (native `<select>`, native language names, accessible label from translations)
+   - [x] `src/App.tsx` placeholder screen (name, tagline, coming-soon, selector), responsive Tailwind layout
+   - [x] Verify: switching language updates text, title, and `lang` instantly; a reload keeps the choice; the app still works with storage blocked
 5. **CI & docs**
-   - [ ] `.github/workflows/ci.yml` as in Approach
-   - [ ] Update `CLAUDE.md` Commands section (real scripts, incl. `format`, `format:check`, Bun install note)
-   - [ ] `README.md`: prerequisites (Bun, Chromium), setup, scripts
+   - [x] `.github/workflows/ci.yml` as in Approach
+   - [x] Update `CLAUDE.md` Commands section (real scripts, incl. `format`, `format:check`, Bun install note)
+   - [x] `README.md`: prerequisites (Bun, Chromium), setup, scripts
    - [ ] Run every item in `validation.md`
 
 ## Files touched

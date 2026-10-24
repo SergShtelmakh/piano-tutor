@@ -35,14 +35,19 @@ Piano Tutor is a gamified piano-learning web app: it connects to a MIDI piano vi
 
 ## Commands
 
-No code exists yet. Phase 1 (project scaffold) introduces the scripts below; update this section when it lands.
+Bun is the primary package manager (npm also works). On Windows, Bun may not be on PATH: `$env:Path += ";$env:USERPROFILE\.bun\bin"`.
 
 ```bash
-bun run dev        # dev server
-bun run build      # production build
-bun run lint       # tsc --noEmit
-bun run test       # vitest
+bun install
+bun run dev            # dev server on http://localhost:3000
+bun run build          # tsc -b + production build
+bun run lint           # tsc -b (type check) + eslint
+bun run format         # prettier --write
+bun run format:check   # prettier --check (run in CI)
+bun run test           # vitest run (once)
 ```
+
+Note: `typescript` is pinned to `^6` until `typescript-eslint` supports TypeScript 7.
 
 ## Language
 
