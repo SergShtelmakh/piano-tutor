@@ -17,7 +17,7 @@ Workflow (details and example prompts in `specs/README.md`):
 1. **Spec** — for a roadmap phase, use the `feature-spec` skill: branch `feature/<slug>`, folder `specs/YYYY-MM-DD-<slug>/` with `plan.md`, `requirements.md`, `validation.md`. Ask clarifying questions first. Stop for human review.
 2. **Implement** — work through `plan.md` task groups in order; tick tasks off as you go. Don't add scope that isn't in the spec.
 3. **Validate** — run every item in `validation.md`; the feature is done only when all pass.
-4. **Replan** — use the `replan` skill: update roadmap, tech stack, changelog, README.
+4. **Replan** — use the `replan` skill: update roadmap, tech stack, changelog, README. Run it on the feature branch **before** the PR is merged, so the phase stays one branch = one PR.
 
 Models: **planning runs on Opus** (steps 1 Spec and 4 Replan); **implementation runs on Sonnet** (steps 2 Implement and 3 Validate). Switch with `/model` before starting each step.
 
@@ -27,7 +27,8 @@ Rules:
 - If the spec turns out to be wrong, update the spec first, then the code.
 - New ideas found mid-feature go to the roadmap Backlog or `specs/backlog/`, not into the current feature.
 - Commit spec files together with the code they describe. One roadmap phase = one branch = one PR.
-- `specs/tech-stack.md` is currently **proposed**, not final. Phase 1 confirms it; if a choice there is wrong, change the spec first.
+- `specs/tech-stack.md` is **confirmed** (Phase 1). If a choice there turns out wrong, change the spec first. Check its "Known technical debt" section before touching tooling.
+- Translations for `uk`, `de`, `fr` are written by the agent. Ask the user to skim new strings during validation.
 
 ## About the project
 
@@ -52,7 +53,7 @@ Note: `typescript` is pinned to `^6` until `typescript-eslint` supports TypeScri
 ## Language
 
 - Docs, specs, code comments, commit messages, PR descriptions: **English**.
-- UI strings: English by default; the user can optionally pick Ukrainian, German, or French. All strings live in one translations module (see `specs/tech-stack.md`).
+- UI strings: English is the source and fallback; Ukrainian, German, and French are also shipped, and the first-visit language follows the browser. All strings live in `src/i18n/` (add keys to `locales/en.ts` first, then the other locales). See `specs/tech-stack.md`.
 
 ## Architecture rules (summary — full list in `specs/tech-stack.md`)
 

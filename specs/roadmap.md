@@ -6,19 +6,19 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Status: **initial draft** — the order and scope below are a starting proposal.
+> Phase 1 is done. Phases 2–6 are still the original proposal; re-check each one when its spec is written.
 
-## Phase 1 — Project scaffold & quality gates 🔨
+## Phase 1 — Project scaffold & quality gates ✅
 
 Goal: an empty but fully working, tested, deployable skeleton.
 
-Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/)
+Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/). Merged in PR #2.
 
-- Vite + React + TypeScript (strict) + Tailwind; Bun scripts `dev`, `build`, `lint`, `test`.
-- Vitest with one sample test; `.gitignore`.
-- GitHub Actions CI running lint, build, test on every PR.
-- Translations module with `en` (default, fallback), `uk`, `de`, `fr` locales and a simple language selector that remembers the choice.
-- App shell with a placeholder screen (English by default, all text through the translations module).
+- Vite + React + TypeScript (strict) + Tailwind; Bun scripts `dev`, `build`, `preview`, `lint`, `format`, `format:check`, `test`.
+- ESLint + Prettier, Vitest; `.gitignore`.
+- GitHub Actions CI running lint, format check, build, and test on every PR and push to `main`.
+- In-house translations module with `en` (source, fallback), `uk`, `de`, `fr`; browser-language detection on first visit; a language selector that remembers the choice.
+- App shell with a placeholder screen.
 
 ## Phase 2 — Input pipeline & on-screen keyboard 📋
 
@@ -29,6 +29,7 @@ Goal: any key press from any source becomes a note event and makes a sound.
 - Computer-keyboard mapping and clickable/touch on-screen piano keyboard.
 - Small Web Audio synth with velocity.
 - Unit tests for MIDI message parsing.
+- All new UI text (device status, permission and unsupported-browser messages) goes through the translations module, in all four locales.
 
 ## Phase 3 — First lesson: play the right notes 📋
 
@@ -38,6 +39,7 @@ Goal: the core promise of the product, end to end.
 - One playable lesson screen: target highlighted on the keyboard (green = right, red = wrong), counters for correct notes and mistakes.
 - Completion summary with accuracy.
 - Unit tests for the judge and lesson progression.
+- Translations: add interpolation and plural forms (needed for "3 mistakes", "85 % accuracy"). This was deferred from Phase 1. Ukrainian has several plural forms, so use `Intl.PluralRules`.
 
 ## Phase 4 — Game mechanics & local progress 📋
 
@@ -69,3 +71,11 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Session recorder with `.mid` export.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.
+- Dark mode / theming.
+
+**Tooling backlog** (small fixes; they don't need a phase, see [`backlog/tooling.md`](backlog/tooling.md)):
+
+- Upgrade to TypeScript 7 once `typescript-eslint` supports it.
+- `.gitattributes` to normalise line endings (LF in the repo).
+- Component / end-to-end smoke tests (Testing Library or Playwright), so manual browser checks can be automated.
+- Pre-commit hooks (format + lint), if missed formatting becomes a recurring problem in CI.
