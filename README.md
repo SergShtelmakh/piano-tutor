@@ -1,42 +1,39 @@
-# piano-tutor
+# Piano Tutor
 
-Gamified piano learning web app: connects to your piano via Web MIDI and checks whether you play the right notes.
+A gamified piano-learning web app: connect a MIDI keyboard (Web MIDI) and get real-time feedback on whether you play the right notes. Client-side only, no backend. See [specs/mission.md](specs/mission.md).
 
-> **Status:** early planning. The repository starts from a clean slate and is developed with Spec-Driven Development — no application code yet; the first phase is the project scaffold.
+> Status: project scaffold only (roadmap Phase 1). Lessons and MIDI input are coming in later phases — see [specs/roadmap.md](specs/roadmap.md).
 
-## Vision
+## Prerequisites
 
-Plug in a digital piano or MIDI keyboard, open the page, and play short, rewarding challenges. The app judges every note instantly, and game mechanics (XP, streaks, levels) keep practice fun. No account, no backend — everything runs in the browser. Details: [`specs/mission.md`](specs/mission.md).
+- [Bun](https://bun.sh) (npm also works)
+- A Chromium-based browser (Chrome, Edge) for Web MIDI in later phases
 
-## Planned features
+## Getting started
 
-- Real-time note checking via Web MIDI (with on-screen / computer-keyboard fallback)
-- Guided lessons with green / red key feedback
-- XP, levels, and daily streaks with local progress
-- Installable PWA that works offline
-
-See [`specs/roadmap.md`](specs/roadmap.md) for phases and status.
-
-## Development process (Spec-Driven Development)
-
-Every feature starts as a Markdown spec that a coding agent implements and validates.
-
-- **Constitution** — [`specs/mission.md`](specs/mission.md) (why & for whom), [`specs/tech-stack.md`](specs/tech-stack.md) (how it's built, rules, quality gates), [`specs/roadmap.md`](specs/roadmap.md) (phases and status).
-- **Feature loop** — for each roadmap phase: spec (`plan.md`, `requirements.md`, `validation.md` in `specs/YYYY-MM-DD-<slug>/`) → implement → validate → replan.
-- **Agent skills** — `.claude/skills/feature-spec` creates a spec for the next phase; `.claude/skills/replan` updates the roadmap and docs after a feature.
-
-See [`specs/README.md`](specs/README.md) for the workflow and example prompts, and [`CLAUDE.md`](CLAUDE.md) for agent guidance.
-
-## Repository layout
-
-```
-specs/                 # SDD: constitution, templates, backlog, feature specs
-.claude/skills/        # agent skills: feature-spec, replan
-CLAUDE.md              # guidance for coding agents
+```bash
+bun install
+bun run dev      # http://localhost:3000
 ```
 
-Application source will appear after Phase 1.
+## Scripts
 
-## License
+| Script                 | What it does                               |
+| ---------------------- | ------------------------------------------ |
+| `bun run dev`          | Dev server on http://localhost:3000        |
+| `bun run build`        | Type check + production build into `dist/` |
+| `bun run preview`      | Serve the production build locally         |
+| `bun run lint`         | TypeScript type check, then ESLint         |
+| `bun run format`       | Format all files with Prettier             |
+| `bun run format:check` | Fail if any file is not formatted          |
+| `bun run test`         | Run unit tests once (Vitest)               |
 
-[MIT](LICENSE)
+CI (GitHub Actions) runs `lint`, `format:check`, `build`, and `test` on every pull request and every push to `main`.
+
+## Language
+
+The UI is available in English, Ukrainian, German, and French. The first visit follows the browser language (falling back to English); the language selector remembers your choice.
+
+## Development process
+
+This project uses Spec-Driven Development. Specs in [specs/](specs/) are the source of truth — start with [specs/README.md](specs/README.md).
