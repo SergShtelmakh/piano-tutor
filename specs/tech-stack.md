@@ -1,9 +1,9 @@
 # Tech Stack
 
 > Part of the project **constitution**. This file answers **how it is built** and lists the technical rules every feature spec must respect.
-> Status: **proposed** — nothing is built yet. Confirm or change each choice before Phase 1 starts; this file is the single place where those decisions are recorded.
+> Status: **confirmed** in Phase 1 (2026-10-25). The PWA, audio, and hosting rows are still unbuilt and get confirmed in their phases. This file is the single place where those decisions are recorded. Change it before the code.
 
-## Stack (proposed)
+## Stack
 
 | Area            | Choice                                                                                                                   | Why                                                                                          |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
@@ -50,3 +50,20 @@
 | Manual check                                        | `bun run dev`, try the changed flow with the computer keyboard | always        |
 
 A phase is done only when all gates that exist at that point pass and its `validation.md` is fully checked.
+
+## Versions in use
+
+Pinned by `bun.lock` (as of Phase 1): React 19, Vite 8, Tailwind CSS 4 (`@tailwindcss/vite`), TypeScript 6, Vitest 5, ESLint 10 + typescript-eslint 8, Prettier 3.
+
+## Project layout
+
+- `src/i18n/`: translations. `core.ts` (pure: locales, detection, lookup with `en` fallback), `storage.ts` (`localStorage` wrapper), `context.ts` (`useT()`, `useLocale()`), `I18nProvider.tsx`, and `locales/{en,uk,de,fr}.ts`. Add new UI strings to `locales/en.ts` first; the key type comes from it.
+- `src/components/`: thin UI components.
+- Tests sit next to the code as `*.test.ts`. The Vitest environment is `node`. There is no DOM test setup yet.
+
+## Known technical debt
+
+- `typescript` is pinned to `^6` because `typescript-eslint` doesn't support TS 7 yet. See `backlog/tooling.md`.
+- Prettier uses `endOfLine: "auto"` and there is no `.gitattributes`, so Windows checkouts get CRLF warnings. See `backlog/tooling.md`.
+- UI behaviour (language switching, layout) is verified only manually; there are no component or e2e tests.
+- Locale translations (`uk`, `de`, `fr`) are written by the agent and need a human skim in every phase that adds strings.

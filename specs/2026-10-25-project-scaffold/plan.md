@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 1 — Project scaffold & quality gates
 > Branch: `feature/project-scaffold`
-> Status: Draft
+> Status: Validated
 
 ## Goal
 
@@ -52,7 +52,7 @@ The repository becomes a working app: `bun run dev` opens a translated placehold
    - [x] `.github/workflows/ci.yml` as in Approach
    - [x] Update `CLAUDE.md` Commands section (real scripts, incl. `format`, `format:check`, Bun install note)
    - [x] `README.md`: prerequisites (Bun, Chromium), setup, scripts
-   - [ ] Run every item in `validation.md`
+   - [x] Run every item in `validation.md`
 
 ## Files touched
 
