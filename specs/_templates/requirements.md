@@ -16,14 +16,14 @@ Use "must" / "should". Each item must be checkable in `validation.md`.
 - User-facing text goes through the translations module (English default; add keys for `uk`, `de`, `fr` too).
 - Works with the on-screen and computer keyboard (no MIDI device required).
 - No perceptible added input latency.
-- 
+-
 
 ## Out of scope
 
-- 
+-
 
 ## Decisions
 
 | Question | Decision | Reason |
-|---|---|---|
-| | | |
+| -------- | -------- | ------ |
+|          |          |        |
