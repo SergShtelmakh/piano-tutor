@@ -5,22 +5,22 @@
 
 ## Stack (proposed)
 
-| Area | Choice | Why |
-|---|---|---|
-| App type | Client-side SPA, installable PWA, **no backend** | Zero friction, privacy by default (see mission). |
-| Language | TypeScript, `strict` mode | Safer refactors for agent-written code. |
-| UI | React (latest stable), functional components | Large ecosystem, good agent support. |
-| Build / dev | Vite | Fast dev loop, simple static output. |
-| Styling | Tailwind CSS | Utility classes in `className`, no separate CSS files per component. |
-| Input | Web MIDI API + computer keyboard + pointer/touch | Hardware optional (mission principle 4). |
-| Audio | Web Audio API (small in-house synth) | No sample downloads, works offline. |
-| Persistence | `localStorage` (wrapped in try/catch) | Local-only progress; revisit if sync is ever in scope. |
-| PWA | `vite-plugin-pwa` | Installable, offline-capable. |
-| Unit tests | Vitest | Same toolchain as Vite. |
-| Lint / format | ESLint (flat config, `typescript-eslint`, React Hooks) + Prettier | Consistent style for agent-written code; dev-only. |
-| Package manager | Bun (npm must also work) | |
-| Target browsers | Chromium-based desktop + Chrome on Android | Web MIDI is not available in Safari/Firefox; those fall back to on-screen/computer keyboard. |
-| Hosting | Static hosting over HTTPS (required for Web MIDI and service workers) — _TBD: GitHub Pages / Netlify / Cloudflare Pages_ | |
+| Area            | Choice                                                                                                                   | Why                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| App type        | Client-side SPA, installable PWA, **no backend**                                                                         | Zero friction, privacy by default (see mission).                                             |
+| Language        | TypeScript, `strict` mode                                                                                                | Safer refactors for agent-written code.                                                      |
+| UI              | React (latest stable), functional components                                                                             | Large ecosystem, good agent support.                                                         |
+| Build / dev     | Vite                                                                                                                     | Fast dev loop, simple static output.                                                         |
+| Styling         | Tailwind CSS                                                                                                             | Utility classes in `className`, no separate CSS files per component.                         |
+| Input           | Web MIDI API + computer keyboard + pointer/touch                                                                         | Hardware optional (mission principle 4).                                                     |
+| Audio           | Web Audio API (small in-house synth)                                                                                     | No sample downloads, works offline.                                                          |
+| Persistence     | `localStorage` (wrapped in try/catch)                                                                                    | Local-only progress; revisit if sync is ever in scope.                                       |
+| PWA             | `vite-plugin-pwa`                                                                                                        | Installable, offline-capable.                                                                |
+| Unit tests      | Vitest                                                                                                                   | Same toolchain as Vite.                                                                      |
+| Lint / format   | ESLint (flat config, `typescript-eslint`, React Hooks) + Prettier                                                        | Consistent style for agent-written code; dev-only.                                           |
+| Package manager | Bun (npm must also work)                                                                                                 |                                                                                              |
+| Target browsers | Chromium-based desktop + Chrome on Android                                                                               | Web MIDI is not available in Safari/Firefox; those fall back to on-screen/computer keyboard. |
+| Hosting         | Static hosting over HTTPS (required for Web MIDI and service workers) — _TBD: GitHub Pages / Netlify / Cloudflare Pages_ |                                                                                              |
 
 ## Architecture rules
 
@@ -40,13 +40,13 @@
 
 ## Quality gates
 
-| Gate | Command | Introduced in |
-|---|---|---|
-| Type check + lint | `bun run lint` (`tsc` no-emit, then ESLint) | Phase 1 |
-| Formatting | `bun run format:check` (Prettier) | Phase 1 |
-| Production build | `bun run build` | Phase 1 |
-| Unit tests | `bun run test` | Phase 1 |
-| CI (lint + format check + build + test on every PR) | GitHub Actions | Phase 1 |
-| Manual check | `bun run dev`, try the changed flow with the computer keyboard | always |
+| Gate                                                | Command                                                        | Introduced in |
+| --------------------------------------------------- | -------------------------------------------------------------- | ------------- |
+| Type check + lint                                   | `bun run lint` (`tsc` no-emit, then ESLint)                    | Phase 1       |
+| Formatting                                          | `bun run format:check` (Prettier)                              | Phase 1       |
+| Production build                                    | `bun run build`                                                | Phase 1       |
+| Unit tests                                          | `bun run test`                                                 | Phase 1       |
+| CI (lint + format check + build + test on every PR) | GitHub Actions                                                 | Phase 1       |
+| Manual check                                        | `bun run dev`, try the changed flow with the computer keyboard | always        |
 
 A phase is done only when all gates that exist at that point pass and its `validation.md` is fully checked.

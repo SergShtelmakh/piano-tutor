@@ -24,9 +24,9 @@ Numbered groups, each small enough to review on its own. The agent implements th
 
 ## Files touched
 
-| File | Change |
-|---|---|
-| `src/...` | |
+| File      | Change |
+| --------- | ------ |
+| `src/...` |        |
 
 ## New dependencies
 
@@ -34,4 +34,4 @@ None. (If any: name, version, why it is needed, why existing code can't do it.)
 
 ## Risks & open questions
 
-- 
+-
