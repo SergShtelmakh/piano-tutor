@@ -1,6 +1,6 @@
 # Real-device MIDI check
 
-Left open in Phase 2 (`specs/2026-10-25-input-pipeline-keyboard/validation.md`, FR-3 / FR-4 and FR-11).
+Left open in Phase 2 (`specs/phase-02-input-pipeline-keyboard/validation.md`, FR-3 / FR-4 and FR-11).
 
 ## Problem
 

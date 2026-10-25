@@ -55,20 +55,20 @@ Groups 2 and 3 can only be fully checked after the PR is merged to `main` (produ
 
 ## Files touched
 
-| File                                                               | Change                                      |
-| ------------------------------------------------------------------ | ------------------------------------------- |
-| `config/buildInfo.ts`, `config/buildInfo.test.ts`                  | New: pure build-info resolver and tests     |
-| `vite.config.ts`                                                   | `base` and `define` from `resolveBuildInfo` |
-| `tsconfig.node.json`                                               | Include `config`                            |
-| `src/env.d.ts`                                                     | New: declare `__BUILD_INFO__`               |
-| `src/components/BuildInfo.tsx`                                     | New: footer line                            |
-| `src/App.tsx`                                                      | Render the footer                           |
-| `src/i18n/locales/{en,uk,de,fr}.ts`                                | `buildLabel`, `buildLocal`                  |
-| `.github/workflows/ci.yml`                                         | `deploy-github-pages` job                   |
-| `README.md`                                                        | Live URLs, deployment section               |
-| `specs/backlog/midi-device-check.md`                               | Results; closed when all pass               |
-| `specs/2026-10-25-deployment-device-testing/hosting-comparison.md` | New: comparison                             |
-| `src/input/midiAccess.ts`, `src/core/*`                            | Only if FR-9 / FR-10 find bugs              |
+| File                                                             | Change                                      |
+| ---------------------------------------------------------------- | ------------------------------------------- |
+| `config/buildInfo.ts`, `config/buildInfo.test.ts`                | New: pure build-info resolver and tests     |
+| `vite.config.ts`                                                 | `base` and `define` from `resolveBuildInfo` |
+| `tsconfig.node.json`                                             | Include `config`                            |
+| `src/env.d.ts`                                                   | New: declare `__BUILD_INFO__`               |
+| `src/components/BuildInfo.tsx`                                   | New: footer line                            |
+| `src/App.tsx`                                                    | Render the footer                           |
+| `src/i18n/locales/{en,uk,de,fr}.ts`                              | `buildLabel`, `buildLocal`                  |
+| `.github/workflows/ci.yml`                                       | `deploy-github-pages` job                   |
+| `README.md`                                                      | Live URLs, deployment section               |
+| `specs/backlog/midi-device-check.md`                             | Results; closed when all pass               |
+| `specs/phase-03-deployment-device-testing/hosting-comparison.md` | New: comparison                             |
+| `src/input/midiAccess.ts`, `src/core/*`                          | Only if FR-9 / FR-10 find bugs              |
 
 ## New dependencies
 

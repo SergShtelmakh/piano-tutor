@@ -1,7 +1,7 @@
 # Roadmap
 
 > Part of the project **constitution**. A living document: **what** we build and **in what order**.
-> Each phase becomes one feature spec folder (`specs/YYYY-MM-DD-<slug>/`) and one branch/PR.
+> Each phase becomes one feature spec folder (`specs/phase-NN-<slug>/`) and one branch/PR.
 > Keep phases small enough to implement and validate in one session. Re-plan between phases.
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
@@ -12,7 +12,7 @@
 
 Goal: an empty but fully working, tested, deployable skeleton.
 
-Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/). Merged in PR #2.
+Spec: [`specs/phase-01-project-scaffold/`](phase-01-project-scaffold/). Merged in PR #2.
 
 - Vite + React + TypeScript (strict) + Tailwind; Bun scripts `dev`, `build`, `preview`, `lint`, `format`, `format:check`, `test`.
 - ESLint + Prettier, Vitest; `.gitignore`.
@@ -24,7 +24,7 @@ Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/). Merg
 
 Goal: any key press from any source becomes a note event and makes a sound.
 
-Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-keyboard/). Branch `feature/input-pipeline-keyboard`.
+Spec: [`specs/phase-02-input-pipeline-keyboard/`](phase-02-input-pipeline-keyboard/). Branch `feature/input-pipeline-keyboard`.
 
 - Single note bus (`src/input/noteBus.ts`): MIDI, computer keyboard, and on-screen piano emit `noteon` / `noteoff` / `sustain`; the synth and the key highlight subscribe.
 - Web MIDI behind a Connect button: all inputs, hot-plug, release on unplug, sustain pedal; status for no devices / denied / unsupported / insecure.
@@ -38,7 +38,7 @@ Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-ke
 
 Goal: the app is reachable over HTTPS from any device, so it can be tested on phones, tablets, and other computers early. Moved up from the old Phase 6 so every later phase can be checked on real hardware as it ships.
 
-Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-device-testing/). Branch `feature/deployment-device-testing`.
+Spec: [`specs/phase-03-deployment-device-testing/`](phase-03-deployment-device-testing/). Branch `feature/deployment-device-testing`.
 
 - Deploy to **both GitHub Pages and Cloudflare Pages** at the same time, so the two can be compared (speed, preview deployments per branch / PR, setup effort, limits) and one chosen afterwards. Web MIDI and, later, the service worker both need HTTPS.
 - Deploy pipeline: production build published automatically after CI passes on `main`; per-PR or per-branch previews where the host offers them (Cloudflare Pages does; GitHub Pages does not for free).
@@ -53,7 +53,7 @@ Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-devi
 
 ## Phase 4 — First lesson: play the right notes ✅
 
-Spec: [`specs/2026-10-25-first-lesson/`](2026-10-25-first-lesson/). Branch `feature/first-lesson`.
+Spec: [`specs/phase-04-first-lesson/`](phase-04-first-lesson/). Branch `feature/first-lesson`.
 
 Goal: the core promise of the product, end to end.
 

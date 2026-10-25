@@ -14,7 +14,7 @@ Create the spec for one feature before writing any code.
 2. Pick the phase: the one the user named, otherwise the first phase marked `📋 planned`.
 3. Create a git branch `feature/<slug>` (kebab-case, from the phase title). If git is not available, say so and continue.
 4. Ask the user **3–5 clarifying questions** about scope, UX, and edge cases. Wait for answers. Do not guess on decisions that change behavior.
-5. Create `specs/YYYY-MM-DD-<slug>/` (today's date) by copying `specs/_templates/plan.md`, `requirements.md`, `validation.md`, and fill them in:
+5. Create `specs/phase-NN-<slug>/` (NN = the roadmap phase number, zero-padded) by copying `specs/_templates/plan.md`, `requirements.md`, `validation.md`, and fill them in:
    - `requirements.md`: context, numbered FR-n, non-functional requirements, out of scope, and a **Decisions** table with the user's answers.
    - `plan.md`: approach, numbered **task groups** (small, ordered, reviewable), files touched, new dependencies (default: none).
    - `validation.md`: one manual check per FR-n with concrete steps and expected result, plus the automated gates from `tech-stack.md`.
