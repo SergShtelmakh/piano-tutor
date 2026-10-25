@@ -49,7 +49,7 @@ Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-devi
 - Update the hosting row in `tech-stack.md` (confirmed choice) and the privacy note if the host adds analytics.
 - **Outcome:** `config/buildInfo.ts` resolves the base path, commit and host from the environment; a footer shows `Build <commit> · <host>`. GitHub Pages deploys from a CI job after `verify` on `main`; Cloudflare deploys through its Git integration with `wrangler.jsonc` (the dashboard created a **Workers** project with static assets, `*.workers.dev`, not a Pages project; it also gives a preview URL per branch).
 - **Real-device MIDI verified** on the Cloudflare preview with a Roland FP-30X: desktop Chrome (Windows 10) and Android Chrome over USB-OTG. Connect, velocity, hot-plug, no stuck notes, and the sustain pedal all passed with no code changes. The backlog note is closed.
-- **Still open after merge** (they need `main`): the GitHub Pages deploy and its live site (FR-4, FR-5), the production Cloudflare site (FR-7), and the host comparison with measurements (FR-12, `hosting-comparison.md`). The hosting choice in `tech-stack.md` stays open until the comparison is filled in.
+- **Checked after merge:** both sites serve `main` (GitHub Pages deploy after `verify`, production Cloudflare), and the host comparison is in `hosting-comparison.md`. Decision: keep both, GitHub Pages as production and Cloudflare for per-branch previews.
 
 ## Phase 4 — First lesson: play the right notes 📋
 

@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 3 — Deployment & device testing
 > Branch: `feature/deployment-device-testing`
-> Status: Implemented (GitHub Pages, production Cloudflare, and the host comparison are checked after merge)
+> Status: Validated
 
 ## Goal
 

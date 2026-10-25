@@ -17,7 +17,7 @@ All notable changes to this project are documented here. The format is based on 
 
 ### Known issues
 
-- The two hosts are not compared yet; one may be dropped later.
+- Both hosts stay for now: GitHub Pages as production and Cloudflare for branch previews.
 
 ## 2026-10-25 — Phase 2: play the piano
 
