@@ -40,10 +40,10 @@ CI (GitHub Actions) runs `lint`, `format:check`, `build`, and `test` on every pu
 
 The app is a static site, deployed to two hosts so they can be compared (see [specs/2026-10-25-deployment-device-testing/](specs/2026-10-25-deployment-device-testing/)). Web MIDI needs HTTPS, which both provide.
 
-| Host                 | URL                                          | How it deploys                                                                                              |
-| -------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| GitHub Pages         | https://sergshtelmakh.github.io/piano-tutor/ | The `deploy-github-pages` job in `.github/workflows/ci.yml` runs after CI passes on `main`. No PR previews. |
-| Cloudflare (Workers) | https://piano-tutor.sh-serg1993.workers.dev/ | Git integration: pushes to `main` update production; every other branch and PR gets a preview URL.          |
+| Host                 | URL                                                                                                                                           | How it deploys                                                                                              |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| GitHub Pages         | https://sergshtelmakh.github.io/piano-tutor/                                                                                                  | The `deploy-github-pages` job in `.github/workflows/ci.yml` runs after CI passes on `main`. No PR previews. |
+| Cloudflare (Workers) | https://piano-tutor.sh-serg1993.workers.dev/ (branch preview: https://feature-deployment-device-testing-piano-tutor.sh-serg1993.workers.dev/) | Git integration: pushes to `main` update production; every other branch and PR gets a preview URL.          |
 
 The footer of the app shows the commit and host of the running build.
 

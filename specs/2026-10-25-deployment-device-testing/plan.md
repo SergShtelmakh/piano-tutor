@@ -40,8 +40,8 @@ The app is live over HTTPS on GitHub Pages and Cloudflare Pages, so the learner 
    - [ ] User enables Pages with source "GitHub Actions"
    - [ ] After merge (or a test push to `main`): the job runs after `verify`, the site loads, the footer shows the commit (FR-4, FR-5)
 3. **Cloudflare Pages**
-   - [ ] User creates the Pages project with the documented settings
-   - [ ] This branch gets a preview URL that works; after merge, production updates (FR-6, FR-7)
+   - [x] User creates the Pages project with the documented settings
+   - [x] This branch gets a preview URL that works; after merge, production updates (FR-6, FR-7)
    - [x] `README.md`: live URLs, how each host deploys, Cloudflare settings (FR-8)
 4. **Real-device MIDI checks**
    - [ ] Desktop Chrome on the deployed site: FR-9 checks
