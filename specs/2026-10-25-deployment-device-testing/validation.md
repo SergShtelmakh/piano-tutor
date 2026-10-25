@@ -20,7 +20,7 @@ Local: `bun run dev`, open http://localhost:3000 in Chrome.
 - [ ] FR-4: after merging to `main`, the Actions run shows `verify` then `deploy-github-pages`, and the deploy job succeeds. (If you test this before merge, use a push that fails `verify` to confirm nothing is deployed, or check the job condition in the workflow file.)
 - [ ] FR-5: open `https://sergshtelmakh.github.io/piano-tutor/` in Chrome → HTTPS, no 404s in DevTools, the on-screen piano and computer keyboard play, the language selector works, the footer shows `GitHub Pages` and the merged commit.
 - [ ] FR-6: the Cloudflare Pages project uses the settings in `README.md`; the first build log shows Bun installing and `vite build` succeeding.
-- [ ] FR-7: the preview URL of `feature/deployment-device-testing` loads and plays, with the footer showing `Cloudflare Pages` and the branch's commit. After merge, `https://<project>.pages.dev/` shows the `main` commit.
+- [ ] FR-7: the preview URL of `feature/deployment-device-testing` loads and plays, with the footer showing `Cloudflare` and the branch's commit. After merge, `https://<project>.pages.dev/` shows the `main` commit.
 - [ ] FR-8: `README.md` lists both live URLs and the deploy setup for each host; the links open.
 - [ ] FR-9 **(MIDI, desktop, required)**: on the deployed site in desktop Chrome with a real keyboard:
   - Click **Connect MIDI keyboard**, allow → the device name is listed.

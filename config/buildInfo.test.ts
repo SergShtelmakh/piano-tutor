@@ -25,18 +25,24 @@ describe('resolveBuildInfo', () => {
     ).toEqual({ basePath: '/piano-tutor/', commit: '0123456', target: 'github-pages' });
   });
 
+  it('reads the Cloudflare Workers Builds environment', () => {
+    expect(resolveBuildInfo({ WORKERS_CI: '1', WORKERS_CI_COMMIT_SHA: SHA })).toEqual({
+      basePath: '/',
+      commit: '0123456',
+      target: 'cloudflare',
+    });
+  });
+
   it('reads the Cloudflare Pages environment', () => {
     expect(resolveBuildInfo({ CF_PAGES: '1', CF_PAGES_COMMIT_SHA: SHA })).toEqual({
       basePath: '/',
       commit: '0123456',
-      target: 'cloudflare-pages',
+      target: 'cloudflare',
     });
   });
 
   it('ignores an unknown DEPLOY_TARGET', () => {
     expect(resolveBuildInfo({ DEPLOY_TARGET: 'netlify' }).target).toBe('local');
-    expect(resolveBuildInfo({ DEPLOY_TARGET: 'netlify', CF_PAGES: '1' }).target).toBe(
-      'cloudflare-pages',
-    );
+    expect(resolveBuildInfo({ DEPLOY_TARGET: 'netlify', CF_PAGES: '1' }).target).toBe('cloudflare');
   });
 });
