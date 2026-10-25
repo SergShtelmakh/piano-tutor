@@ -9,7 +9,22 @@ import { loadKeyLabels } from '../input/keyboardLabels.ts';
 const SCREEN_VELOCITY = 90;
 const BLACK_KEY_WIDTH = 0.6; // relative to a white key
 
-export default function PianoKeyboard() {
+/** A key that briefly flashes after it was judged in a lesson. */
+export interface KeyFeedback {
+  note: number;
+  kind: 'right' | 'wrong';
+}
+
+function keyColor(note: number, black: boolean, lit: ReadonlySet<number>, feedback?: KeyFeedback) {
+  if (feedback?.note === note) {
+    if (feedback.kind === 'right') return black ? 'bg-green-600' : 'bg-green-400';
+    return black ? 'bg-red-600' : 'bg-red-400';
+  }
+  if (lit.has(note)) return black ? 'bg-sky-500' : 'bg-sky-300';
+  return black ? 'bg-slate-800' : 'bg-white';
+}
+
+export default function PianoKeyboard({ feedback }: { feedback?: KeyFeedback | null }) {
   const t = useT();
   const { locale } = useLocale();
   const bus = useNoteBus();
@@ -79,9 +94,12 @@ export default function PianoKeyboard() {
         <button
           key={note}
           {...keyProps(note)}
-          className={`flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-0.5 border-r border-slate-300 pb-1.5 text-slate-700 last:border-r-0 ${
-            lit.has(note) ? 'bg-sky-300' : 'bg-white'
-          }`}
+          className={`flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-0.5 border-r border-slate-300 pb-1.5 text-slate-700 last:border-r-0 ${keyColor(
+            note,
+            false,
+            lit,
+            feedback ?? undefined,
+          )}`}
         >
           <span className="text-[10px] font-semibold text-slate-500">{computerKey(note)}</span>
           <span className="text-[10px] leading-none sm:text-xs">
@@ -99,9 +117,12 @@ export default function PianoKeyboard() {
               left: `${whitesBefore * whiteWidth - (whiteWidth * BLACK_KEY_WIDTH) / 2}%`,
               width: `${whiteWidth * BLACK_KEY_WIDTH}%`,
             }}
-            className={`absolute top-0 flex h-28 items-end justify-center rounded-b-md pb-1.5 text-[10px] font-semibold text-slate-200 ${
-              lit.has(note) ? 'bg-sky-500' : 'bg-slate-800'
-            }`}
+            className={`absolute top-0 flex h-28 items-end justify-center rounded-b-md pb-1.5 text-[10px] font-semibold text-slate-200 ${keyColor(
+              note,
+              true,
+              lit,
+              feedback ?? undefined,
+            )}`}
           >
             {computerKey(note)}
           </button>

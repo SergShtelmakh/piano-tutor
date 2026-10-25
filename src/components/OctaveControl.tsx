@@ -1,4 +1,4 @@
-import { KEY_COUNT, MAX_BASE_OCTAVE, MIN_BASE_OCTAVE, octaveStart } from '../core/notes.ts';
+import { keyboardRange, MAX_BASE_OCTAVE, MIN_BASE_OCTAVE } from '../core/notes.ts';
 import { useLocale, useT } from '../i18n/context.ts';
 import { noteLabelFor } from '../i18n/noteNames.ts';
 import { useBaseOctave } from '../input/context.ts';
@@ -10,7 +10,7 @@ export default function OctaveControl() {
   const t = useT();
   const { locale } = useLocale();
   const { baseOctave, shiftBaseOctave } = useBaseOctave();
-  const first = octaveStart(baseOctave);
+  const range = keyboardRange(baseOctave);
 
   return (
     <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export default function OctaveControl() {
         {t('octaveDown')}
       </button>
       <span className="min-w-16 text-center text-sm font-semibold">
-        {noteLabelFor(locale, first)}–{noteLabelFor(locale, first + KEY_COUNT - 1)}
+        {noteLabelFor(locale, range[0])}–{noteLabelFor(locale, range[range.length - 1])}
       </span>
       <button
         type="button"
