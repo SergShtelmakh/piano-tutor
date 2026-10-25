@@ -38,6 +38,6 @@ Local: `bun run dev`, open http://localhost:3000 in Chrome.
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md` — phase status updated
-- [ ] `specs/tech-stack.md` — hosting row confirmed with the chosen host and reason; project layout mentions `config/`; the "real MIDI device" debt removed if FR-9 / FR-10 pass
-- [ ] `CHANGELOG.md` / README updated (live URLs, MIDI tested on devices)
+- [x] `specs/roadmap.md` — phase status updated
+- [x] `specs/tech-stack.md` — hosting row confirmed with the chosen host and reason; project layout mentions `config/`; the "real MIDI device" debt removed if FR-9 / FR-10 pass
+- [x] `CHANGELOG.md` / README updated (live URLs, MIDI tested on devices)

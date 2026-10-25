@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–2 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
+> Phases 1–3 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -32,9 +32,9 @@ Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-ke
 - 25-key on-screen piano (C3–C5 by default, octave buttons), multi-touch, pressed-key highlight.
 - Note names follow the language: letters (`en`), letters with H (`de`), до-ре-мі (`uk`), do-ré-mi (`fr`). Changed during review.
 - Web Audio synth: 16 voices, velocity, envelope, compressor; volume and mute saved locally.
-- **Not verified on a real device:** connecting / unplugging a MIDI keyboard and the sustain pedal (no working device connection during validation). Parsing and pedal logic are unit-tested. Re-check in Phase 3 over HTTPS, see [`backlog/midi-device-check.md`](backlog/midi-device-check.md).
+- **Real-device MIDI** was not verified in this phase; it was checked in Phase 3 (see [`backlog/midi-device-check.md`](backlog/midi-device-check.md).
 
-## Phase 3 — Deployment & device testing 🔨
+## Phase 3 — Deployment & device testing ✅
 
 Goal: the app is reachable over HTTPS from any device, so it can be tested on phones, tablets, and other computers early. Moved up from the old Phase 6 so every later phase can be checked on real hardware as it ships.
 
@@ -47,6 +47,9 @@ Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-devi
 - At the end, record the comparison and keep one host (or both, if there is a reason) in `tech-stack.md`.
 - Run the real-device MIDI checks left open in Phase 2 on the deployed site (desktop Chrome and Android Chrome with a USB-OTG keyboard), see [`backlog/midi-device-check.md`](backlog/midi-device-check.md).
 - Update the hosting row in `tech-stack.md` (confirmed choice) and the privacy note if the host adds analytics.
+- **Outcome:** `config/buildInfo.ts` resolves the base path, commit and host from the environment; a footer shows `Build <commit> · <host>`. GitHub Pages deploys from a CI job after `verify` on `main`; Cloudflare deploys through its Git integration with `wrangler.jsonc` (the dashboard created a **Workers** project with static assets, `*.workers.dev`, not a Pages project; it also gives a preview URL per branch).
+- **Real-device MIDI verified** on the Cloudflare preview with a Roland FP-30X: desktop Chrome (Windows 10) and Android Chrome over USB-OTG. Connect, velocity, hot-plug, no stuck notes, and the sustain pedal all passed with no code changes. The backlog note is closed.
+- **Still open after merge** (they need `main`): the GitHub Pages deploy and its live site (FR-4, FR-5), the production Cloudflare site (FR-7), and the host comparison with measurements (FR-12, `hosting-comparison.md`). The hosting choice in `tech-stack.md` stays open until the comparison is filled in.
 
 ## Phase 4 — First lesson: play the right notes 📋
 

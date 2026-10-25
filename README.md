@@ -2,7 +2,7 @@
 
 A gamified piano-learning web app: connect a MIDI keyboard (Web MIDI) and get real-time feedback on whether you play the right notes. Client-side only, no backend. See [specs/mission.md](specs/mission.md).
 
-> Status: free play works (roadmap Phase 2): MIDI keyboard, computer keyboard, and on-screen piano all make sound. Lessons are coming in later phases — see [specs/roadmap.md](specs/roadmap.md).
+> Status: free play works and is deployed online (roadmap Phases 2–3): MIDI keyboard, computer keyboard, and on-screen piano all make sound. Lessons are coming in later phases — see [specs/roadmap.md](specs/roadmap.md).
 
 ## Prerequisites
 
