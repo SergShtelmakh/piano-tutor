@@ -9,7 +9,7 @@ specs/
 ├── roadmap.md        # constitution: phases in implementation order (living)
 ├── _templates/       # plan.md, requirements.md, validation.md
 ├── backlog/          # research notes and ideas not yet on the roadmap
-└── YYYY-MM-DD-<slug>/  # one folder per feature (= one roadmap phase)
+└── phase-NN-<slug>/  # one folder per feature (= one roadmap phase)
     ├── plan.md
     ├── requirements.md
     └── validation.md
@@ -23,7 +23,7 @@ Constitution (once, then evolves)
         │
         ▼
 Feature loop (per roadmap phase)
-  1. Spec      → branch feature/<slug>, folder specs/YYYY-MM-DD-<slug>/,
+  1. Spec      → branch feature/<slug>, folder specs/phase-NN-<slug>/,
                  agent asks clarifying questions, writes plan / requirements / validation
                  → human reviews and edits the spec
   2. Implement → agent works through plan.md task groups, one at a time

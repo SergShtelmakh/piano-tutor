@@ -2,7 +2,7 @@
 
 ## Context
 
-Roadmap Phase 3. Phases 1–2 built a free-play piano that runs only on `localhost`. Web MIDI needs a secure context, so the app has never been tried on a phone, and the real-device MIDI checks from Phase 2 (FR-3 / FR-4 / FR-11 in `specs/2026-10-25-input-pipeline-keyboard/validation.md`) are still open. See `specs/backlog/midi-device-check.md`.
+Roadmap Phase 3. Phases 1–2 built a free-play piano that runs only on `localhost`. Web MIDI needs a secure context, so the app has never been tried on a phone, and the real-device MIDI checks from Phase 2 (FR-3 / FR-4 / FR-11 in `specs/phase-02-input-pipeline-keyboard/validation.md`) are still open. See `specs/backlog/midi-device-check.md`.
 
 This phase publishes the app over HTTPS on **two** static hosts at the same time, GitHub Pages and Cloudflare Pages, so they can be compared before one is chosen. It also runs the open MIDI checks on the deployed site. Deploying early means every later phase can be tested on real hardware as it ships.
 

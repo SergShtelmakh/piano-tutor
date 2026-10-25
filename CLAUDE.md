@@ -14,7 +14,7 @@ Before any non-trivial change, read the constitution:
 
 Workflow (details and example prompts in `specs/README.md`):
 
-1. **Spec** — for a roadmap phase, use the `feature-spec` skill: branch `feature/<slug>`, folder `specs/YYYY-MM-DD-<slug>/` with `plan.md`, `requirements.md`, `validation.md`. Ask clarifying questions first. Stop for human review.
+1. **Spec** — for a roadmap phase, use the `feature-spec` skill: branch `feature/<slug>`, folder `specs/phase-NN-<slug>/` with `plan.md`, `requirements.md`, `validation.md`. Ask clarifying questions first. Stop for human review.
 2. **Implement** — work through `plan.md` task groups in order; tick tasks off as you go. Don't add scope that isn't in the spec.
 3. **Validate** — run every item in `validation.md`; the feature is done only when all pass.
 4. **Replan** — use the `replan` skill: update roadmap, tech stack, changelog, README. Run it on the feature branch **before** the PR is merged, so the phase stays one branch = one PR.

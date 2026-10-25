@@ -1,6 +1,6 @@
 # Tooling backlog
 
-Found during Phase 1 (`specs/2026-10-25-project-scaffold/`). Each item is a small fix and doesn't need its own roadmap phase.
+Found during Phase 1 (`specs/phase-01-project-scaffold/`). Each item is a small fix and doesn't need its own roadmap phase.
 
 ## TypeScript 7
 

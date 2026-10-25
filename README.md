@@ -39,7 +39,7 @@ CI (GitHub Actions) runs `lint`, `format:check`, `build`, and `test` on every pu
 
 ## Deployment
 
-The app is a static site, deployed to two hosts so they can be compared (see [specs/2026-10-25-deployment-device-testing/](specs/2026-10-25-deployment-device-testing/)). Web MIDI needs HTTPS, which both provide.
+The app is a static site, deployed to two hosts so they can be compared (see [specs/phase-03-deployment-device-testing/](specs/phase-03-deployment-device-testing/)). Web MIDI needs HTTPS, which both provide.
 
 | Host                 | URL                                                                                                                                           | How it deploys                                                                                              |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
