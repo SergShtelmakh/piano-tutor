@@ -54,6 +54,7 @@ The footer of the app shows the commit and host of the running build.
 - Production branch: `main`
 - Build command: `bun install --frozen-lockfile && bun run build` (fallback if Bun fails: `npm install && npm run build`)
 - Build output directory: `dist`
+- `wrangler.jsonc` in the repo sets the Worker name (`piano-tutor`), the `dist` assets directory and the `previews` block that branch preview builds (`wrangler preview`) require.
 - Environment variable `BUN_VERSION`: `1.4.4`
 - Leave Web Analytics off (privacy by default).
 
