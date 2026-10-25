@@ -16,6 +16,8 @@ export interface LessonFeedback {
   kind: 'right' | 'wrong';
   /** Changes on every judgement, so the same key can flash twice in a row. */
   id: number;
+  /** For a `right` note that finished its step: the index of that step; otherwise null. */
+  completedStep: number | null;
 }
 
 /**
@@ -51,11 +53,20 @@ export function useLesson(
       const result = judge(lessonRef.current, stateRef.current, event);
       if (result.outcome === 'ignored' || result.note === undefined) return;
 
+      const previous = stateRef.current;
       stateRef.current = result.state;
       // Called from the listener, not an effect, so Strict Mode cannot report a finish twice.
       if (result.state.finished) onFinishRef.current?.(lessonRef.current, result.state);
       setState(result.state);
-      setFeedback({ note: result.note, kind: result.outcome, id: ++feedbackId.current });
+      setFeedback({
+        note: result.note,
+        kind: result.outcome,
+        id: ++feedbackId.current,
+        completedStep:
+          result.outcome === 'right' && result.state.stepIndex > previous.stepIndex
+            ? previous.stepIndex
+            : null,
+      });
       clearTimeout(feedbackTimer.current);
       feedbackTimer.current = setTimeout(() => setFeedback(null), FEEDBACK_MS);
     });

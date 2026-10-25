@@ -9,6 +9,8 @@ export interface Lesson {
   /** The octave of the C under the computer `A` key while this lesson is played. */
   baseOctave: number;
   steps: readonly (readonly number[])[];
+  /** How many steps each page of the staff row holds, in order; the sum is `steps.length`. */
+  pages: readonly number[];
 }
 
 export interface LessonState {
@@ -28,6 +30,16 @@ export interface JudgeResult {
   outcome: Outcome;
   /** The judged note, for `right` and `wrong`. */
   note?: number;
+}
+
+/** The page that holds `stepIndex`: the index of its first step and its length. */
+export function pageOf(lesson: Lesson, stepIndex: number): { start: number; length: number } {
+  let start = 0;
+  for (const length of lesson.pages) {
+    if (stepIndex < start + length) return { start, length };
+    start += length;
+  }
+  return { start, length: 0 };
 }
 
 export function startLesson(lesson: Lesson): LessonState {

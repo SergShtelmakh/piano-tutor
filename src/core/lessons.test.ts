@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vitest';
+import { keyboardWindow } from './computerKeymap.ts';
+import { isBlackKey } from './notes.ts';
 import {
+  INTERVAL_POOL,
   LESSON_CATALOG,
+  LESSON_UNITS,
   NOTE_READING_LENGTH,
   NOTE_READING_POOL,
   createNoteReadingLesson,
+  evenPages,
+  hasChords,
+  nextLessonId,
   randomSequence,
   type RandomSource,
 } from './lessons.ts';
@@ -113,5 +120,117 @@ describe('lesson catalog', () => {
       expect(lesson.id).toBe(entry.id);
       expect(lesson.titleKey).toBe(entry.titleKey);
     }
+  });
+});
+
+describe('evenPages', () => {
+  it('splits into even pages of at most 8', () => {
+    expect(evenPages(20)).toEqual([7, 7, 6]);
+    expect(evenPages(12)).toEqual([6, 6]);
+    expect(evenPages(8)).toEqual([8]);
+    expect(evenPages(9)).toEqual([5, 4]);
+    expect(evenPages(1)).toEqual([1]);
+    expect(evenPages(0)).toEqual([]);
+  });
+});
+
+describe('curriculum', () => {
+  const lessons = LESSON_CATALOG.map((entry) => entry.create(seeded(3)));
+
+  it('has the 13 lessons of the spec, in order, with note-reading kept', () => {
+    expect(LESSON_CATALOG.map((entry) => entry.id)).toEqual([
+      'treble-c-g',
+      'note-reading',
+      'treble-g-e',
+      'bass-c-g',
+      'bass-octave',
+      'both-clefs',
+      'melody-mary',
+      'melody-ode',
+      'melody-twinkle',
+      'melody-ode-left',
+      'intervals',
+      'chords-major',
+      'chords-all',
+    ]);
+    expect(LESSON_UNITS.map((unit) => unit.lessons.length)).toEqual([3, 2, 1, 4, 3]);
+  });
+
+  it('uses only white keys inside the keyboard window of its base octave', () => {
+    for (const lesson of lessons) {
+      expect(lesson.steps.length, lesson.id).toBeGreaterThan(0);
+      const { low, high } = keyboardWindow(lesson.baseOctave);
+      for (const note of lesson.steps.flat()) {
+        expect(isBlackKey(note), `${lesson.id} ${note}`).toBe(false);
+        expect(note, lesson.id).toBeGreaterThanOrEqual(low);
+        expect(note, lesson.id).toBeLessThanOrEqual(high);
+      }
+    }
+  });
+
+  it('has pages that add up to the steps, at most 8 each', () => {
+    for (const lesson of lessons) {
+      expect(
+        lesson.pages.reduce((sum, length) => sum + length, 0),
+        lesson.id,
+      ).toBe(lesson.steps.length);
+      for (const length of lesson.pages) {
+        expect(length, lesson.id).toBeGreaterThan(0);
+        expect(length, lesson.id).toBeLessThanOrEqual(8);
+      }
+    }
+  });
+
+  it('never repeats a step twice in a row in random lessons', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      for (const entry of LESSON_CATALOG) {
+        const steps = entry.create(seeded(seed)).steps;
+        if (entry.id.startsWith('melody')) continue;
+        for (let i = 1; i < steps.length; i++) {
+          expect(steps[i].join(), entry.id).not.toBe(steps[i - 1].join());
+        }
+      }
+    }
+  });
+
+  it('gives chord lessons at most three notes per step and 12 steps', () => {
+    for (const id of ['intervals', 'chords-major', 'chords-all']) {
+      const lesson = lessons.find((item) => item.id === id)!;
+      expect(lesson.steps).toHaveLength(12);
+      for (const step of lesson.steps) expect(step.length).toBeLessThanOrEqual(3);
+    }
+    expect(hasChords(lessons.find((item) => item.id === 'chords-all')!)).toBe(true);
+    expect(hasChords(lessons.find((item) => item.id === 'note-reading')!)).toBe(false);
+  });
+
+  it('plays the written tunes', () => {
+    const notesOf = (id: string) => lessons.find((item) => item.id === id)!.steps.flat();
+    expect(notesOf('melody-mary').slice(0, 7)).toEqual([64, 62, 60, 62, 64, 64, 64]);
+    expect(notesOf('melody-mary')).toHaveLength(26);
+    expect(notesOf('melody-ode')).toHaveLength(30);
+    expect(notesOf('melody-twinkle')).toHaveLength(42);
+    expect(notesOf('melody-ode-left')).toEqual(notesOf('melody-ode').map((note) => note - 12));
+    expect(lessons.find((item) => item.id === 'melody-ode')!.pages).toEqual([8, 7, 8, 7]);
+  });
+
+  it('builds intervals from a second to an octave', () => {
+    expect(INTERVAL_POOL).toHaveLength(28);
+    for (const [low, high] of INTERVAL_POOL) {
+      expect(high).toBeGreaterThan(low);
+      expect(high - low).toBeLessThanOrEqual(12);
+    }
+  });
+});
+
+describe('nextLessonId', () => {
+  it('is the first lesson without a record', () => {
+    expect(nextLessonId(LESSON_CATALOG, {})).toBe('treble-c-g');
+    expect(nextLessonId(LESSON_CATALOG, { 'treble-c-g': {} })).toBe('note-reading');
+    expect(nextLessonId(LESSON_CATALOG, { 'note-reading': {} })).toBe('treble-c-g');
+  });
+
+  it('is null when every lesson has a record', () => {
+    const all = Object.fromEntries(LESSON_CATALOG.map((entry) => [entry.id, {}]));
+    expect(nextLessonId(LESSON_CATALOG, all)).toBeNull();
   });
 });

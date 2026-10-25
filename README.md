@@ -2,7 +2,7 @@
 
 A gamified piano-learning web app: connect a MIDI keyboard (Web MIDI) and get real-time feedback on whether you play the right notes. Client-side only, no backend. See [specs/mission.md](specs/mission.md).
 
-> Status: free play, a first lesson, and local progress (stars, XP, levels, daily streak) work and are deployed online (roadmap Phases 2–4): MIDI keyboard, computer keyboard, and on-screen piano all make sound, and lessons train note reading on a music staff. More lessons come in later phases — see [specs/roadmap.md](specs/roadmap.md).
+> Status: free play, a first lesson, and local progress (stars, XP, levels, daily streak) work and are deployed online (roadmap Phases 2–4): MIDI keyboard, computer keyboard, and on-screen piano all make sound, and a 13-lesson first-week curriculum trains note reading, melodies, intervals, and chords on a music staff. More content comes in later phases — see [specs/roadmap.md](specs/roadmap.md).
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ bun run dev      # http://localhost:3000
 - **MIDI keyboard:** click **Connect MIDI keyboard** and allow access. Every connected keyboard works, including the sustain pedal. Web MIDI needs Chrome or Edge and a secure page (HTTPS or `localhost`).
 - **Computer keyboard:** `A S D F G H J K L ;` are the white keys (C D E F G A B C D E) and `W E T Y U O P` are the black keys. The left `Shift` key (`⇧`) plays the B just below the first C. `Z` / `X` shift the octave down / up. Keys are matched by physical position, so this works on QWERTZ and AZERTY layouts too.
 - **On-screen piano:** click or touch the keys. The octave buttons change the shown range (B2–C5 by default: the B below the first C, two octaves, and the top C).
-- **Home and lessons:** the app opens on **Home**. Press **Start** on a lesson card. A note appears on a music staff (treble and bass clef); find and play that key with any of the three inputs. A wrong key counts as a mistake and the same note stays until you play it right. After 20 random notes (B3–C5) you get your accuracy, 1–3 stars, and XP. Every start gives a new order.
+- **Home and lessons:** the app opens on **Home**, with 13 lessons in five units: right hand (treble clef), left hand (bass clef), both clefs, melodies (Mary Had a Little Lamb, Ode to Joy, Twinkle Twinkle), and intervals and chords. Press **Start** on a lesson card; the lesson marked **Next** is the first one you haven't finished, but nothing is locked. The staff shows a row of notes: the highlighted one is the one to play, played ones turn grey. For a chord, play all its notes in any order. A wrong key counts as a mistake and the target stays until you play it right. At the end you get your accuracy, 1–3 stars, and XP. Random lessons give a new order on every start.
 - **Progress:** XP raises your level, and finishing at least one lesson per day builds a daily streak. Everything is saved on your device only; **Reset progress** on Home clears it.
 
 ## Scripts

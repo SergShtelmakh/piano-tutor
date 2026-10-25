@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   codeForNote,
   KEY_OFFSETS,
+  keyboardWindow,
   noteForCode,
   QWERTY_LABELS,
   shiftOctave,
@@ -68,5 +69,12 @@ describe('computer keymap', () => {
 
   it('has a fallback label for every mapped key', () => {
     for (const code of Object.keys(KEY_OFFSETS)) expect(QWERTY_LABELS[code]).toMatch(/^[A-Z;⇧]$/);
+  });
+});
+
+describe('keyboardWindow', () => {
+  it('runs from the B below the base C to the E above the next C', () => {
+    expect(keyboardWindow(4)).toEqual({ low: 59, high: 76 });
+    expect(keyboardWindow(3)).toEqual({ low: 47, high: 64 });
   });
 });
