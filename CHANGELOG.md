@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-25 — Phase 3: online on two hosts
+
+### Added
+
+- The app is deployed over HTTPS, so Web MIDI works on any device. GitHub Pages: https://sergshtelmakh.github.io/piano-tutor/ (goes live after this release is merged). Cloudflare: https://piano-tutor.sh-serg1993.workers.dev/, with a preview link for every branch.
+- A small footer shows which build you are running (commit and host), in all four languages.
+
+### Changed
+
+- MIDI keyboards were tested on real devices with a Roland FP-30X: connect, velocity, plugging in and out, and the sustain pedal work in desktop Chrome and in Android Chrome over USB-OTG.
+
+### Known issues
+
+- The two hosts are not compared yet; one may be dropped later.
+
 ## 2026-10-25 — Phase 2: play the piano
 
 ### Added
