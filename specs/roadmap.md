@@ -98,6 +98,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
+- Keyboard size: a setting for the number of keys per device and a calibration step (press the lowest and highest key), so lessons stay within the real keyboard; see [`backlog/keyboard-size.md`](backlog/keyboard-size.md).
 - From Phase 2: a setting for the note-name convention independent of the language (e.g. letters in `uk`); a MIDI device picker; glissando on the on-screen piano (sliding a finger onto the next key plays it); a sustain key for computer / touch input.
 
 **Tooling backlog** (small fixes; they don't need a phase, see [`backlog/tooling.md`](backlog/tooling.md)):
