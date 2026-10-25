@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–3 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
+> Phases 1–4 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -51,7 +51,7 @@ Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-devi
 - **Real-device MIDI verified** on the Cloudflare preview with a Roland FP-30X: desktop Chrome (Windows 10) and Android Chrome over USB-OTG. Connect, velocity, hot-plug, no stuck notes, and the sustain pedal all passed with no code changes. The backlog note is closed.
 - **Checked after merge:** both sites serve `main` (GitHub Pages deploy after `verify`, production Cloudflare), and the host comparison is in `hosting-comparison.md`. Decision: keep both, GitHub Pages as production and Cloudflare for per-branch previews.
 
-## Phase 4 — First lesson: play the right notes 🔨
+## Phase 4 — First lesson: play the right notes ✅
 
 Spec: [`specs/2026-10-25-first-lesson/`](2026-10-25-first-lesson/). Branch `feature/first-lesson`.
 
@@ -63,6 +63,8 @@ Goal: the core promise of the product, end to end.
 - Completion summary with accuracy.
 - Unit tests for the judge and lesson progression.
 - Translations: add interpolation and plural forms (needed for "3 mistakes", "85 % accuracy"). This was deferred from Phase 1. Ukrainian has several plural forms, so use `Intl.PluralRules`.
+- **Outcome (changed during spec review):** the target is shown as a **note on a grand staff** (treble + bass clef), not as a highlighted key, and no note name is shown. The lesson is 20 **random** white-key notes from B3 to C5 (never the same note twice in a row, a new order on every start). `ShiftLeft` plays the B below the base C, so the on-screen piano has 26 keys. Right/wrong flashes colour the played key and the notehead. A **Free play / Lesson** switch lives in app state (no router). Clef shapes are Bravura outlines (SIL OFL 1.1, credited in README). Verified on desktop Chrome and Android Chrome (staff, multi-touch, MIDI keyboard, Sticky Keys with `ShiftLeft`).
+- The sheet-music backlog item has started: single notes on a grand staff only. Chords, key signatures, rhythm, and melodies are still open.
 
 ## Phase 5 — Game mechanics & local progress 📋
 
@@ -91,7 +93,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 
 - Load a `.mid` file and play it step by step (custom MIDI parser).
 - Chord / interval / key analyzer with a chord dictionary.
-- Sheet-music view and falling-notes ("waterfall") view.
+- Sheet-music view (started in Phase 4 with single notes on a grand staff; chords, rhythm, and melodies remain) and falling-notes ("waterfall") view.
 - Session recorder with `.mid` export.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.

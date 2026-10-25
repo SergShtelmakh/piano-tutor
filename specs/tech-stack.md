@@ -34,7 +34,7 @@
 ## Conventions
 
 - Docs, specs, code comments, commit messages, PR descriptions: **English**.
-- UI language: **English** is the source and fallback language; the app also ships **Ukrainian, German, and French**. On first visit the language is detected from the browser (`navigator.languages`, primary subtag matched against `uk`/`de`/`fr`/`en`), otherwise English; a language the user picked always wins. All user-facing strings go through one in-house translations module with a locale per language (`en`, `uk`, `de`, `fr`); `en` defines the key type and is the fallback for any missing key. The chosen language is stored in `localStorage` (wrapped in try/catch). No hard-coded UI strings in components.
+- UI language: **English** is the source and fallback language; the app also ships **Ukrainian, German, and French**. On first visit the language is detected from the browser (`navigator.languages`, primary subtag matched against `uk`/`de`/`fr`/`en`), otherwise English; a language the user picked always wins. All user-facing strings go through one in-house translations module with a locale per language (`en`, `uk`, `de`, `fr`); `en` defines the key type and is the fallback for any missing key. Messages support `{name}` interpolation, and plural entries are objects of forms (`one`, `few`, `many`, `other`) picked with `Intl.PluralRules` (`tp(key, count)`); percentages use `Intl.NumberFormat`. The chosen language is stored in `localStorage` (wrapped in try/catch). No hard-coded UI strings in components.
 - Branches: `feature/<slug>`; one roadmap phase = one branch = one PR.
 - Commits are small and reference the spec folder.
 
@@ -57,12 +57,13 @@ Pinned by `bun.lock` (as of Phase 1): React 19, Vite 8, Tailwind CSS 4 (`@tailwi
 
 ## Project layout
 
-- `src/i18n/`: translations. `core.ts` (pure: locales, detection, lookup with `en` fallback), `storage.ts` (`localStorage` wrapper), `context.ts` (`useT()`, `useLocale()`), `I18nProvider.tsx`, `noteNames.ts` (pure: note names per language; use it for any note name shown to the user), and `locales/{en,uk,de,fr}.ts`. Add new UI strings to `locales/en.ts` first; the key type comes from it.
-- `src/core/`: pure domain logic with no React, DOM, or audio imports: shared event types (`types.ts`), note helpers, MIDI parsing, computer-key map, and held/sustained note bookkeeping. Unit-tested.
+- `src/i18n/`: translations. `core.ts` (pure: locales, detection, lookup with `en` fallback), `storage.ts` (`localStorage` wrapper), `context.ts` (`useT()`, `usePluralT()`, `useLocale()`), `I18nProvider.tsx`, `noteNames.ts` (pure: note names per language; use it for any note name shown to the user), and `locales/{en,uk,de,fr}.ts`. Add new UI strings to `locales/en.ts` first; the key type comes from it.
+- `src/core/`: pure domain logic with no React, DOM, or audio imports: shared event types (`types.ts`), note helpers, MIDI parsing, computer-key map, and held/sustained note bookkeeping, plus the lesson model (`lesson.ts`: steps, judge, accuracy), lesson generators with an injectable random source (`lessons.ts`), and the staff geometry (`staff.ts`: note → clef, line index, ledger lines). Unit-tested. The computer-keyboard layout covers `A`–`;`, `W E T Y U O P`, and `ShiftLeft` for the B below the base C (the on-screen piano has 26 keys).
 - `src/input/`: the note pipeline (`noteBus.ts`) and its adapters: computer keyboard, Web MIDI, key labels, plus `NoteInputProvider` and hooks.
 - `src/audio/`: the Web Audio synth and volume/mute settings.
 - `config/`: build configuration. `buildInfo.ts` (pure, unit-tested) resolves base path, commit, and host from environment variables (`BASE_PATH`, `DEPLOY_TARGET`, `GITHUB_SHA`, Cloudflare `CF_PAGES*` / `WORKERS_CI*`); `vite.config.ts` exposes it to the app as `__BUILD_INFO__`. `wrangler.jsonc` at the repo root configures the Cloudflare deployment.
-- `src/components/`: thin UI components.
+- `src/lesson/`: `useLesson` hook that connects a lesson to the note bus (synchronous judging, short right/wrong feedback, restart, octave save/restore).
+- `src/components/`: thin UI components, including `StaffView` (SVG grand staff; clef outlines in `clefPaths.ts` come from the Bravura font, SIL OFL 1.1, see `licenses/`), `LessonScreen`, `LessonSummary`, and `ModeSwitch`. The mode (free play / lesson) is plain app state; there is no router.
 - Tests sit next to the code as `*.test.ts`. The Vitest environment is `node`. There is no DOM test setup yet.
 
 ## Known technical debt
