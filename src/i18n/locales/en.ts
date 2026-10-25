@@ -26,7 +26,32 @@ export const en = {
   pianoLabel: 'Piano keyboard',
   buildLabel: 'Build',
   buildLocal: 'local',
+  modeFree: 'Free play',
+  modeLesson: 'Lesson',
+  modeLabel: 'Mode',
+  lessonNoteReadingTitle: 'Note reading',
+  lessonInstruction: 'Play the note shown on the staff.',
+  staffTargetLabel: 'Target note: {note}',
+  lessonProgress: 'Step {current} of {total}',
+  lessonRestart: 'Restart',
+  lessonBack: 'Back to free play',
+  correctCount: { one: '{count} correct note', other: '{count} correct notes' },
+  mistakesCount: { one: '{count} mistake', other: '{count} mistakes' },
+  summaryTitle: 'Lesson complete',
+  summaryAccuracy: 'Accuracy: {percent}',
+  summaryAgain: 'Play again',
 } as const;
 
-export type TranslationKey = keyof typeof en;
-export type PartialTranslations = Partial<Record<TranslationKey, string>>;
+type Entries = typeof en;
+
+export type TranslationKey = keyof Entries;
+/** Keys whose value is a plain string (use `t`). */
+export type MessageKey = {
+  [K in TranslationKey]: Entries[K] extends string ? K : never;
+}[TranslationKey];
+/** Keys whose value has one string per plural category (use `tp`). */
+export type PluralKey = Exclude<TranslationKey, MessageKey>;
+export type PluralForms = Partial<Record<Intl.LDMLPluralRule, string>>;
+export type PartialTranslations = { [K in MessageKey]?: string } & {
+  [K in PluralKey]?: PluralForms;
+};

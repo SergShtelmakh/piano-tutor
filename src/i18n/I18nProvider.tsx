@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { I18nContext, type I18nValue } from './context.ts';
-import { resolveInitialLocale, translate, type Locale } from './core.ts';
+import { resolveInitialLocale, translate, translatePlural, type Locale } from './core.ts';
 import { loadLocale, saveLocale } from './storage.ts';
 
 function detectInitialLocale(): Locale {
@@ -18,7 +18,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         setLocaleState(next);
         saveLocale(next);
       },
-      t: (key) => translate(locale, key),
+      t: (key, params) => translate(locale, key, params),
+      tp: (key, count, params) => translatePlural(locale, key, count, params),
     }),
     [locale],
   );

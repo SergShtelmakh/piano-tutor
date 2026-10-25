@@ -51,7 +51,9 @@ Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-devi
 - **Real-device MIDI verified** on the Cloudflare preview with a Roland FP-30X: desktop Chrome (Windows 10) and Android Chrome over USB-OTG. Connect, velocity, hot-plug, no stuck notes, and the sustain pedal all passed with no code changes. The backlog note is closed.
 - **Checked after merge:** both sites serve `main` (GitHub Pages deploy after `verify`, production Cloudflare), and the host comparison is in `hosting-comparison.md`. Decision: keep both, GitHub Pages as production and Cloudflare for per-branch previews.
 
-## Phase 4 — First lesson: play the right notes 📋
+## Phase 4 — First lesson: play the right notes 🔨
+
+Spec: [`specs/2026-10-25-first-lesson/`](2026-10-25-first-lesson/). Branch `feature/first-lesson`.
 
 Goal: the core promise of the product, end to end.
 
