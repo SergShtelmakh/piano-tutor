@@ -37,16 +37,16 @@ The app is live over HTTPS on GitHub Pages and Cloudflare Pages, so the learner 
    - [x] Check locally: `BASE_PATH=/piano-tutor/ bun run build && bun run preview` → the app loads under `/piano-tutor/` with no 404s
 2. **GitHub Pages deploy**
    - [x] `deploy-github-pages` job in `ci.yml` as in Approach
-   - [ ] User enables Pages with source "GitHub Actions"
+   - [x] User enables Pages with source "GitHub Actions"
    - [ ] After merge (or a test push to `main`): the job runs after `verify`, the site loads, the footer shows the commit (FR-4, FR-5)
 3. **Cloudflare Pages**
    - [x] User creates the Pages project with the documented settings
    - [x] This branch gets a preview URL that works; after merge, production updates (FR-6, FR-7)
    - [x] `README.md`: live URLs, how each host deploys, Cloudflare settings (FR-8)
 4. **Real-device MIDI checks**
-   - [ ] Desktop Chrome on the deployed site: FR-9 checks
-   - [ ] Android Chrome + USB-OTG: FR-10 checks
-   - [ ] Fix any bug found, with tests (FR-11); update `specs/backlog/midi-device-check.md`
+   - [x] Desktop Chrome on the deployed site: FR-9 checks
+   - [x] Android Chrome + USB-OTG: FR-10 checks
+   - [x] Fix any bug found, with tests (FR-11); update `specs/backlog/midi-device-check.md`
 5. **Host comparison**
    - [ ] `hosting-comparison.md` with the measurements from FR-12
    - [ ] User picks the host(s); if one is dropped, remove its deploy (workflow job, or disconnect the Cloudflare project) and its README lines
