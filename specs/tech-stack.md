@@ -57,7 +57,10 @@ Pinned by `bun.lock` (as of Phase 1): React 19, Vite 8, Tailwind CSS 4 (`@tailwi
 
 ## Project layout
 
-- `src/i18n/`: translations. `core.ts` (pure: locales, detection, lookup with `en` fallback), `storage.ts` (`localStorage` wrapper), `context.ts` (`useT()`, `useLocale()`), `I18nProvider.tsx`, and `locales/{en,uk,de,fr}.ts`. Add new UI strings to `locales/en.ts` first; the key type comes from it.
+- `src/i18n/`: translations. `core.ts` (pure: locales, detection, lookup with `en` fallback), `storage.ts` (`localStorage` wrapper), `context.ts` (`useT()`, `useLocale()`), `I18nProvider.tsx`, and `noteNames.ts` (pure: note names per language), and `locales/{en,uk,de,fr}.ts`. Add new UI strings to `locales/en.ts` first; the key type comes from it.
+- `src/core/`: pure domain logic with no React, DOM, or audio imports: shared event types (`types.ts`), note helpers, MIDI parsing, computer-key map, and held/sustained note bookkeeping. Unit-tested.
+- `src/input/`: the note pipeline (`noteBus.ts`) and its adapters: computer keyboard, Web MIDI, key labels, plus `NoteInputProvider` and hooks.
+- `src/audio/`: the Web Audio synth and volume/mute settings.
 - `src/components/`: thin UI components.
 - Tests sit next to the code as `*.test.ts`. The Vitest environment is `node`. There is no DOM test setup yet.
 
