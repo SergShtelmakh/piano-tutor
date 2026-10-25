@@ -21,9 +21,13 @@ export interface LessonFeedback {
 /**
  * Runs a lesson on the note bus: every `noteon`, from any source, is judged at once.
  * `createLesson` is called for the first lesson and again on every restart (a new random order).
+ * `onFinish` is called once, when the last step is judged right.
  * While the hook is mounted the base octave is the lesson's; it is restored when it unmounts.
  */
-export function useLesson(createLesson: () => Lesson) {
+export function useLesson(
+  createLesson: () => Lesson,
+  onFinish?: (lesson: Lesson, state: LessonState) => void,
+) {
   const bus = useNoteBus();
   const { baseOctave, setBaseOctave } = useBaseOctave();
   const [lesson, setLesson] = useState(createLesson);
@@ -36,6 +40,11 @@ export function useLesson(createLesson: () => Lesson) {
   const feedbackId = useRef(0);
   const feedbackTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const octaveBeforeLesson = useRef(baseOctave);
+  const onFinishRef = useRef(onFinish);
+
+  useEffect(() => {
+    onFinishRef.current = onFinish;
+  });
 
   useEffect(() => {
     return bus.subscribe((event) => {
@@ -43,6 +52,8 @@ export function useLesson(createLesson: () => Lesson) {
       if (result.outcome === 'ignored' || result.note === undefined) return;
 
       stateRef.current = result.state;
+      // Called from the listener, not an effect, so Strict Mode cannot report a finish twice.
+      if (result.state.finished) onFinishRef.current?.(lessonRef.current, result.state);
       setState(result.state);
       setFeedback({ note: result.note, kind: result.outcome, id: ++feedbackId.current });
       clearTimeout(feedbackTimer.current);

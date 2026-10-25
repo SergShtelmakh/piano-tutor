@@ -1,4 +1,5 @@
 // The lessons that ship with the app. Pure: the random source is passed in.
+import type { MessageKey } from '../i18n/locales/en.ts';
 import type { Lesson } from './lesson.ts';
 
 /** White keys B3 C4 D4 E4 F4 G4 A4 B4 C5: one note on the bass staff, the rest on the treble staff. */
@@ -41,3 +42,14 @@ export function createNoteReadingLesson(random: RandomSource): Lesson {
     steps: randomSequence(NOTE_READING_POOL, NOTE_READING_LENGTH, random).map((note) => [note]),
   };
 }
+
+export interface LessonEntry {
+  id: string;
+  titleKey: MessageKey;
+  create: (random: RandomSource) => Lesson;
+}
+
+/** Every lesson the Home screen offers, in display order. */
+export const LESSON_CATALOG: readonly LessonEntry[] = [
+  { id: 'note-reading', titleKey: 'lessonNoteReadingTitle', create: createNoteReadingLesson },
+];

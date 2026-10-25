@@ -1,17 +1,18 @@
 import { useT } from '../i18n/context.ts';
 
-export type Mode = 'free' | 'lesson';
+export type Mode = 'home' | 'free';
 
-const MODES: { mode: Mode; labelKey: 'modeFree' | 'modeLesson' }[] = [
+const MODES: { mode: Mode; labelKey: 'modeHome' | 'modeFree' }[] = [
+  { mode: 'home', labelKey: 'modeHome' },
   { mode: 'free', labelKey: 'modeFree' },
-  { mode: 'lesson', labelKey: 'modeLesson' },
 ];
 
+/** `mode` is null while a lesson is open: neither button is selected. */
 export default function ModeSwitch({
   mode,
   onChange,
 }: {
-  mode: Mode;
+  mode: Mode | null;
   onChange: (mode: Mode) => void;
 }) {
   const t = useT();
