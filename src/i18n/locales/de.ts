@@ -32,6 +32,7 @@ export const de: PartialTranslations = {
   modeLabel: 'Modus',
   lessonNoteReadingTitle: 'Noten lesen',
   lessonInstruction: 'Spiele die Note, die im Notensystem gezeigt wird.',
+  staffLabel: 'Notensystem',
   staffTargetLabel: 'Zielnote: {note}',
   lessonProgress: 'Schritt {current} von {total}',
   lessonRestart: 'Neu starten',
