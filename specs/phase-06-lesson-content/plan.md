@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 6 — Lesson content
 > Branch: `feature/lesson-content`
-> Status: Implemented (manual validation pending)
+> Status: Implemented (replanned; manual validation open)
 
 ## Goal
 

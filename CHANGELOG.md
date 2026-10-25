@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-26 — Phase 6: lesson content
+
+### Added
+
+- **13 lessons** in five units on Home: right hand (treble clef), left hand (bass clef), both clefs, melodies (Mary Had a Little Lamb, Ode to Joy, Twinkle Twinkle, and Ode to Joy for the left hand), and intervals and chords.
+- The staff now shows a **row of notes**: the one to play is highlighted, played ones turn grey, and the next ones are visible so you can read ahead.
+- **Chords and intervals** are drawn as stacked notes.
+- A **Next** badge marks the first lesson you haven't finished. Nothing is locked.
+- Lesson titles, unit headings, and instructions are translated into Ukrainian, German, and French.
+
+### Changed
+
+- To finish a chord, **press all its notes at the same time**. Keys you released don't count, and a wrong key cancels the try, so you press the whole chord again.
+- The first lesson is now called "Around middle C". Your earlier results for it are kept.
+
 ## 2026-10-25 — Phase 5: game mechanics & local progress
 
 ### Added

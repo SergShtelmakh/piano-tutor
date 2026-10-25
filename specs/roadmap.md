@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–5 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
+> Phases 1–6 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -77,16 +77,17 @@ Spec: [`specs/phase-05-game-mechanics-local-progress/`](phase-05-game-mechanics-
 - Simple progress/home screen with a list of lessons and their stars/best accuracy.
 - **Outcome:** a pure progress core (`src/core/progress.ts`): stars (1★ any finish, 2★ ≥ 80 %, 3★ ≥ 95 %), XP = 10 + 5 × stars, level L at 25·L·(L−1) XP, daily streak by local calendar day (no freezes), best values per lesson. Saved as versioned JSON under `piano-tutor.progress`; invalid data means empty progress, and blocked storage falls back to memory with a note. The mode switch became **Home / Free play** (Home is the default, lessons open from a catalog-driven list, `LESSON_CATALOG`). Runs are recorded once from the note listener. Reset progress has an in-page confirmation. Manual validation by the user was still open when this replan was written.
 
-## Phase 6 — Lesson content 🔨
+## Phase 6 — Lesson content ✅
 
 Goal: enough content for a real first week.
 
 Spec: [`specs/phase-06-lesson-content/`](phase-06-lesson-content/). Branch `feature/lesson-content`.
 
-Builds on Phase 5: add entries to `LESSON_CATALOG` (Home lists them automatically); unlock order needs a rule in the catalog entry and a locked state on `LessonCard`. Saved progress is `version: 1`; adding fields means a migration in `parseProgress`, otherwise old data is dropped.
-
-- Lesson format and a small curriculum (single notes → both hands separately → simple melodies → intervals/chords).
-- Unlock order tied to progress.
+- A 13-lesson curriculum in five units: right hand (treble), left hand (bass), both clefs, melodies, intervals and chords.
+- Lessons are grouped by unit on Home; no lesson is locked.
+- **Outcome:** `LESSON_UNITS` in `src/core/lessons.ts` holds the curriculum (`LESSON_CATALOG` is derived from it), with generators for random notes, intervals, and chords (no repeat in a row), fixed melodies split into phrases, and `nextLessonId`. A lesson has `pages` (at most 8 steps each), and the staff shows one page as a **row** of whole notes: played steps grey, the current step blue with a marker under it, chords as stacked noteheads, seconds with the upper note moved right (`src/core/staffRow.ts`). All content is white keys inside the computer-keyboard window of its base octave; a unit test enforces this. Saved progress is unchanged (`version: 1`); `note-reading` kept its id, and its title became "Around middle C".
+- **Changed during the phase:** the user chose **no locks**, so "unlock order" became a **Next** badge on the first lesson without a finished run. After implementation, **chords are judged by held keys**: a chord step is done only when all its notes are down at once, a release removes a note, a wrong note is a mistake and cancels the attempt, and keys held from the previous step don't count. Single-note steps count at once, so legato playing works. This replaced the first rule (any order, one at a time). The judge now handles `noteoff`.
+- Manual validation by the user was still open when this replan was written. Two spots most likely to need fixes: how an 8-note page and a chord page look at 360 px, and chords on the on-screen piano (they need several fingers).
 
 ## Phase 7 — PWA & offline 📋
 
@@ -107,6 +108,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Dark mode / theming.
 - Keyboard size: a setting for the number of keys per device and a calibration step (press the lowest and highest key), so lessons stay within the real keyboard; see [`backlog/keyboard-size.md`](backlog/keyboard-size.md).
 - Responsive on-screen keyboard: choose the number of visible keys from the container width (comfortable key width, touch-friendly), stretch to full width, keep lesson notes visible; see [`backlog/responsive-keyboard.md`](backlog/responsive-keyboard.md).
+- From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
 - From Phase 5: streak freezes, badges, a progress history, and syncing progress between tabs (a `storage` event listener).
 - From Phase 2: a setting for the note-name convention independent of the language (e.g. letters in `uk`); a MIDI device picker; glissando on the on-screen piano (sliding a finger onto the next key plays it); a sustain key for computer / touch input.
 
