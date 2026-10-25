@@ -32,6 +32,7 @@ export const uk: PartialTranslations = {
   modeLabel: 'Режим',
   lessonNoteReadingTitle: 'Читання нот',
   lessonInstruction: 'Зіграйте ноту, показану на нотному стані.',
+  staffLabel: 'Нотний стан',
   staffTargetLabel: 'Цільова нота: {note}',
   lessonProgress: 'Крок {current} з {total}',
   lessonRestart: 'Почати спочатку',

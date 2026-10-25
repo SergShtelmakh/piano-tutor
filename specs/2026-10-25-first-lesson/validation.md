@@ -28,7 +28,7 @@ Run `bun run dev`, open http://localhost:3000 in Chrome. Repeat the key checks o
 - [ ] FR-13: after the last note the summary shows "Lesson complete", accuracy, correct notes, and mistakes. Notes played now make sound but change nothing. **Play again** → step 1 with a new order; **Back to free play** → free play.
 - [ ] FR-14: covered by `core.test.ts`. In the app with `uk`: 1 → "1 помилка", 2 → "2 помилки", 5 → "5 помилок"; with `fr`, accuracy reads like "80 %".
 - [ ] FR-15: every new string is translated in `en`, `uk`, `de`, `fr`; the user skims them.
-- [ ] Staff rendering: the clefs and the staff look correct on desktop Chrome **and on Android Chrome** (preview URL). If the clef glyphs are missing on Android, the font fallback from `plan.md` is applied and re-checked.
+- [ ] Staff rendering: the clefs and the staff look correct on desktop Chrome **and on Android Chrome** (preview URL); both clefs are drawn as outlines, not as text.
 - [ ] Sticky Keys: on Windows, press `ShiftLeft` five times quickly in free play and note whether the Sticky Keys prompt appears (known risk, see `plan.md`); decide with the user whether to keep `ShiftLeft`.
 - [ ] Works with the computer keyboard without a MIDI device
 - [ ] Layout at 360 px width: the staff, lesson, and summary fit, the staff is readable, the 16 white keys and their labels fit, no horizontal scroll

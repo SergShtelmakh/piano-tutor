@@ -32,6 +32,7 @@ export const fr: PartialTranslations = {
   modeLabel: 'Mode',
   lessonNoteReadingTitle: 'Lecture de notes',
   lessonInstruction: 'Jouez la note indiquée sur la portée.',
+  staffLabel: 'Portée',
   staffTargetLabel: 'Note cible : {note}',
   lessonProgress: 'Étape {current} sur {total}',
   lessonRestart: 'Recommencer',

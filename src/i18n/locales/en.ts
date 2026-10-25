@@ -31,6 +31,7 @@ export const en = {
   modeLabel: 'Mode',
   lessonNoteReadingTitle: 'Note reading',
   lessonInstruction: 'Play the note shown on the staff.',
+  staffLabel: 'Music staff',
   staffTargetLabel: 'Target note: {note}',
   lessonProgress: 'Step {current} of {total}',
   lessonRestart: 'Restart',

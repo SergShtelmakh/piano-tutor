@@ -60,7 +60,7 @@ The learner opens the Lesson mode, sees a note on a music staff, finds and plays
 **UI — `src/components/`** (thin; FR-1, FR-7, FR-9, FR-10, FR-12, FR-13)
 
 - `StaffView.tsx`: an inline `<svg viewBox>` with `width: 100%`. It draws two five-line staves with a gap, a left barline (with a thin bracket line joining them), the clefs, the ledger lines, and one whole note (an ellipse with a thick stroke and a transparent fill). Coordinates come from `staffPosition` and a few layout constants. Props: `note: number | null`, `feedback?: 'right' | 'wrong'`. The notehead colour follows `feedback` (green / red), otherwise the text colour. The `<svg>` has `role="img"` and `aria-label={t('staffTargetLabel', { note: noteLabelFor(locale, note) })}`; no note name is drawn.
-- Clefs: the Unicode glyphs 𝄞 (U+1D11E) and 𝄢 (U+1D122) as `<text>` with `font-family: 'Noto Music', 'Segoe UI Symbol', 'Apple Symbols', serif`. **Fallback decided here:** if a device does not show them (checked on Android Chrome in `validation.md`), embed a small subset of the OFL-licensed Noto Music font as an asset in `public/` (not an npm dependency) and load it with `@font-face`. A font file must have its licence noted in `README.md`.
+- Clefs: SVG `<path>` outlines of the treble and bass clef in `components/clefPaths.ts`, taken from the OFL-licensed Bravura font (units are staff spaces; scaled by the line gap). Unicode music symbols were tried first and were misplaced in a test (their position depends on the system font), so no font is used at run time. The licence text is in `licenses/Bravura-OFL-1.1.txt` and credited in `README.md`.
 - `PianoKeyboard.tsx` gets an optional prop `feedback?: { note; kind }`. Colour priority per key: feedback flash (green / red) > held (sky) > normal. Without the prop it behaves as today. There is no target highlight.
 - `ModeSwitch.tsx`: two buttons (Free play / Lesson) with `aria-pressed`.
 - `LessonScreen.tsx`: title, instruction, `StaffView`, progress, counters (`tp`), keyboard with feedback, Restart and Back buttons. When finished it renders `LessonSummary`.
@@ -83,34 +83,34 @@ The learner opens the Lesson mode, sees a note on a music staff, finds and plays
    - [x] `src/lesson/useLesson.ts`
    - [x] `PianoKeyboard` `feedback` prop and colours; check the extra key at 360 px
 4. **Staff view, screens, and strings**
-   - [ ] `StaffView` (grand staff, clefs, ledger lines, whole note, feedback colour, accessible label)
-   - [ ] `ModeSwitch`, `LessonScreen`, `LessonSummary`; mode state in `App.tsx`
-   - [ ] New keys in `en`, then `uk`, `de`, `fr` (mode names, lesson title, instruction, staff label, progress, counters, summary, buttons)
-   - [ ] Check at 360 px, on Android Chrome (clef glyphs), and with each input source
+   - [x] `StaffView` (grand staff, clefs, ledger lines, whole note, feedback colour, accessible label)
+   - [x] `ModeSwitch`, `LessonScreen`, `LessonSummary`; mode state in `App.tsx`
+   - [x] New keys in `en`, then `uk`, `de`, `fr` (mode names, lesson title, instruction, staff label, progress, counters, summary, buttons)
+   - [ ] Check on Android Chrome (staff and clefs); 360 px and the computer keyboard are checked in Chrome
 5. **Docs**
-   - [ ] `README.md` "How to play": the Lesson mode and the `⇧` key for B
+   - [x] `README.md` "How to play": the Lesson mode and the `⇧` key for B
    - [ ] Run every check in `validation.md`
 
 ## Files touched
 
-| File                                                                          | Change                                                         |
-| ----------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `src/i18n/core.ts`, `core.test.ts`                                            | Interpolation, plurals, percent formatting; tests              |
-| `src/i18n/context.ts`, `I18nProvider.tsx`                                     | `t` with params, `usePluralT()`                                |
-| `src/i18n/locales/{en,uk,de,fr}.ts`                                           | Types for plural entries; new strings                          |
-| `src/core/lesson.ts`, `lesson.test.ts`                                        | New: lesson model, judge; tests                                |
-| `src/core/lessons.ts`, `lessons.test.ts`                                      | New: note pool, random sequence, the lesson; tests             |
-| `src/core/staff.ts`, `staff.test.ts`                                          | New: note → clef, line index, ledger lines; tests              |
-| `src/core/computerKeymap.ts`, `notes.ts` and their tests                      | `ShiftLeft` = B below the base C; 26-key range                 |
-| `src/input/keyboardLabels.ts`                                                 | Label fallback for `ShiftLeft`                                 |
-| `src/input/context.ts`, `NoteInputProvider.tsx`                               | `setBaseOctave`                                                |
-| `src/lesson/useLesson.ts`                                                     | New: bus subscription, new sequence on restart, feedback timer |
-| `src/components/StaffView.tsx`                                                | New: SVG grand staff with one note                             |
-| `src/components/PianoKeyboard.tsx`                                            | `feedback` prop                                                |
-| `src/components/ModeSwitch.tsx`, `LessonScreen.tsx`, `LessonSummary.tsx`      | New                                                            |
-| `src/App.tsx`                                                                 | Mode state                                                     |
-| `README.md`                                                                   | Lesson mode and `⇧` in "How to play"                           |
-| `public/`, `src/index.css`, `README.md` (only if the clef fallback is needed) | Font subset, `@font-face`, licence note                        |
+| File                                                                       | Change                                                         |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `src/i18n/core.ts`, `core.test.ts`                                         | Interpolation, plurals, percent formatting; tests              |
+| `src/i18n/context.ts`, `I18nProvider.tsx`                                  | `t` with params, `usePluralT()`                                |
+| `src/i18n/locales/{en,uk,de,fr}.ts`                                        | Types for plural entries; new strings                          |
+| `src/core/lesson.ts`, `lesson.test.ts`                                     | New: lesson model, judge; tests                                |
+| `src/core/lessons.ts`, `lessons.test.ts`                                   | New: note pool, random sequence, the lesson; tests             |
+| `src/core/staff.ts`, `staff.test.ts`                                       | New: note → clef, line index, ledger lines; tests              |
+| `src/core/computerKeymap.ts`, `notes.ts` and their tests                   | `ShiftLeft` = B below the base C; 26-key range                 |
+| `src/input/keyboardLabels.ts`                                              | Label fallback for `ShiftLeft`                                 |
+| `src/input/context.ts`, `NoteInputProvider.tsx`                            | `setBaseOctave`                                                |
+| `src/lesson/useLesson.ts`                                                  | New: bus subscription, new sequence on restart, feedback timer |
+| `src/components/StaffView.tsx`                                             | New: SVG grand staff with one note                             |
+| `src/components/PianoKeyboard.tsx`                                         | `feedback` prop                                                |
+| `src/components/ModeSwitch.tsx`, `LessonScreen.tsx`, `LessonSummary.tsx`   | New                                                            |
+| `src/App.tsx`                                                              | Mode state                                                     |
+| `README.md`                                                                | Lesson mode and `⇧` in "How to play"                           |
+| `src/components/clefPaths.ts`, `licenses/Bravura-OFL-1.1.txt`, `README.md` | Clef outlines, their licence, credits                          |
 
 ## New dependencies
 
@@ -118,7 +118,7 @@ None. `Intl.PluralRules` and `Intl.NumberFormat` are built into every target bro
 
 ## Risks & open questions
 
-- **Clef glyphs may not render everywhere.** The musical symbols are in Unicode but not in every system font (Android is the likely problem). The plan lists the fallback (a font subset). We check on Windows Chrome and Android Chrome during validation.
+- **Clef outlines come from a font.** They are plain SVG paths, so they render the same on every device; the Bravura licence (OFL 1.1) must stay in the repo and be credited. The path data was generated once with a throw-away script (not part of the repo).
 - **`ShiftLeft` as a note key.** It is the key left of `Z` on most layouts, not left of `A`, so the piano shape is not perfectly matched (the key left of `A` is `CapsLock`, which is unreliable for key events on some systems, and `Tab` breaks focus navigation). Two things to watch: Windows offers **Sticky Keys** after five quick presses of Shift in a row (notes never repeat in this lesson, so a long run of B3 presses is not possible, but free play can trigger it), and shifted keys may report `shiftKey` (we ignore it, since only Ctrl / Alt / Meta are filtered). Checked in `validation.md`; if it feels wrong, a later change can move the key.
 - **A 26-key range changes free play too.** The piano gets one more key on the left and the white keys are about 6 % narrower. The key labels are tight at 360 px, so we check them; if they do not fit, the white-key labels use one line.
 - **Base octave change on lesson start** moves the computer keyboard and the on-screen range (B3–C6 instead of B2–C5) and would stay when the learner goes back to free play. Decided in the plan: restore it on leaving the lesson.

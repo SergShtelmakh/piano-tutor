@@ -2,7 +2,7 @@
 
 A gamified piano-learning web app: connect a MIDI keyboard (Web MIDI) and get real-time feedback on whether you play the right notes. Client-side only, no backend. See [specs/mission.md](specs/mission.md).
 
-> Status: free play works and is deployed online (roadmap Phases 2–3): MIDI keyboard, computer keyboard, and on-screen piano all make sound. Lessons are coming in later phases — see [specs/roadmap.md](specs/roadmap.md).
+> Status: free play and a first lesson work and are deployed online (roadmap Phases 2–4): MIDI keyboard, computer keyboard, and on-screen piano all make sound, and the **Lesson** mode trains note reading on a music staff. More lessons and progress come in later phases — see [specs/roadmap.md](specs/roadmap.md).
 
 ## Prerequisites
 
@@ -19,8 +19,9 @@ bun run dev      # http://localhost:3000
 ## How to play
 
 - **MIDI keyboard:** click **Connect MIDI keyboard** and allow access. Every connected keyboard works, including the sustain pedal. Web MIDI needs Chrome or Edge and a secure page (HTTPS or `localhost`).
-- **Computer keyboard:** `A S D F G H J K L ;` are the white keys (C D E F G A B C D E) and `W E T Y U O P` are the black keys. `Z` / `X` shift the octave down / up. Keys are matched by physical position, so this works on QWERTZ and AZERTY layouts too.
-- **On-screen piano:** click or touch the keys. The octave buttons change the shown range (C3–C5 by default).
+- **Computer keyboard:** `A S D F G H J K L ;` are the white keys (C D E F G A B C D E) and `W E T Y U O P` are the black keys. The left `Shift` key (`⇧`) plays the B just below the first C. `Z` / `X` shift the octave down / up. Keys are matched by physical position, so this works on QWERTZ and AZERTY layouts too.
+- **On-screen piano:** click or touch the keys. The octave buttons change the shown range (B2–C5 by default: the B below the first C, two octaves, and the top C).
+- **Lesson mode:** pick **Lesson** at the top. A note appears on a music staff (treble and bass clef); find and play that key with any of the three inputs. A wrong key counts as a mistake and the same note stays until you play it right. After 20 random notes (B3–C5) you get your accuracy. Every start gives a new order.
 
 ## Scripts
 
@@ -60,6 +61,10 @@ The footer of the app shows the commit and host of the running build.
 - Leave Web Analytics off (privacy by default).
 
 Cloudflare sets `CF_PAGES*` (Pages) or `WORKERS_CI*` (Workers Builds, which is what the dashboard created: a `workers.dev` URL), which the build reads for the footer. The base path stays `/`.
+
+## Credits
+
+The treble and bass clef shapes on the music staff are outlines from the [Bravura](https://github.com/steinbergmedia/bravura) music font, © Steinberg Media Technologies GmbH, used under the SIL Open Font License 1.1 (see [licenses/Bravura-OFL-1.1.txt](licenses/Bravura-OFL-1.1.txt)).
 
 ## Language
 
