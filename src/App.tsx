@@ -1,4 +1,5 @@
 import LanguageSelector from './components/LanguageSelector.tsx';
+import BuildInfo from './components/BuildInfo.tsx';
 import MidiStatus from './components/MidiStatus.tsx';
 import OctaveControl from './components/OctaveControl.tsx';
 import PianoKeyboard from './components/PianoKeyboard.tsx';
@@ -26,6 +27,7 @@ export default function App() {
           </div>
           <PianoKeyboard />
         </main>
+        <BuildInfo />
       </div>
     </NoteInputProvider>
   );

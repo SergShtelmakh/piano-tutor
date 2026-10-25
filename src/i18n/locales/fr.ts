@@ -25,4 +25,6 @@ export const fr: PartialTranslations = {
   octaveDown: 'Octave inférieure',
   octaveUp: 'Octave supérieure',
   pianoLabel: 'Clavier de piano',
+  buildLabel: 'Version',
+  buildLocal: 'locale',
 };
