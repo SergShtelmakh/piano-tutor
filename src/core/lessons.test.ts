@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  LESSON_CATALOG,
   NOTE_READING_LENGTH,
   NOTE_READING_POOL,
   createNoteReadingLesson,
@@ -100,5 +101,17 @@ describe('createNoteReadingLesson', () => {
     expect(createNoteReadingLesson(seeded(9)).steps).toEqual(
       createNoteReadingLesson(seeded(9)).steps,
     );
+  });
+});
+
+describe('lesson catalog', () => {
+  it('has unique ids that match the lessons it creates', () => {
+    const ids = LESSON_CATALOG.map((entry) => entry.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    for (const entry of LESSON_CATALOG) {
+      const lesson = entry.create(seeded(1));
+      expect(lesson.id).toBe(entry.id);
+      expect(lesson.titleKey).toBe(entry.titleKey);
+    }
   });
 });

@@ -1,20 +1,38 @@
-import { createNoteReadingLesson } from '../core/lessons.ts';
+import { useCallback, useState } from 'react';
+import { accuracy } from '../core/lesson.ts';
+import type { LessonEntry } from '../core/lessons.ts';
+import type { RunReward } from '../core/progress.ts';
 import { usePluralT, useT } from '../i18n/context.ts';
 import { useLesson } from '../lesson/useLesson.ts';
+import { useProgress } from '../progress/context.ts';
+
 import LessonSummary from './LessonSummary.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import StaffView from './StaffView.tsx';
 
-// Defined once, so `restart` keeps its identity; each call builds a new random order.
-const createLesson = () => createNoteReadingLesson(Math.random);
-
 const buttonClass =
   'rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100';
 
-export default function LessonScreen({ onExit }: { onExit: () => void }) {
+export default function LessonScreen({
+  entry,
+  onExit,
+}: {
+  entry: LessonEntry;
+  onExit: () => void;
+}) {
   const t = useT();
   const tp = usePluralT();
-  const { lesson, state, targets, feedback, restart } = useLesson(createLesson);
+  const { recordRun } = useProgress();
+  const [reward, setReward] = useState<RunReward | null>(null);
+  // Defined once per entry, so `restart` keeps its identity; each call builds a new random order.
+  const createLesson = useCallback(() => entry.create(Math.random), [entry]);
+  const { lesson, state, targets, feedback, restart } = useLesson(createLesson, (finished, end) =>
+    setReward(recordRun(finished.id, accuracy(end))),
+  );
+  const startAgain = () => {
+    setReward(null);
+    restart();
+  };
 
   const target = targets[0] ?? null;
   // After a right note the staff already moved on; show the played note for the flash instead.
@@ -25,7 +43,7 @@ export default function LessonScreen({ onExit }: { onExit: () => void }) {
       <h2 className="text-xl font-bold">{t(lesson.titleKey)}</h2>
 
       {state.finished ? (
-        <LessonSummary state={state} onAgain={restart} onExit={onExit} />
+        <LessonSummary state={state} reward={reward} onAgain={startAgain} onExit={onExit} />
       ) : (
         <>
           <p className="text-slate-700">{t('lessonInstruction')}</p>
@@ -43,7 +61,7 @@ export default function LessonScreen({ onExit }: { onExit: () => void }) {
             <span>{tp('mistakesCount', state.mistakes)}</span>
           </div>
           <div className="flex gap-3">
-            <button type="button" onClick={restart} className={buttonClass}>
+            <button type="button" onClick={startAgain} className={buttonClass}>
               {t('lessonRestart')}
             </button>
             <button type="button" onClick={onExit} className={buttonClass}>

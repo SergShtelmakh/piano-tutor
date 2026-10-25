@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–4 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
+> Phases 1–4 are done; Phase 5 is in progress. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -66,9 +66,11 @@ Goal: the core promise of the product, end to end.
 - **Outcome (changed during spec review):** the target is shown as a **note on a grand staff** (treble + bass clef), not as a highlighted key, and no note name is shown. The lesson is 20 **random** white-key notes from B3 to C5 (never the same note twice in a row, a new order on every start). `ShiftLeft` plays the B below the base C, so the on-screen piano has 26 keys. Right/wrong flashes colour the played key and the notehead. A **Free play / Lesson** switch lives in app state (no router). Clef shapes are Bravura outlines (SIL OFL 1.1, credited in README). Verified on desktop Chrome and Android Chrome (staff, multi-touch, MIDI keyboard, Sticky Keys with `ShiftLeft`).
 - The sheet-music backlog item has started: single notes on a grand staff only. Chords, key signatures, rhythm, and melodies are still open.
 
-## Phase 5 — Game mechanics & local progress 📋
+## Phase 5 — Game mechanics & local progress 🔨
 
 Goal: a reason to come back tomorrow.
+
+Spec: [`specs/phase-05-game-mechanics-local-progress/`](phase-05-game-mechanics-local-progress/). Branch `feature/game-mechanics-local-progress`.
 
 - XP, levels, daily streak; rewards shown on lesson completion.
 - Progress saved to `localStorage` (graceful when unavailable).
