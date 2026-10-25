@@ -74,9 +74,9 @@ The learner opens the Lesson mode, sees a note on a music staff, finds and plays
    - [x] `t(key, params?)` and `usePluralT()` in `context.ts` / `I18nProvider.tsx`
    - [x] Tests in `core.test.ts` as in Approach
 2. **Lesson core, random sequence, and staff position**
-   - [ ] `src/core/lesson.ts`, `lesson.test.ts`
-   - [ ] `src/core/lessons.ts` (pool, `randomSequence`, `createNoteReadingLesson`), `lessons.test.ts`
-   - [ ] `src/core/staff.ts`, `staff.test.ts`
+   - [x] `src/core/lesson.ts`, `lesson.test.ts`
+   - [x] `src/core/lessons.ts` (pool, `randomSequence`, `createNoteReadingLesson`), `lessons.test.ts`
+   - [x] `src/core/staff.ts`, `staff.test.ts`
 3. **Input range and lesson hook**
    - [ ] `ShiftLeft` = B below the base C in `computerKeymap.ts`, 26-key `keyboardRange`, labels, updated tests
    - [ ] `setBaseOctave` in the input context
