@@ -77,9 +77,11 @@ Spec: [`specs/phase-05-game-mechanics-local-progress/`](phase-05-game-mechanics-
 - Simple progress/home screen with a list of lessons and their stars/best accuracy.
 - **Outcome:** a pure progress core (`src/core/progress.ts`): stars (1★ any finish, 2★ ≥ 80 %, 3★ ≥ 95 %), XP = 10 + 5 × stars, level L at 25·L·(L−1) XP, daily streak by local calendar day (no freezes), best values per lesson. Saved as versioned JSON under `piano-tutor.progress`; invalid data means empty progress, and blocked storage falls back to memory with a note. The mode switch became **Home / Free play** (Home is the default, lessons open from a catalog-driven list, `LESSON_CATALOG`). Runs are recorded once from the note listener. Reset progress has an in-page confirmation. Manual validation by the user was still open when this replan was written.
 
-## Phase 6 — Lesson content 📋
+## Phase 6 — Lesson content 🔨
 
 Goal: enough content for a real first week.
+
+Spec: [`specs/phase-06-lesson-content/`](phase-06-lesson-content/). Branch `feature/lesson-content`.
 
 Builds on Phase 5: add entries to `LESSON_CATALOG` (Home lists them automatically); unlock order needs a rule in the catalog entry and a locked state on `LessonCard`. Saved progress is `version: 1`; adding fields means a migration in `parseProgress`, otherwise old data is dropped.
 

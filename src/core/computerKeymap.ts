@@ -51,3 +51,10 @@ export function codeForNote(note: number, baseOctave: number): string | null {
 export function shiftOctave(baseOctave: number, delta: number): number {
   return clampBaseOctave(baseOctave + delta);
 }
+
+/** The lowest and highest note the computer keyboard and the on-screen piano reach. */
+export function keyboardWindow(baseOctave: number): { low: number; high: number } {
+  const offsets = Object.values(KEY_OFFSETS);
+  const start = octaveStart(baseOctave);
+  return { low: start + Math.min(...offsets), high: start + Math.max(...offsets) };
+}

@@ -6,6 +6,7 @@ import {
   startLesson,
   type Lesson,
   type LessonState,
+  pageOf,
 } from './lesson.ts';
 import type { NoteEvent } from './types.ts';
 
@@ -17,9 +18,10 @@ const scale: Lesson = {
   titleKey: 'lessonNoteReadingTitle',
   baseOctave: 4,
   steps: [[60], [62], [64]],
+  pages: [3],
 };
 
-const withChord: Lesson = { ...scale, steps: [[60, 64, 67], [62]] };
+const withChord: Lesson = { ...scale, steps: [[60, 64, 67], [62]], pages: [2] };
 
 /** Feeds the notes one by one and returns the last state. */
 function play(lesson: Lesson, notes: number[], from: LessonState = startLesson(lesson)) {
@@ -147,5 +149,20 @@ describe('accuracy', () => {
     expect(accuracy({ ...startLesson(scale), correct: 12, mistakes: 3 })).toBeCloseTo(0.8);
     expect(accuracy({ ...startLesson(scale), correct: 0, mistakes: 4 })).toBe(0);
     expect(accuracy(play(scale, [61, 60, 61, 62, 64]))).toBeCloseTo(3 / 5);
+  });
+});
+
+describe('pageOf', () => {
+  const paged: Lesson = { ...scale, steps: [[60], [62], [64], [65], [67]], pages: [2, 3] };
+
+  it('finds the page of a step', () => {
+    expect(pageOf(paged, 0)).toEqual({ start: 0, length: 2 });
+    expect(pageOf(paged, 1)).toEqual({ start: 0, length: 2 });
+    expect(pageOf(paged, 2)).toEqual({ start: 2, length: 3 });
+    expect(pageOf(paged, 4)).toEqual({ start: 2, length: 3 });
+  });
+
+  it('gives an empty page after the last step', () => {
+    expect(pageOf(paged, 5)).toEqual({ start: 5, length: 0 });
   });
 });
