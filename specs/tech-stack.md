@@ -62,8 +62,9 @@ Pinned by `bun.lock` (as of Phase 1): React 19, Vite 8, Tailwind CSS 4 (`@tailwi
 - `src/input/`: the note pipeline (`noteBus.ts`) and its adapters: computer keyboard, Web MIDI, key labels, plus `NoteInputProvider` and hooks.
 - `src/audio/`: the Web Audio synth and volume/mute settings.
 - `config/`: build configuration. `buildInfo.ts` (pure, unit-tested) resolves base path, commit, and host from environment variables (`BASE_PATH`, `DEPLOY_TARGET`, `GITHUB_SHA`, Cloudflare `CF_PAGES*` / `WORKERS_CI*`); `vite.config.ts` exposes it to the app as `__BUILD_INFO__`. `wrangler.jsonc` at the repo root configures the Cloudflare deployment.
-- `src/lesson/`: `useLesson` hook that connects a lesson to the note bus (synchronous judging, short right/wrong feedback, restart, octave save/restore).
-- `src/components/`: thin UI components, including `StaffView` (SVG grand staff; clef outlines in `clefPaths.ts` come from the Bravura font, SIL OFL 1.1, see `licenses/`), `LessonScreen`, `LessonSummary`, and `ModeSwitch`. The mode (free play / lesson) is plain app state; there is no router.
+- `src/lesson/`: `useLesson` hook that connects a lesson to the note bus (synchronous judging, short right/wrong feedback, restart, octave save/restore, an `onFinish` callback called once).
+- `src/progress/`: progress persistence and state. `storage.ts` (`localStorage` key `piano-tutor.progress`, versioned JSON, try/catch), `today.ts` (local `YYYY-MM-DD`), `context.ts` (`useProgress()`), `ProgressProvider.tsx`. The rules are pure, in `src/core/progress.ts` (stars, XP, levels, streak, `recordRun`, `parseProgress`) and `LESSON_CATALOG` in `src/core/lessons.ts`.
+- `src/components/`: thin UI components, including `StaffView` (SVG grand staff; clef outlines in `clefPaths.ts` come from the Bravura font, SIL OFL 1.1, see `licenses/`), `LessonScreen`, `LessonSummary`, and `ModeSwitch`. The screen (Home / free play / open lesson) is plain app state; there is no router.
 - Tests sit next to the code as `*.test.ts`. The Vitest environment is `node`. There is no DOM test setup yet.
 
 ## Known technical debt
@@ -73,4 +74,6 @@ Pinned by `bun.lock` (as of Phase 1): React 19, Vite 8, Tailwind CSS 4 (`@tailwi
 - UI behaviour (language switching, layout) is verified only manually; there are no component or e2e tests.
 - Locale translations (`uk`, `de`, `fr`) are written by the agent and need a human skim in every phase that adds strings.
 - `midiAccess.ts` was verified by hand on one keyboard (Roland FP-30X) in Phase 3, not by automated tests. Other keyboards may differ (for example half-pedal values).
+- Progress persistence (`src/progress/`) and the Home screen are verified only manually; the pure rules are tested.
+- Two browser tabs each keep their own copy of progress; the last save wins (no `storage` listener yet).
 - Input adapters, the synth, and components have no automated tests (Web MIDI, Web Audio, and DOM are not available in the `node` test environment).

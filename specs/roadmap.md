@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–4 are done; Phase 5 is in progress. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
+> Phases 1–5 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -66,7 +66,7 @@ Goal: the core promise of the product, end to end.
 - **Outcome (changed during spec review):** the target is shown as a **note on a grand staff** (treble + bass clef), not as a highlighted key, and no note name is shown. The lesson is 20 **random** white-key notes from B3 to C5 (never the same note twice in a row, a new order on every start). `ShiftLeft` plays the B below the base C, so the on-screen piano has 26 keys. Right/wrong flashes colour the played key and the notehead. A **Free play / Lesson** switch lives in app state (no router). Clef shapes are Bravura outlines (SIL OFL 1.1, credited in README). Verified on desktop Chrome and Android Chrome (staff, multi-touch, MIDI keyboard, Sticky Keys with `ShiftLeft`).
 - The sheet-music backlog item has started: single notes on a grand staff only. Chords, key signatures, rhythm, and melodies are still open.
 
-## Phase 5 — Game mechanics & local progress 🔨
+## Phase 5 — Game mechanics & local progress ✅
 
 Goal: a reason to come back tomorrow.
 
@@ -75,10 +75,13 @@ Spec: [`specs/phase-05-game-mechanics-local-progress/`](phase-05-game-mechanics-
 - XP, levels, daily streak; rewards shown on lesson completion.
 - Progress saved to `localStorage` (graceful when unavailable).
 - Simple progress/home screen with a list of lessons and their stars/best accuracy.
+- **Outcome:** a pure progress core (`src/core/progress.ts`): stars (1★ any finish, 2★ ≥ 80 %, 3★ ≥ 95 %), XP = 10 + 5 × stars, level L at 25·L·(L−1) XP, daily streak by local calendar day (no freezes), best values per lesson. Saved as versioned JSON under `piano-tutor.progress`; invalid data means empty progress, and blocked storage falls back to memory with a note. The mode switch became **Home / Free play** (Home is the default, lessons open from a catalog-driven list, `LESSON_CATALOG`). Runs are recorded once from the note listener. Reset progress has an in-page confirmation. Manual validation by the user was still open when this replan was written.
 
 ## Phase 6 — Lesson content 📋
 
 Goal: enough content for a real first week.
+
+Builds on Phase 5: add entries to `LESSON_CATALOG` (Home lists them automatically); unlock order needs a rule in the catalog entry and a locked state on `LessonCard`. Saved progress is `version: 1`; adding fields means a migration in `parseProgress`, otherwise old data is dropped.
 
 - Lesson format and a small curriculum (single notes → both hands separately → simple melodies → intervals/chords).
 - Unlock order tied to progress.
@@ -102,6 +105,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Dark mode / theming.
 - Keyboard size: a setting for the number of keys per device and a calibration step (press the lowest and highest key), so lessons stay within the real keyboard; see [`backlog/keyboard-size.md`](backlog/keyboard-size.md).
 - Responsive on-screen keyboard: choose the number of visible keys from the container width (comfortable key width, touch-friendly), stretch to full width, keep lesson notes visible; see [`backlog/responsive-keyboard.md`](backlog/responsive-keyboard.md).
+- From Phase 5: streak freezes, badges, a progress history, and syncing progress between tabs (a `storage` event listener).
 - From Phase 2: a setting for the note-name convention independent of the language (e.g. letters in `uk`); a MIDI device picker; glissando on the on-screen piano (sliding a finger onto the next key plays it); a sustain key for computer / touch input.
 
 **Tooling backlog** (small fixes; they don't need a phase, see [`backlog/tooling.md`](backlog/tooling.md)):

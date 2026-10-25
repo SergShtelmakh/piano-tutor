@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-25 — Phase 5: game mechanics & local progress
+
+### Added
+
+- A **Home** screen (the new default) with your level, an XP bar, your daily streak and best streak, and a lesson list showing best stars, best accuracy, and number of runs.
+- **Stars and XP:** a finished lesson earns 1 star, 2 stars from 80 %, or 3 stars from 95 % accuracy, and 15 / 20 / 25 XP. XP raises your level.
+- **Daily streak:** finish at least one lesson per day to keep it going.
+- The lesson summary shows your stars, XP, level-ups, streak, and "New best!" notes.
+- **Reset progress** on Home, with a confirmation.
+- Progress is saved on your device only. If the browser blocks storage, the app still works and says that progress cannot be saved.
+
+### Changed
+
+- The mode switch is now **Home / Free play**; lessons start from Home and **Back** returns there.
+
 ## 2026-10-25 — Phase 4: first lesson
 
 ### Added
