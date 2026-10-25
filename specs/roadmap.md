@@ -34,9 +34,11 @@ Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-ke
 - Web Audio synth: 16 voices, velocity, envelope, compressor; volume and mute saved locally.
 - **Not verified on a real device:** connecting / unplugging a MIDI keyboard and the sustain pedal (no working device connection during validation). Parsing and pedal logic are unit-tested. Re-check in Phase 3 over HTTPS, see [`backlog/midi-device-check.md`](backlog/midi-device-check.md).
 
-## Phase 3 — Deployment & device testing 📋
+## Phase 3 — Deployment & device testing 🔨
 
 Goal: the app is reachable over HTTPS from any device, so it can be tested on phones, tablets, and other computers early. Moved up from the old Phase 6 so every later phase can be checked on real hardware as it ships.
+
+Spec: [`specs/2026-10-25-deployment-device-testing/`](2026-10-25-deployment-device-testing/). Branch `feature/deployment-device-testing`.
 
 - Deploy to **both GitHub Pages and Cloudflare Pages** at the same time, so the two can be compared (speed, preview deployments per branch / PR, setup effort, limits) and one chosen afterwards. Web MIDI and, later, the service worker both need HTTPS.
 - Deploy pipeline: production build published automatically after CI passes on `main`; per-PR or per-branch previews where the host offers them (Cloudflare Pages does; GitHub Pages does not for free).

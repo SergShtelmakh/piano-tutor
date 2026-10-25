@@ -25,4 +25,6 @@ export const uk: PartialTranslations = {
   octaveDown: 'Октава вниз',
   octaveUp: 'Октава вгору',
   pianoLabel: 'Клавіатура піаніно',
+  buildLabel: 'Збірка',
+  buildLocal: 'локальна',
 };

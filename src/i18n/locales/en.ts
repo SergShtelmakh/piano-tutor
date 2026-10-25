@@ -24,6 +24,8 @@ export const en = {
   octaveDown: 'Octave down',
   octaveUp: 'Octave up',
   pianoLabel: 'Piano keyboard',
+  buildLabel: 'Build',
+  buildLocal: 'local',
 } as const;
 
 export type TranslationKey = keyof typeof en;
