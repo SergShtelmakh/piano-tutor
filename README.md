@@ -55,7 +55,7 @@ The footer of the app shows the commit and host of the running build.
 - Production branch: `main`
 - Build command: `bun install --frozen-lockfile && bun run build` (fallback if Bun fails: `npm install && npm run build`)
 - Build output directory: `dist`
-- Non-production branch deploy command: `npx wrangler versions upload` (the default `npx wrangler preview` is an open beta and failed with API error 10013 on asset upload).
+- Preview command (the branch Previews that Cloudflare creates for every non-production branch): `npx wrangler preview`. A Preview is its own resource, so `npx wrangler versions upload` fails there with "The name in your wrangler.jsonc file must match the name of your Worker". `wrangler preview` is an open beta command and once failed with API error 10013 on the asset upload; a retry fixed it. Check the command on the Preview page of each new branch if it was copied from somewhere else.
 - `wrangler.jsonc` in the repo sets the Worker name (`piano-tutor`), the `dist` assets directory and the `previews` block that branch preview builds (`wrangler preview`) require.
 - Environment variable `BUN_VERSION`: `1.4.4`
 - Leave Web Analytics off (privacy by default).
