@@ -49,7 +49,7 @@ export const fr: PartialTranslations = {
   lessonChordsAllTitle: 'Accords majeurs et mineurs',
   lessonInstructionNotes: 'Jouez la note en surbrillance. La rangée montre la suite.',
   lessonInstructionChords:
-    "Jouez toutes les notes de l'accord en surbrillance, ensemble ou l'une après l'autre.",
+    "Appuyez en même temps sur toutes les notes de l'accord en surbrillance.",
   staffLabel: 'Portée',
   staffTargetLabel: 'Note cible : {note}',
   staffTargetsLabel: 'Notes cibles : {notes}',

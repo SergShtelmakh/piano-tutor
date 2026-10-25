@@ -15,9 +15,9 @@ export interface Lesson {
 
 export interface LessonState {
   stepIndex: number;
-  /** Notes of the current step that were already played right. */
+  /** Notes of the current step that are held down right now (pressed during this step). */
   playedInStep: readonly number[];
-  /** Right notes so far. */
+  /** Right notes in finished steps. */
   correct: number;
   mistakes: number;
   finished: boolean;
@@ -58,24 +58,38 @@ export function currentTargets(lesson: Lesson, state: LessonState): readonly num
 }
 
 /**
- * Judges one note event. Only `noteon` counts. A note that belongs to the current step and was
- * not played yet is right; any other note is a mistake, and the target stays the same.
+ * Judges one note event. A step is the set of notes to play; `playedInStep` holds the notes of the
+ * current step that are pressed right now, so keys are never remembered after they are released:
+ * a step with several notes is done only when all of them are held at once. A note outside the
+ * step is a mistake and cancels the attempt (the learner presses the whole chord again). Notes that
+ * were already down before the step began never count: only a `noteon` does. `correct` grows by the
+ * size of the step when it is done. A step with one note is done by its `noteon`.
  */
 export function judge(lesson: Lesson, state: LessonState, event: NoteEvent): JudgeResult {
-  if (event.type !== 'noteon' || state.finished) return { state, outcome: 'ignored' };
+  if (state.finished || event.type === 'sustain') return { state, outcome: 'ignored' };
 
   const note = event.note;
+
+  if (event.type === 'noteoff') {
+    if (!state.playedInStep.includes(note)) return { state, outcome: 'ignored' };
+    const playedInStep = state.playedInStep.filter((held) => held !== note);
+    return { state: { ...state, playedInStep }, outcome: 'ignored' };
+  }
+
   const targets = currentTargets(lesson, state);
 
   if (!targets.includes(note)) {
-    return { state: { ...state, mistakes: state.mistakes + 1 }, outcome: 'wrong', note };
+    return {
+      state: { ...state, playedInStep: [], mistakes: state.mistakes + 1 },
+      outcome: 'wrong',
+      note,
+    };
   }
   if (state.playedInStep.includes(note)) return { state, outcome: 'ignored' };
 
   const played = [...state.playedInStep, note];
-  const correct = state.correct + 1;
   if (played.length < targets.length) {
-    return { state: { ...state, playedInStep: played, correct }, outcome: 'right', note };
+    return { state: { ...state, playedInStep: played }, outcome: 'right', note };
   }
 
   const stepIndex = state.stepIndex + 1;
@@ -84,7 +98,7 @@ export function judge(lesson: Lesson, state: LessonState, event: NoteEvent): Jud
       ...state,
       stepIndex,
       playedInStep: [],
-      correct,
+      correct: state.correct + targets.length,
       finished: stepIndex >= lesson.steps.length,
     },
     outcome: 'right',

@@ -12,7 +12,7 @@ The learner gets a first-week curriculum of 13 lessons in five units: treble not
 
 **Core (pure, `src/core/`)**
 
-- `lesson.ts`: `Lesson` gets `pages: readonly number[]`, the number of steps on each page (the sum equals `steps.length`). The judge, `startLesson`, and `accuracy` stay as they are. A helper `pageOf(lesson, stepIndex)` returns the page's first step and length.
+- `lesson.ts`: chord steps are judged by held keys (FR-12): `LessonState.playedInStep` holds the step's notes pressed and still down, `judge` also handles `noteoff`, and `correct` grows by the step size when a step completes. `Lesson` gets `pages: readonly number[]`, the number of steps on each page (the sum equals `steps.length`). The judge, `startLesson`, and `accuracy` stay as they are. A helper `pageOf(lesson, stepIndex)` returns the page's first step and length.
 - `lessons.ts`:
   - Generalise `randomSequence` so it works on any pool by index (`randomIndices(poolSize, length, random)`, no repeat in a row), and use it for notes, intervals, and chords. Keep `randomSequence` (used by tests and the note lessons) on top of it.
   - `evenPages(total, max = 8)` for random lessons (20 → 7, 7, 6).
