@@ -1,7 +1,7 @@
 const BLACK_PITCH_CLASSES = new Set([1, 3, 6, 8, 10]);
 
-/** Number of keys shown on the on-screen piano: two octaves plus the top C. */
-export const KEY_COUNT = 25;
+/** Keys shown on the on-screen piano: the B below the base C, two octaves, and the top C. */
+export const KEY_COUNT = 26;
 export const MIN_BASE_OCTAVE = 1;
 export const MAX_BASE_OCTAVE = 6;
 export const DEFAULT_BASE_OCTAVE = 3;
@@ -25,9 +25,9 @@ export function octaveStart(octave: number): number {
   return (octave + 1) * 12;
 }
 
-/** The shown notes for a base octave: base C up to the C two octaves higher. */
+/** The shown notes for a base octave: the B below the base C up to the C two octaves higher. */
 export function keyboardRange(baseOctave: number): number[] {
-  const first = octaveStart(baseOctave);
+  const first = octaveStart(baseOctave) - 1;
   return Array.from({ length: KEY_COUNT }, (_, i) => first + i);
 }
 

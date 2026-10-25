@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { loadMuted, loadVolume } from '../audio/settings.ts';
 import { createSynth } from '../audio/synth.ts';
 import { shiftOctave } from '../core/computerKeymap.ts';
-import { DEFAULT_BASE_OCTAVE } from '../core/notes.ts';
+import { clampBaseOctave, DEFAULT_BASE_OCTAVE } from '../core/notes.ts';
 import { attachComputerKeyboard } from './computerKeyboard.ts';
 import { NoteInputContext, type NoteInputValue } from './context.ts';
 import { createLitStore } from './litStore.ts';
@@ -20,7 +20,7 @@ function createServices() {
 /** Owns the one note pipeline: the bus, the synth and highlight listening to it, and the computer keyboard. */
 export function NoteInputProvider({ children }: { children: ReactNode }) {
   const [services] = useState(createServices);
-  const [baseOctave, setBaseOctave] = useState(DEFAULT_BASE_OCTAVE);
+  const [baseOctave, setOctave] = useState(DEFAULT_BASE_OCTAVE);
   const baseOctaveRef = useRef(baseOctave);
 
   useEffect(() => {
@@ -28,7 +28,10 @@ export function NoteInputProvider({ children }: { children: ReactNode }) {
   }, [baseOctave]);
 
   const shiftBaseOctave = useCallback((delta: number) => {
-    setBaseOctave((current) => shiftOctave(current, delta));
+    setOctave((current) => shiftOctave(current, delta));
+  }, []);
+  const setBaseOctave = useCallback((octave: number) => {
+    setOctave(clampBaseOctave(octave));
   }, []);
 
   useEffect(
@@ -48,8 +51,8 @@ export function NoteInputProvider({ children }: { children: ReactNode }) {
   }, [services.synth]);
 
   const value = useMemo<NoteInputValue>(
-    () => ({ ...services, baseOctave, shiftBaseOctave }),
-    [services, baseOctave, shiftBaseOctave],
+    () => ({ ...services, baseOctave, shiftBaseOctave, setBaseOctave }),
+    [services, baseOctave, shiftBaseOctave, setBaseOctave],
   );
 
   return <NoteInputContext.Provider value={value}>{children}</NoteInputContext.Provider>;

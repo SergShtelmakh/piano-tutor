@@ -9,6 +9,8 @@ export interface NoteInputValue {
   synth: Synth;
   baseOctave: number;
   shiftBaseOctave: (delta: number) => void;
+  /** Sets the base octave directly (clamped), e.g. when a lesson needs a specific range. */
+  setBaseOctave: (octave: number) => void;
 }
 
 export const NoteInputContext = createContext<NoteInputValue | null>(null);
@@ -28,9 +30,12 @@ export function useSynth(): Synth {
 }
 
 /** The octave of the C under the `A` key; the on-screen piano starts on the same C. */
-export function useBaseOctave(): Pick<NoteInputValue, 'baseOctave' | 'shiftBaseOctave'> {
-  const { baseOctave, shiftBaseOctave } = useNoteInput();
-  return { baseOctave, shiftBaseOctave };
+export function useBaseOctave(): Pick<
+  NoteInputValue,
+  'baseOctave' | 'shiftBaseOctave' | 'setBaseOctave'
+> {
+  const { baseOctave, shiftBaseOctave, setBaseOctave } = useNoteInput();
+  return { baseOctave, shiftBaseOctave, setBaseOctave };
 }
 
 /** The notes physically held right now, from any source. */

@@ -19,14 +19,18 @@ export const KEY_OFFSETS: Readonly<Record<string, number>> = {
   KeyL: 14,
   KeyP: 15,
   Semicolon: 16,
+  // The B just below the base C: the left Shift key, so it reaches B3 when A plays C4.
+  ShiftLeft: -1,
 };
 
 export const OCTAVE_DOWN_CODE = 'KeyZ';
 export const OCTAVE_UP_CODE = 'KeyX';
 
-/** Labels used when the Keyboard Map API is unavailable. */
+const FALLBACK_LABELS: Readonly<Record<string, string>> = { Semicolon: ';', ShiftLeft: '⇧' };
+
+/** Labels used when the Keyboard Map API is unavailable (and for keys the layout map lacks). */
 export const QWERTY_LABELS: Readonly<Record<string, string>> = Object.fromEntries(
-  Object.keys(KEY_OFFSETS).map((code) => [code, code === 'Semicolon' ? ';' : code.slice(3)]),
+  Object.keys(KEY_OFFSETS).map((code) => [code, FALLBACK_LABELS[code] ?? code.slice(3)]),
 );
 
 /** Note number played by a physical key at the given base octave, or null if the key is unmapped. */

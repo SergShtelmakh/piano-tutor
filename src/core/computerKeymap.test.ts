@@ -32,6 +32,14 @@ describe('computer keymap', () => {
     expect(black.map((c) => noteLabelFor('en', noteForCode(c, 3)!))).toEqual(expected);
   });
 
+  it('plays the B below the base C with the left Shift key', () => {
+    expect(noteForCode('ShiftLeft', 4)).toBe(59);
+    expect(noteLabelFor('en', noteForCode('ShiftLeft', 4)!)).toBe('B3');
+    expect(noteLabelFor('en', noteForCode('ShiftLeft', 3)!)).toBe('B2');
+    expect(noteForCode('ShiftLeft', 1)).toBe(23); // B0, the lowest note the app can play
+    expect(QWERTY_LABELS.ShiftLeft).toBe('⇧');
+  });
+
   it('moves with the base octave', () => {
     expect(noteForCode('KeyA', 4)).toBe(60);
     expect(noteForCode('KeyA', 1)).toBe(24);
@@ -47,7 +55,8 @@ describe('computer keymap', () => {
     expect(codeForNote(48, 3)).toBe('KeyA');
     expect(codeForNote(64, 3)).toBe('Semicolon');
     expect(codeForNote(65, 3)).toBeNull();
-    expect(codeForNote(47, 3)).toBeNull();
+    expect(codeForNote(47, 3)).toBe('ShiftLeft');
+    expect(codeForNote(46, 3)).toBeNull();
   });
 
   it('clamps octave shifts to C1–C6', () => {
@@ -58,6 +67,6 @@ describe('computer keymap', () => {
   });
 
   it('has a fallback label for every mapped key', () => {
-    for (const code of Object.keys(KEY_OFFSETS)) expect(QWERTY_LABELS[code]).toMatch(/^[A-Z;]$/);
+    for (const code of Object.keys(KEY_OFFSETS)) expect(QWERTY_LABELS[code]).toMatch(/^[A-Z;⇧]$/);
   });
 });

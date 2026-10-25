@@ -78,10 +78,10 @@ The learner opens the Lesson mode, sees a note on a music staff, finds and plays
    - [x] `src/core/lessons.ts` (pool, `randomSequence`, `createNoteReadingLesson`), `lessons.test.ts`
    - [x] `src/core/staff.ts`, `staff.test.ts`
 3. **Input range and lesson hook**
-   - [ ] `ShiftLeft` = B below the base C in `computerKeymap.ts`, 26-key `keyboardRange`, labels, updated tests
-   - [ ] `setBaseOctave` in the input context
-   - [ ] `src/lesson/useLesson.ts`
-   - [ ] `PianoKeyboard` `feedback` prop and colours; check the extra key at 360 px
+   - [x] `ShiftLeft` = B below the base C in `computerKeymap.ts`, 26-key `keyboardRange`, labels, updated tests
+   - [x] `setBaseOctave` in the input context
+   - [x] `src/lesson/useLesson.ts`
+   - [x] `PianoKeyboard` `feedback` prop and colours; check the extra key at 360 px
 4. **Staff view, screens, and strings**
    - [ ] `StaffView` (grand staff, clefs, ledger lines, whole note, feedback colour, accessible label)
    - [ ] `ModeSwitch`, `LessonScreen`, `LessonSummary`; mode state in `App.tsx`

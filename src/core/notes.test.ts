@@ -16,12 +16,13 @@ describe('notes', () => {
     expect(pitchClass(71)).toBe(11);
   });
 
-  it('builds the 25-note range for a base octave', () => {
+  it('builds the 26-note range for a base octave: the B below, two octaves, the top C', () => {
     const range = keyboardRange(3);
-    expect(range).toHaveLength(25);
-    expect(range[0]).toBe(48);
-    expect(range[24]).toBe(72);
-    expect(range[12]).toBe(60);
+    expect(range).toHaveLength(26);
+    expect(range[0]).toBe(47);
+    expect(range[1]).toBe(48);
+    expect(range[25]).toBe(72);
+    expect(range[13]).toBe(60);
   });
 
   it('clamps the base octave to C1–C6', () => {
