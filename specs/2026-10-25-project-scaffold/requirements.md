@@ -42,7 +42,7 @@ The answers to the planning questions are in the **Decisions** table below. Two 
 ## Out of scope
 
 - Note pipeline, MIDI, audio, keyboard UI (Phase 2).
-- PWA, service worker, deployment, choice of hosting (Phase 6).
+- PWA, service worker, deployment, choice of hosting (now Phase 3 for deployment, Phase 7 for the PWA).
 - Routing, state-management libraries, component libraries.
 - Plurals or interpolation in translations, added when a later phase needs them.
 - Pre-commit hooks (husky/lint-staged).

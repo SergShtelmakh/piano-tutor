@@ -4,7 +4,7 @@
 
 Roadmap Phase 2. Phase 1 delivered a translated app shell with a placeholder screen and no input. This phase adds the foundation that every later phase builds on: one note-event pipeline (architecture rule 1 in `tech-stack.md`) fed by a MIDI keyboard, the computer keyboard, and an on-screen piano, plus a small Web Audio synth so every key press makes a sound. The placeholder screen becomes a free-play screen.
 
-Phase 3 (first lesson) will subscribe its judge to the same pipeline, so the event shape defined here is the contract for later phases.
+Phase 4 (first lesson) will subscribe its judge to the same pipeline, so the event shape defined here is the contract for later phases.
 
 The answers to the planning questions are in the **Decisions** table below. None of them change `tech-stack.md`.
 
@@ -47,7 +47,7 @@ The answers to the planning questions are in the **Decisions** table below. None
 
 ## Non-functional requirements
 
-- All user-facing text goes through the translations module, with keys in `en`, `uk`, `de`, and `fr`. Translations do not have interpolation yet (Phase 3), so device names are shown next to a translated label, not inside a translated sentence.
+- All user-facing text goes through the translations module, with keys in `en`, `uk`, `de`, and `fr`. Translations do not have interpolation yet (Phase 4), so device names are shown next to a translated label, not inside a translated sentence.
 - Works fully without a MIDI device (computer keyboard and on-screen piano).
 - No perceptible added input latency: the synth subscribes to the pipeline directly and starts the sound in the same event callback, not after a React render.
 - Pure core modules (note helpers, MIDI parsing, key mapping, held/sustained bookkeeping) have no React, DOM, or Web Audio imports, and have unit tests.
@@ -56,7 +56,7 @@ The answers to the planning questions are in the **Decisions** table below. None
 
 ## Out of scope
 
-- Lessons, target notes, judging, right/wrong colours (Phase 3).
+- Lessons, target notes, judging, right/wrong colours (Phase 4).
 - Choosing one MIDI device out of several; MIDI output; SysEx.
 - Sample-based or multi-timbre sounds, reverb, other effects.
 - Pitch bend, modulation, soft / sostenuto pedals, and other controllers.
@@ -77,4 +77,4 @@ The answers to the planning questions are in the **Decisions** table below. None
 | Extras in this phase      | **All four**: sustain pedal (CC64), volume + mute, pressed-key highlight, note-name and computer-key labels.                                                                                        | User choice.                                                                                                                                                                          |
 | Volume persistence        | Volume and mute are saved in `localStorage` (`piano-tutor.volume`, `piano-tutor.muted`).                                                                                                            | A learner expects their volume to stay the same after a reload. Same pattern as the saved language.                                                                                   |
 | Note-name convention      | **Follows the language** (changed after the first review): `en` letters, `de` letters with H, `uk` до-ре-мі, `fr` do-ré-mi; scientific octave numbers everywhere (C4 = middle C), ♯ for black keys. | Learners in `uk` / `fr` are taught solfège, and `de` learners H. The first draft used letters everywhere; the user asked for the localized names. A separate setting is out of scope. |
-| Key highlight vs. sustain | A key is lit only while physically held, not while it rings on the pedal.                                                                                                                           | Shows what the learner is pressing, which is what Phase 3 will judge.                                                                                                                 |
+| Key highlight vs. sustain | A key is lit only while physically held, not while it rings on the pedal.                                                                                                                           | Shows what the learner is pressing, which is what Phase 4 will judge.                                                                                                                 |

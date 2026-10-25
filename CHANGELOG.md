@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-25 — Phase 2: play the piano
+
+### Added
+
+- The start screen is now a free-play piano. Every key press makes a sound and lights up the key on screen.
+- Play with the computer keyboard: `A S D F G H J K L ;` are the white keys, `W E T Y U O P` the black keys, and `Z` / `X` shift the octave. Keys follow their physical position, so QWERTZ and AZERTY keyboards work too, and in Chrome the key labels match your layout.
+- Play the on-screen piano with a mouse, pen, or several fingers at once. The octave buttons move the two-octave range (C3–C5 by default).
+- Connect a MIDI keyboard in Chrome or Edge with **Connect MIDI keyboard**. All connected keyboards work, including velocity and the sustain pedal. Plugging in or out is picked up without a reload. Clear messages explain when MIDI is blocked, unsupported, or needs a secure page.
+- Note names follow your language: C D E… in English, C D E… H in German, до ре мі… in Ukrainian, do ré mi… in French.
+- Volume slider and mute button; both are remembered.
+
+### Known issues
+
+- Connecting a real MIDI keyboard has not been tested on a device yet. The on-screen piano and computer keyboard were tested.
+
+### Removed
+
+- The "coming soon" placeholder message.
+
 ## 2026-10-25 — Phase 1: project scaffold
 
 ### Added

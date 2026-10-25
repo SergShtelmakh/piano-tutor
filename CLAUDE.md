@@ -38,6 +38,8 @@ Piano Tutor is a gamified piano-learning web app: it connects to a MIDI piano vi
 
 Bun is the primary package manager (npm also works). On Windows, Bun may not be on PATH: `$env:Path += ";$env:USERPROFILE\.bun\bin"`.
 
+Don't rewrite files with Windows PowerShell `Get-Content` / `Set-Content`: it reads UTF-8 as the system code page and corrupts non-ASCII text (`→`, `♯`, Cyrillic). This happened in Phase 2. Use the Edit tool, or Bash `sed`.
+
 ```bash
 bun install
 bun run dev            # dev server on http://localhost:3000

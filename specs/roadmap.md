@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phase 1 is done. Phases 2–6 are still the original proposal; re-check each one when its spec is written.
+> Phases 1–2 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -20,30 +20,44 @@ Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/). Merg
 - In-house translations module with `en` (source, fallback), `uk`, `de`, `fr`; browser-language detection on first visit; a language selector that remembers the choice.
 - App shell with a placeholder screen.
 
-## Phase 2 — Input pipeline & on-screen keyboard 🔨
+## Phase 2 — Input pipeline & on-screen keyboard ✅
 
 Goal: any key press from any source becomes a note event and makes a sound.
 
-Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-keyboard/).
+Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-keyboard/). Branch `feature/input-pipeline-keyboard`.
 
-- Single note-event pipeline (rule 1 in `tech-stack.md`).
-- Web MIDI connection: device list, permission handling, unsupported-browser message.
-- Computer-keyboard mapping and clickable/touch on-screen piano keyboard.
-- Small Web Audio synth with velocity.
-- Unit tests for MIDI message parsing.
-- All new UI text (device status, permission and unsupported-browser messages) goes through the translations module, in all four locales.
+- Single note bus (`src/input/noteBus.ts`): MIDI, computer keyboard, and on-screen piano emit `noteon` / `noteoff` / `sustain`; the synth and the key highlight subscribe.
+- Web MIDI behind a Connect button: all inputs, hot-plug, release on unplug, sustain pedal; status for no devices / denied / unsupported / insecure.
+- Computer keyboard by physical key (DAW layout `A`–`;`, `W E T Y U O P`, `Z` / `X` octave); labels follow the OS layout via the Keyboard Map API.
+- 25-key on-screen piano (C3–C5 by default, octave buttons), multi-touch, pressed-key highlight.
+- Note names follow the language: letters (`en`), letters with H (`de`), до-ре-мі (`uk`), do-ré-mi (`fr`). Changed during review.
+- Web Audio synth: 16 voices, velocity, envelope, compressor; volume and mute saved locally.
+- **Not verified on a real device:** connecting / unplugging a MIDI keyboard and the sustain pedal (no working device connection during validation). Parsing and pedal logic are unit-tested. Re-check in Phase 3 over HTTPS, see [`backlog/midi-device-check.md`](backlog/midi-device-check.md).
 
-## Phase 3 — First lesson: play the right notes 📋
+## Phase 3 — Deployment & device testing 📋
+
+Goal: the app is reachable over HTTPS from any device, so it can be tested on phones, tablets, and other computers early. Moved up from the old Phase 6 so every later phase can be checked on real hardware as it ships.
+
+- Deploy to **both GitHub Pages and Cloudflare Pages** at the same time, so the two can be compared (speed, preview deployments per branch / PR, setup effort, limits) and one chosen afterwards. Web MIDI and, later, the service worker both need HTTPS.
+- Deploy pipeline: production build published automatically after CI passes on `main`; per-PR or per-branch previews where the host offers them (Cloudflare Pages does; GitHub Pages does not for free).
+- Vite `base` is configurable per target (GitHub Pages serves under `/<repo>/`, Cloudflare Pages from the root), so CI makes one build per host.
+- Record both live URLs in `README.md`; confirm each deployed build works with the on-screen and computer keyboard.
+- At the end, record the comparison and keep one host (or both, if there is a reason) in `tech-stack.md`.
+- Run the real-device MIDI checks left open in Phase 2 on the deployed site (desktop Chrome and Android Chrome with a USB-OTG keyboard), see [`backlog/midi-device-check.md`](backlog/midi-device-check.md).
+- Update the hosting row in `tech-stack.md` (confirmed choice) and the privacy note if the host adds analytics.
+
+## Phase 4 — First lesson: play the right notes 📋
 
 Goal: the core promise of the product, end to end.
 
-- Pure lesson model: a sequence of target notes/chords and a judge that decides right / wrong.
+- Pure lesson model: a sequence of target notes/chords and a judge that decides right / wrong. The judge subscribes to the Phase 2 note bus (`noteon` events from every source), so lessons work with MIDI, computer keys, and touch alike.
+- Lesson text that names notes uses `i18n/noteNames.ts`, so instructions match the key labels in every language.
 - One playable lesson screen: target highlighted on the keyboard (green = right, red = wrong), counters for correct notes and mistakes.
 - Completion summary with accuracy.
 - Unit tests for the judge and lesson progression.
 - Translations: add interpolation and plural forms (needed for "3 mistakes", "85 % accuracy"). This was deferred from Phase 1. Ukrainian has several plural forms, so use `Intl.PluralRules`.
 
-## Phase 4 — Game mechanics & local progress 📋
+## Phase 5 — Game mechanics & local progress 📋
 
 Goal: a reason to come back tomorrow.
 
@@ -51,17 +65,18 @@ Goal: a reason to come back tomorrow.
 - Progress saved to `localStorage` (graceful when unavailable).
 - Simple progress/home screen with a list of lessons and their stars/best accuracy.
 
-## Phase 5 — Lesson content 📋
+## Phase 6 — Lesson content 📋
 
 Goal: enough content for a real first week.
 
 - Lesson format and a small curriculum (single notes → both hands separately → simple melodies → intervals/chords).
 - Unlock order tied to progress.
 
-## Phase 6 — PWA & deployment 📋
+## Phase 7 — PWA & offline 📋
 
-- Installable PWA with offline support; Android install hint.
-- Deploy pipeline to the chosen static host.
+Goal: installable and usable without a connection. Deployment itself moved up to Phase 3.
+
+- Installable PWA (`vite-plugin-pwa`) with offline support; Android install hint.
 
 ## Backlog 💡
 
@@ -74,6 +89,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
+- From Phase 2: a setting for the note-name convention independent of the language (e.g. letters in `uk`); a MIDI device picker; glissando on the on-screen piano (sliding a finger onto the next key plays it); a sustain key for computer / touch input.
 
 **Tooling backlog** (small fixes; they don't need a phase, see [`backlog/tooling.md`](backlog/tooling.md)):
 
