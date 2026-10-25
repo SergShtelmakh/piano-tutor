@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-25 — Phase 4: first lesson
+
+### Added
+
+- A **Free play / Lesson** switch at the top. The lesson trains note reading: a note appears on a music staff (treble and bass clef), and you play that key with the MIDI keyboard, the computer keyboard, or the on-screen piano.
+- Each lesson has 20 random white-key notes from B3 to C5, never the same note twice in a row, in a new order on every start. A wrong key counts as a mistake and the note stays until you play it right. The played key and the note flash green or red.
+- A summary with your accuracy, correct notes, and mistakes (with correct plural forms in Ukrainian, German, and French), **Play again**, and **Back to free play**.
+- The left `Shift` key plays the B just below the first C, and the on-screen piano got that extra key (26 keys, B2–C5 by default), so the whole lesson range can be played without changing the octave.
+
+### Changed
+
+- The translations support inserted values and plural forms.
+
+### Credits
+
+- The clef shapes come from the Bravura music font (SIL Open Font License 1.1).
+
 ## 2026-10-25 — Phase 3: online on two hosts
 
 ### Added
