@@ -33,6 +33,6 @@ Run `bun run dev` and open http://localhost:3000 in Chrome. Checks marked **(MID
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md`: phase status updated
-- [ ] `specs/tech-stack.md`: project layout updated (`src/core/`, `src/input/`, `src/audio/`); rules unchanged
-- [ ] `CHANGELOG.md` / README updated (user-visible)
+- [x] `specs/roadmap.md`: phase status updated
+- [x] `specs/tech-stack.md`: project layout updated (`src/core/`, `src/input/`, `src/audio/`); rules unchanged
+- [x] `CHANGELOG.md` / README updated (user-visible)

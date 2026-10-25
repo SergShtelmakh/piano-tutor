@@ -93,4 +93,4 @@ Everything is listed in `tech-stack.md` or is standard tooling for it. Only `rea
 - **Bun must be installed locally** before task group 1. On Windows: `powershell -c "irm bun.sh/install.ps1 | iex"`.
 - Locale translations (uk/de/fr) are written by the agent. The user should skim them for a natural tone.
 - Exact package versions are picked at install time (latest stable) and pinned by `bun.lock`.
-- Hosting stays TBD until Phase 6. CI here only verifies and does not deploy.
+- Hosting stays TBD until the deployment phase (now Phase 3). CI here only verifies and does not deploy.

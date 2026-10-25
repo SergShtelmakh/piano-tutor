@@ -2,11 +2,11 @@
 
 > Roadmap phase: Phase 2 — Input pipeline & on-screen keyboard
 > Branch: `feature/input-pipeline-keyboard`
-> Status: Implemented
+> Status: Validated (real-device MIDI checks deferred)
 
 ## Goal
 
-The learner can play the app like an instrument: a MIDI keyboard, the computer keyboard, or the on-screen piano all make sound and light up the keys on screen. Every press goes through one note pipeline that Phase 3's lesson judge will subscribe to.
+The learner can play the app like an instrument: a MIDI keyboard, the computer keyboard, or the on-screen piano all make sound and light up the keys on screen. Every press goes through one note pipeline that Phase 4's lesson judge will subscribe to.
 
 ## Approach
 
