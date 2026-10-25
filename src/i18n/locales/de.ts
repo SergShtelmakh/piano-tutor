@@ -48,7 +48,7 @@ export const de: PartialTranslations = {
   lessonChordsMajorTitle: 'Dur-Akkorde: C, F, G',
   lessonChordsAllTitle: 'Dur- und Moll-Akkorde',
   lessonInstructionNotes: 'Spiele die markierte Note. Die Reihe zeigt, was als Nächstes kommt.',
-  lessonInstructionChords: 'Spiele alle Noten des markierten Akkords, zusammen oder nacheinander.',
+  lessonInstructionChords: 'Drücke alle Noten des markierten Akkords gleichzeitig.',
   staffLabel: 'Notensystem',
   staffTargetLabel: 'Zielnote: {note}',
   staffTargetsLabel: 'Zielnoten: {notes}',

@@ -47,8 +47,7 @@ export const en = {
   lessonChordsMajorTitle: 'Major chords: C, F, G',
   lessonChordsAllTitle: 'Major and minor chords',
   lessonInstructionNotes: 'Play the highlighted note. The row shows what comes next.',
-  lessonInstructionChords:
-    'Play all notes of the highlighted chord, together or one after another.',
+  lessonInstructionChords: 'Press all notes of the highlighted chord at the same time.',
   staffLabel: 'Music staff',
   staffTargetLabel: 'Target note: {note}',
   staffTargetsLabel: 'Target notes: {notes}',

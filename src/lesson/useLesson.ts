@@ -51,7 +51,14 @@ export function useLesson(
   useEffect(() => {
     return bus.subscribe((event) => {
       const result = judge(lessonRef.current, stateRef.current, event);
-      if (result.outcome === 'ignored' || result.note === undefined) return;
+      if (result.outcome === 'ignored' || result.note === undefined) {
+        // A released chord key changes the state without a judgement.
+        if (result.state !== stateRef.current) {
+          stateRef.current = result.state;
+          setState(result.state);
+        }
+        return;
+      }
 
       const previous = stateRef.current;
       stateRef.current = result.state;

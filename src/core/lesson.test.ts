@@ -112,15 +112,33 @@ describe('judge: finishing', () => {
 });
 
 describe('judge: chords', () => {
-  it('needs every note of the step, in any order', () => {
+  const off = (note: number): NoteEvent => ({ type: 'noteoff', note, source: 'screen' });
+  const feed = (lesson: Lesson, events: NoteEvent[], from = startLesson(lesson)) =>
+    events.reduce((state, event) => judge(lesson, state, event).state, from);
+
+  it('needs every note of the step held at once, in any order', () => {
     const first = judge(withChord, startLesson(withChord), on(67));
     expect(first.outcome).toBe('right');
     expect(first.state.stepIndex).toBe(0);
     expect(first.state.playedInStep).toEqual([67]);
+    expect(first.state.correct).toBe(0);
 
     const state = play(withChord, [60, 64], first.state);
     expect(state.stepIndex).toBe(1);
     expect(state.playedInStep).toEqual([]);
+    expect(state.correct).toBe(3);
+  });
+
+  it('does not remember a key that was released', () => {
+    const state = feed(withChord, [on(60), off(60), on(64), off(64), on(67)]);
+    expect(state.stepIndex).toBe(0);
+    expect(state.playedInStep).toEqual([67]);
+    expect(state.correct).toBe(0);
+  });
+
+  it('completes when the released key is pressed again with the others held', () => {
+    const state = feed(withChord, [on(60), on(64), off(60), on(60), on(67)]);
+    expect(state.stepIndex).toBe(1);
     expect(state.correct).toBe(3);
   });
 
@@ -131,11 +149,27 @@ describe('judge: chords', () => {
     expect(again.state).toBe(first.state);
   });
 
-  it('counts a wrong note inside a chord and keeps the played notes', () => {
-    const state = play(withChord, [60, 61]);
+  it('counts a wrong note as one mistake and cancels the attempt', () => {
+    const state = play(withChord, [60, 64, 61]);
     expect(state.mistakes).toBe(1);
-    expect(state.playedInStep).toEqual([60]);
+    expect(state.playedInStep).toEqual([]);
     expect(state.stepIndex).toBe(0);
+    // The keys that are still down do not count; the chord has to be pressed again.
+    expect(feed(withChord, [off(60), off(64), off(61), on(60), on(64), on(67)]).stepIndex).toBe(1);
+    expect(play(withChord, [67], state).stepIndex).toBe(0);
+  });
+
+  it('does not count a release of a key that is not in the step', () => {
+    const start = startLesson(withChord);
+    const result = judge(withChord, start, off(60));
+    expect(result.outcome).toBe('ignored');
+    expect(result.state).toBe(start);
+  });
+
+  it('lets a single-note step count while the previous key is still held', () => {
+    const state = feed(scale, [on(60), on(62), on(64)]);
+    expect(state.finished).toBe(true);
+    expect(state.correct).toBe(3);
   });
 });
 

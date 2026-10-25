@@ -25,13 +25,13 @@ Run `bun run dev` and open http://localhost:3000 in Chrome. Use the computer key
 - [ ] FR-9: A wrong note flashes red on the key and on the current step. A right note flashes green. Finishing the last note of a page shows that page for the flash, then the next page.
 - [ ] FR-10: With a screen reader or DevTools Accessibility pane, the staff label reads "Target note: …" for single notes and "Target notes: C, E, G" (in the UI language) for chords.
 - [ ] FR-11: In DevTools device mode at 360 px width, an 8-note page and a chord page are readable; noteheads and ledger lines don't overlap; no horizontal scrolling.
-- [ ] FR-12: Note lessons and chord lessons show their own instruction. In a chord lesson, the chord's notes can be played one after another in any order; a note outside the chord counts as a mistake.
+- [ ] FR-12: Note lessons and chord lessons show their own instruction. In a chord lesson, pressing the notes one after another and releasing them does **not** finish the step. Holding all notes at once finishes it, in any order. Pressing a wrong key while holding part of the chord counts one mistake and cancels the attempt: release and press the whole chord again. A key still held from the previous step does not count until it is pressed again. A single-note step still counts when the previous key is still held.
 - [ ] FR-13: Finish a chord lesson: the summary shows accuracy, stars, and XP; Home shows the result on its card.
 - [ ] FR-14: Each unit has a heading; the cards under it show stars, best accuracy / "Not played yet", runs, and Start.
 - [ ] FR-16: Switch to `uk`, `de`, `fr`: unit headings, lesson titles, instructions, the label, and the badge are translated. **User skims the new translations** (tune titles especially).
 - [ ] Saved progress from Phase 5 (a result for "Note reading") still shows on the "Around middle C" card after upgrading.
 - [ ] The melodies sound right when played (user plays each tune once).
-- [ ] Works with the on-screen piano (touch / mouse), including a chord played one note at a time.
+- [ ] Works with the on-screen piano (touch / mouse): a chord needs several fingers (multi-touch) at once.
 - [ ] Works with a MIDI keyboard if one is available (optional).
 - [ ] No console errors.
 - [ ] User-facing text comes from the translations module, with keys in all locales (`en`, `uk`, `de`, `fr`).

@@ -48,7 +48,7 @@ export const uk: PartialTranslations = {
   lessonChordsMajorTitle: 'Мажорні акорди: до, фа, соль',
   lessonChordsAllTitle: 'Мажорні та мінорні акорди',
   lessonInstructionNotes: 'Зіграйте виділену ноту. Ряд показує, що буде далі.',
-  lessonInstructionChords: 'Зіграйте всі ноти виділеного акорду, разом або по черзі.',
+  lessonInstructionChords: 'Натисніть одночасно всі ноти виділеного акорду.',
   staffLabel: 'Нотний стан',
   staffTargetLabel: 'Цільова нота: {note}',
   staffTargetsLabel: 'Цільові ноти: {notes}',
