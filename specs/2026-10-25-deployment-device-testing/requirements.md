@@ -13,8 +13,8 @@ The clarifying questions and their answers are in the **Decisions** table below.
 **Build**
 
 - **FR-1** The production build must take its base path from the build environment: `/` by default (local, Cloudflare Pages) and `/piano-tutor/` for GitHub Pages. All asset URLs in the built `index.html` must respect it, so the app loads under a sub-path with no 404s.
-- **FR-2** The build must record which build it is: the short commit hash (7 characters) and the deploy target (`github-pages`, `cloudflare-pages`, or `local`). They come from the CI environment (`GITHUB_SHA`, Cloudflare's `CF_PAGES` / `CF_PAGES_COMMIT_SHA`) or an explicit `DEPLOY_TARGET`. When nothing is set, it is a local build with commit `dev`. Resolving these values is a pure, unit-tested function.
-- **FR-3** The app must show a small footer line with the build info, for example `Build a1b2c3d · Cloudflare Pages`, or `Build dev · local` in local development. The word "Build" and the word "local" are translated (`en`, `uk`, `de`, `fr`); host names are proper nouns and are not translated.
+- **FR-2** The build must record which build it is: the short commit hash (7 characters) and the deploy target (`github-pages`, `cloudflare`, or `local`). They come from the CI environment (`GITHUB_SHA`, Cloudflare's `CF_PAGES` / `CF_PAGES_COMMIT_SHA`) or an explicit `DEPLOY_TARGET`. When nothing is set, it is a local build with commit `dev`. Resolving these values is a pure, unit-tested function.
+- **FR-3** The app must show a small footer line with the build info, for example `Build a1b2c3d · Cloudflare`, or `Build dev · local` in local development. The word "Build" and the word "local" are translated (`en`, `uk`, `de`, `fr`); host names are proper nouns and are not translated.
 
 **GitHub Pages**
 
@@ -68,3 +68,7 @@ The clarifying questions and their answers are in the **Decisions** table below.
 | Real-device MIDI check: how strict?      | **Required** to finish the phase (desktop Chrome and Android Chrome + OTG) | The MIDI code has never run against a device; this is the first chance on HTTPS.                |
 | Where does the host comparison go?       | `hosting-comparison.md` in this folder; the choice into `tech-stack.md`    | Keeps the measurements with the phase; the constitution only records the decision.              |
 | Base path mechanism                      | `BASE_PATH` env var read in `vite.config.ts`, default `/`                  | One build per host, as the roadmap says; no code change between hosts.                          |
+
+## Changes during implementation
+
+- The Cloudflare dashboard created a **Workers** project (Workers Builds, `*.workers.dev` URL), not a Pages one. Workers Builds sets `WORKERS_CI` / `WORKERS_CI_COMMIT_SHA` instead of `CF_PAGES*`, so the resolver reads both and the target is called `cloudflare`; the footer shows `Cloudflare`. The comparison in FR-12 is therefore GitHub Pages vs Cloudflare Workers (static assets).

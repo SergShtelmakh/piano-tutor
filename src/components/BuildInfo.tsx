@@ -2,7 +2,7 @@ import { useT } from '../i18n/context.ts';
 
 const HOST_NAMES = {
   'github-pages': 'GitHub Pages',
-  'cloudflare-pages': 'Cloudflare Pages',
+  cloudflare: 'Cloudflare',
 } as const;
 
 export default function BuildInfo() {
