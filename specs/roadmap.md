@@ -20,9 +20,11 @@ Spec: [`specs/2026-10-25-project-scaffold/`](2026-10-25-project-scaffold/). Merg
 - In-house translations module with `en` (source, fallback), `uk`, `de`, `fr`; browser-language detection on first visit; a language selector that remembers the choice.
 - App shell with a placeholder screen.
 
-## Phase 2 — Input pipeline & on-screen keyboard 📋
+## Phase 2 — Input pipeline & on-screen keyboard 🔨
 
 Goal: any key press from any source becomes a note event and makes a sound.
+
+Spec: [`specs/2026-10-25-input-pipeline-keyboard/`](2026-10-25-input-pipeline-keyboard/).
 
 - Single note-event pipeline (rule 1 in `tech-stack.md`).
 - Web MIDI connection: device list, permission handling, unsupported-browser message.
