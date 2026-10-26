@@ -50,6 +50,8 @@ bun run format:check   # prettier --check (run in CI)
 bun run test           # vitest run (once)
 ```
 
+The service worker exists only in production builds: to check offline mode, install, or updates, use `bun run build && bun run preview` (http://localhost:4173), not `dev`. For the GitHub Pages base, set `BASE_PATH=/piano-tutor/` (the app is then at `/piano-tutor/`). In Git Bash prefix it with `MSYS_NO_PATHCONV=1`, or the path is rewritten to `C:/Program Files/Git/...`. Unset it afterwards in PowerShell (`Remove-Item Env:BASE_PATH`).
+
 Note: `typescript` is pinned to `^6` until `typescript-eslint` supports TypeScript 7.
 
 ## Language

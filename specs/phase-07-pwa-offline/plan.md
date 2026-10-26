@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 7 — PWA & offline
 > Branch: `feature/pwa-offline`
-> Status: Implemented (manual validation open)
+> Status: Implemented (replanned; manual validation open)
 
 ## Goal
 
