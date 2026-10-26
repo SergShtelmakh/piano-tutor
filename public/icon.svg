@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0284c7" />
+  <!-- Keys sit inside the central 80 % so the maskable crop keeps them. -->
+  <rect x="112" y="214" width="288" height="170" rx="14" fill="#ffffff" />
+  <g stroke="#0284c7" stroke-width="6">
+    <line x1="160" y1="214" x2="160" y2="384" />
+    <line x1="208" y1="214" x2="208" y2="384" />
+    <line x1="256" y1="214" x2="256" y2="384" />
+    <line x1="304" y1="214" x2="304" y2="384" />
+    <line x1="352" y1="214" x2="352" y2="384" />
+  </g>
+  <g fill="#0f172a">
+    <rect x="144" y="214" width="32" height="104" rx="5" />
+    <rect x="192" y="214" width="32" height="104" rx="5" />
+    <rect x="288" y="214" width="32" height="104" rx="5" />
+    <rect x="336" y="214" width="32" height="104" rx="5" />
+  </g>
+  <!-- Eighth note above the keys. -->
+  <g fill="#ffffff">
+    <ellipse cx="226" cy="168" rx="26" ry="19" transform="rotate(-20 226 168)" />
+    <rect x="243" y="78" width="9" height="92" />
+    <path d="M252 78 C280 92 304 110 296 142 C292 124 276 112 252 106 Z" />
+  </g>
+</svg>

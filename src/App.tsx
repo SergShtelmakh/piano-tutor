@@ -5,6 +5,7 @@ import LanguageSelector from './components/LanguageSelector.tsx';
 import LessonScreen from './components/LessonScreen.tsx';
 import MidiStatus from './components/MidiStatus.tsx';
 import ModeSwitch, { type Mode } from './components/ModeSwitch.tsx';
+import PwaNotices from './components/PwaNotices.tsx';
 import OctaveControl from './components/OctaveControl.tsx';
 import PianoKeyboard from './components/PianoKeyboard.tsx';
 import VolumeControl from './components/VolumeControl.tsx';
@@ -55,6 +56,7 @@ export default function App() {
             )}
           </main>
           <BuildInfo />
+          <PwaNotices lessonOpen={entry !== undefined} />
         </div>
       </NoteInputProvider>
     </ProgressProvider>

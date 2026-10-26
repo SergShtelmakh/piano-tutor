@@ -24,17 +24,27 @@ bun run dev      # http://localhost:3000
 - **Home and lessons:** the app opens on **Home**, with 13 lessons in five units: right hand (treble clef), left hand (bass clef), both clefs, melodies (Mary Had a Little Lamb, Ode to Joy, Twinkle Twinkle), and intervals and chords. Press **Start** on a lesson card; the lesson marked **Next** is the first one you haven't finished, but nothing is locked. The staff shows a row of notes: the highlighted one is the one to play, played ones turn grey. For a chord, play all its notes in any order. A wrong key counts as a mistake and the target stays until you play it right. At the end you get your accuracy, 1–3 stars, and XP. Random lessons give a new order on every start.
 - **Progress:** XP raises your level, and finishing at least one lesson per day builds a daily streak. Everything is saved on your device only; **Reset progress** on Home clears it.
 
+## Install and offline
+
+Piano Tutor is an installable web app (PWA). Open it once online; after that it works without a connection: lessons, free play, sound, progress, and MIDI input.
+
+- **Install:** in Chrome (Android or desktop) Home shows an **Install** card, or use the browser menu / the install icon in the address bar. **Not now** hides the card for good.
+- **Updates:** when a new version has been deployed, a banner offers **Reload** or **Later**. The app never reloads by itself, and the banner waits until you leave a lesson. Progress and settings are kept.
+- **Dev:** `bun run dev` has no service worker. To try offline mode, use `bun run build && bun run preview`.
+- **Icon:** drawn as `public/icon.svg`. After changing it, run `bun run icons` to regenerate the PNG and ICO files, and commit them.
+
 ## Scripts
 
-| Script                 | What it does                               |
-| ---------------------- | ------------------------------------------ |
-| `bun run dev`          | Dev server on http://localhost:3000        |
-| `bun run build`        | Type check + production build into `dist/` |
-| `bun run preview`      | Serve the production build locally         |
-| `bun run lint`         | TypeScript type check, then ESLint         |
-| `bun run format`       | Format all files with Prettier             |
-| `bun run format:check` | Fail if any file is not formatted          |
-| `bun run test`         | Run unit tests once (Vitest)               |
+| Script                 | What it does                                |
+| ---------------------- | ------------------------------------------- |
+| `bun run dev`          | Dev server on http://localhost:3000         |
+| `bun run build`        | Type check + production build into `dist/`  |
+| `bun run preview`      | Serve the production build locally          |
+| `bun run lint`         | TypeScript type check, then ESLint          |
+| `bun run format`       | Format all files with Prettier              |
+| `bun run format:check` | Fail if any file is not formatted           |
+| `bun run test`         | Run unit tests once (Vitest)                |
+| `bun run icons`        | Regenerate app icons from `public/icon.svg` |
 
 CI (GitHub Actions) runs `lint`, `format:check`, `build`, and `test` on every pull request and every push to `main`.
 

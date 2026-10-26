@@ -1,6 +1,7 @@
 import { LESSON_CATALOG, LESSON_UNITS, nextLessonId } from '../core/lessons.ts';
 import { useT } from '../i18n/context.ts';
 import { useProgress } from '../progress/context.ts';
+import InstallCard from './InstallCard.tsx';
 import LessonCard from './LessonCard.tsx';
 import ResetProgress from './ResetProgress.tsx';
 import StatsBar from './StatsBar.tsx';
@@ -12,6 +13,7 @@ export default function HomeScreen({ onStart }: { onStart: (lessonId: string) =>
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
+      <InstallCard />
       <StatsBar />
       {!storageAvailable && (
         <p role="status" className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-900">

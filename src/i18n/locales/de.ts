@@ -85,4 +85,13 @@ export const de: PartialTranslations = {
   rewardStreak: 'Serie:',
   rewardNewBestStreak: 'Neue Bestserie!',
   rewardNewBestAccuracy: 'Neue Bestleistung!',
+  offlineReady: 'Piano Tutor funktioniert jetzt offline.',
+  offlineReadyOk: 'OK',
+  updateAvailable: 'Eine neue Version ist verfügbar.',
+  updateReload: 'Neu laden',
+  updateLater: 'Später',
+  installTitle: 'Piano Tutor installieren',
+  installText: 'Öffne die App vom Startbildschirm und übe auch ohne Internet.',
+  installAction: 'Installieren',
+  installNotNow: 'Nicht jetzt',
 };

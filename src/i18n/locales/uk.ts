@@ -105,4 +105,13 @@ export const uk: PartialTranslations = {
   rewardStreak: 'Серія:',
   rewardNewBestStreak: 'Нова найкраща серія!',
   rewardNewBestAccuracy: 'Новий рекорд!',
+  offlineReady: 'Piano Tutor тепер працює офлайн.',
+  offlineReadyOk: 'Гаразд',
+  updateAvailable: 'Доступна нова версія.',
+  updateReload: 'Перезавантажити',
+  updateLater: 'Пізніше',
+  installTitle: 'Встановіть Piano Tutor',
+  installText: 'Відкривайте його з головного екрана та вправляйтеся без інтернету.',
+  installAction: 'Встановити',
+  installNotNow: 'Не зараз',
 };

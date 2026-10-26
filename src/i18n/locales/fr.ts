@@ -86,4 +86,13 @@ export const fr: PartialTranslations = {
   rewardStreak: 'Série :',
   rewardNewBestStreak: 'Nouvelle meilleure série !',
   rewardNewBestAccuracy: 'Nouveau record !',
+  offlineReady: 'Piano Tutor fonctionne maintenant hors ligne.',
+  offlineReadyOk: 'OK',
+  updateAvailable: 'Une nouvelle version est disponible.',
+  updateReload: 'Recharger',
+  updateLater: 'Plus tard',
+  installTitle: 'Installer Piano Tutor',
+  installText: "Ouvrez-le depuis votre écran d'accueil et exercez-vous même sans connexion.",
+  installAction: 'Installer',
+  installNotNow: 'Pas maintenant',
 };
