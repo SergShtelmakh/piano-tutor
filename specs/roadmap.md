@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–6 are done. Phases 3–7 were reordered after Phase 2 (deployment moved up to Phase 3, PWA split out as Phase 7); re-check each one when its spec is written.
+> Phases 1–7 are done; the MVP scope from `mission.md` is covered. The next phase is picked from the Backlog.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -89,13 +89,15 @@ Spec: [`specs/phase-06-lesson-content/`](phase-06-lesson-content/). Branch `feat
 - **Changed during the phase:** the user chose **no locks**, so "unlock order" became a **Next** badge on the first lesson without a finished run. After implementation, **chords are judged by held keys**: a chord step is done only when all its notes are down at once, a release removes a note, a wrong note is a mistake and cancels the attempt, and keys held from the previous step don't count. Single-note steps count at once, so legato playing works. This replaced the first rule (any order, one at a time). The judge now handles `noteoff`.
 - Manual validation by the user was still open when this replan was written. Two spots most likely to need fixes: how an 8-note page and a chord page look at 360 px, and chords on the on-screen piano (they need several fingers).
 
-## Phase 7 — PWA & offline 🔨
+## Phase 7 — PWA & offline ✅
 
 Goal: installable and usable without a connection. Deployment itself moved up to Phase 3.
 
-Spec: [`specs/phase-07-pwa-offline/`](phase-07-pwa-offline/). Branch `feature/pwa-offline`.
+Spec: [`specs/phase-07-pwa-offline/`](phase-07-pwa-offline/). Branch `feature/pwa-offline` (started from `feature/lesson-content`; rebase onto `main` once Phase 6 is merged).
 
 - Installable PWA (`vite-plugin-pwa`) with offline support; Android install hint.
+- **Outcome:** `vite-plugin-pwa` 2 (supports Vite 8) generates the manifest and a Workbox service worker that precaches the whole build. `start_url`, `scope`, and the navigation fallback follow the base path, so both hosts work. The service worker is off in `bun run dev`. Updates use **prompt** mode: a "new version" banner with Reload / Later, held back while a lesson is open; the app never reloads by itself. A one-time "works offline" note. An install card on Home (`beforeinstallprompt`, captured before React renders); "Not now" is saved under `piano-tutor.installHint`. The show/hide rule is pure (`src/pwa/installHint.ts`) and unit-tested. The app icon is an agent-drawn `public/icon.svg`; `bun run icons` (`@vite-pwa/assets-generator`, dev only) makes the PNG / ICO sizes, which are committed.
+- The user confirmed the production build works in local `preview`. Still open when this replan was written: the update flow and the install card checked step by step, Android install + airplane mode on the Cloudflare preview, the GitHub Pages check after merge, and a skim of the new `uk` / `de` / `fr` strings.
 
 ## Backlog 💡
 
@@ -111,6 +113,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Keyboard size: a setting for the number of keys per device and a calibration step (press the lowest and highest key), so lessons stay within the real keyboard; see [`backlog/keyboard-size.md`](backlog/keyboard-size.md).
 - Responsive on-screen keyboard: choose the number of visible keys from the container width (comfortable key width, touch-friendly), stretch to full width, keep lesson notes visible; see [`backlog/responsive-keyboard.md`](backlog/responsive-keyboard.md).
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
+- From Phase 7: an Install button outside Home (for example in the header) after the card was dismissed; a localized manifest name; manifest screenshots and app shortcuts (richer install UI); a designed app icon to replace the agent-drawn one.
 - From Phase 5: streak freezes, badges, a progress history, and syncing progress between tabs (a `storage` event listener).
 - From Phase 2: a setting for the note-name convention independent of the language (e.g. letters in `uk`); a MIDI device picker; glissando on the on-screen piano (sliding a finger onto the next key plays it); a sustain key for computer / touch input.
 

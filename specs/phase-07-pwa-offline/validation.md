@@ -4,11 +4,11 @@ The feature is done (and the branch can be merged) only when every box is checke
 
 ## Automated
 
-- [ ] `bun run lint` passes
-- [ ] `bun run format:check` passes
-- [ ] `bun run build` passes; `dist/` contains `manifest.webmanifest`, `sw.js`, and the icons
-- [ ] `BASE_PATH=/piano-tutor/ bun run build` passes; in `dist/index.html` the manifest, icon, and script links start with `/piano-tutor/`, and the manifest has `start_url` and `scope` `/piano-tutor/`
-- [ ] `bun run test` passes; `shouldShowInstallHint` has unit tests for every input combination
+- [x] `bun run lint` passes
+- [x] `bun run format:check` passes
+- [x] `bun run build` passes; `dist/` contains `manifest.webmanifest`, `sw.js`, and the icons
+- [x] `BASE_PATH=/piano-tutor/ bun run build` passes; in `dist/index.html` the manifest, icon, and script links start with `/piano-tutor/`, and the manifest has `start_url` and `scope` `/piano-tutor/`
+- [x] `bun run test` passes; `shouldShowInstallHint` has unit tests for every input combination
 - [ ] CI is green on the PR
 
 ## Manual checks
@@ -33,6 +33,6 @@ The service worker runs only in production builds. Run `bun run build && bun run
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md`: Phase 7 marked done, with the outcome
-- [ ] `specs/tech-stack.md`: PWA row confirmed (plugin, `prompt` updates, precache), `src/pwa/` and `public/` in the project layout, the icon script, and known debt (service worker and install flow verified only manually)
-- [ ] `CHANGELOG.md` and `README.md` updated (install and offline)
+- [x] `specs/roadmap.md`: Phase 7 marked done, with the outcome
+- [x] `specs/tech-stack.md`: PWA row confirmed (plugin, `prompt` updates, precache), `src/pwa/` and `public/` in the project layout, the icon script, and known debt (service worker and install flow verified only manually)
+- [x] `CHANGELOG.md` and `README.md` updated (install and offline)

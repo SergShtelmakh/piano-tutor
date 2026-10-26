@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-26 — Phase 7: PWA & offline
+
+### Added
+
+- **Install Piano Tutor** as an app on Android and desktop Chrome: an **Install** card on Home (or the browser menu). **Not now** hides the card for good.
+- **Works offline:** after one visit online, lessons, free play, sound, progress, and MIDI work without a connection. A short note tells you when the app is ready offline.
+- **Updates:** when a new version is out, a banner offers **Reload** or **Later**. The app never reloads by itself and waits until you leave a lesson. Your progress and settings are kept.
+- An **app icon** and favicon.
+- The new messages are translated into Ukrainian, German, and French.
+
 ## 2026-10-26 — Phase 6: lesson content
 
 ### Added
