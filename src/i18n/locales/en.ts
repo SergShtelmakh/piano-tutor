@@ -84,6 +84,15 @@ export const en = {
   rewardStreak: 'Streak:',
   rewardNewBestStreak: 'New best streak!',
   rewardNewBestAccuracy: 'New best!',
+  offlineReady: 'Piano Tutor now works offline.',
+  offlineReadyOk: 'OK',
+  updateAvailable: 'A new version is available.',
+  updateReload: 'Reload',
+  updateLater: 'Later',
+  installTitle: 'Install Piano Tutor',
+  installText: 'Open it from your home screen and practise offline.',
+  installAction: 'Install',
+  installNotNow: 'Not now',
 } as const;
 
 type Entries = typeof en;

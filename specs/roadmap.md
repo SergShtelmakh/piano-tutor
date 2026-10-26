@@ -89,9 +89,11 @@ Spec: [`specs/phase-06-lesson-content/`](phase-06-lesson-content/). Branch `feat
 - **Changed during the phase:** the user chose **no locks**, so "unlock order" became a **Next** badge on the first lesson without a finished run. After implementation, **chords are judged by held keys**: a chord step is done only when all its notes are down at once, a release removes a note, a wrong note is a mistake and cancels the attempt, and keys held from the previous step don't count. Single-note steps count at once, so legato playing works. This replaced the first rule (any order, one at a time). The judge now handles `noteoff`.
 - Manual validation by the user was still open when this replan was written. Two spots most likely to need fixes: how an 8-note page and a chord page look at 360 px, and chords on the on-screen piano (they need several fingers).
 
-## Phase 7 — PWA & offline 📋
+## Phase 7 — PWA & offline 🔨
 
 Goal: installable and usable without a connection. Deployment itself moved up to Phase 3.
+
+Spec: [`specs/phase-07-pwa-offline/`](phase-07-pwa-offline/). Branch `feature/pwa-offline`.
 
 - Installable PWA (`vite-plugin-pwa`) with offline support; Android install hint.
 
