@@ -103,7 +103,7 @@ Spec: [`specs/phase-07-pwa-offline/`](phase-07-pwa-offline/). Branch `feature/pw
 
 Goal: the on-screen piano fits every screen, from a phone in portrait to a wide monitor.
 
-Spec: [`specs/phase-08-responsive-keyboard/`](phase-08-responsive-keyboard/). Branch `feature/responsive-keyboard`. From [`backlog/responsive-keyboard.md`](backlog/responsive-keyboard.md).
+Spec: [`specs/phase-08-responsive-keyboard/`](phase-08-responsive-keyboard/). Branch `feature/responsive-keyboard`. From a backlog note (removed after the phase; decisions are in the spec).
 
 - The piano uses the full window width; extra whole octaves are added around the computer-keyboard range while white keys stay ≥ 40 px, up to all 88 keys.
 - When even the base range doesn't fit (phones), the piano scrolls horizontally on an octave ruler; keys always play. The view follows octave changes and the lesson's current step.
