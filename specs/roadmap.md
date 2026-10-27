@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–8 are done; the MVP scope from `mission.md` is covered. Phase 9 (MIDI file playback) and Phase 10 (keyboard size) come from the Backlog.
+> Phases 1–9 are done; the MVP scope from `mission.md` is covered. Phase 10 (keyboard size) comes from the Backlog.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -108,7 +108,7 @@ Spec: [`specs/phase-08-responsive-keyboard/`](phase-08-responsive-keyboard/). Br
 - The piano uses the full window width; extra whole octaves are added around the computer-keyboard range while white keys stay ≥ 40 px, up to all 88 keys.
 - When even the base range doesn't fit (phones), the piano scrolls horizontally on an octave ruler; keys always play. The view follows octave changes and the lesson's current step.
 
-## Phase 9 — MIDI file playback 🔨
+## Phase 9 — MIDI file playback ✅
 
 Goal: open a `.mid` file and watch and hear it play: the piece is shown as sheet music, a cursor moves along the staff, and the sounding keys light up blue.
 
@@ -118,6 +118,7 @@ Spec: [`specs/phase-09-midi-file-playback/`](phase-09-midi-file-playback/). Bran
 - A new **Player** mode: the score as sheet music (sharps, note values, rests, bars, ties; a simplified one-voice reduction) in systems, with a moving cursor and blue sounding notes.
 - Playback through the note bus as a new source (`playback`), so the synth and the key highlight need no special code. Play / pause / stop, tempo 50–150 %, seeking by slider and by clicking the score.
 - The on-screen piano shows the piece's range and follows what is playing on narrow screens.
+- **Outcome:** `src/core/smf.ts` (parser; limits 2 MB, 50,000 notes, 4 hours; five error kinds, never throws), `playback.ts` (sorted schedule, `drain`, `indexAtTime`), `score.ts` (rounding to sixteenths, bars from time signatures, one voice per staff, rests, ties, sharps / naturals per bar) and `scoreLayout.ts` (systems stretched up to 2×, the time-to-x map for the cursor, two visible systems) are pure and unit-tested; `NoteSource` gained `playback`. `src/playback/player.ts` drives the clock (position from the clock, so no drift; events every 10 ms; every exit releases all notes) and is tested with a fake clock. `PlayerProvider` keeps the player and the open file for the whole app, so the file stays when the learner switches modes (playback stops). `ScoreView` draws Bravura outlines (sharp, natural, flags, rests), stems limited to their own staff, a per-frame cursor, and blue sounding notes. `PianoKeyboard` got `include` (the piece's range) and `followPlayback` (only a finger or the mouse stops the follow-scroll). The user validated the player on desktop and a phone.
 
 ## Phase 10 — Keyboard size & calibration 📋
 
@@ -140,6 +141,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
+- From Phase 9: playing along with a file (see above); loop a section, mute a hand or a track, a metronome / count-in; drag and drop, a built-in example, remembering the last file; a scrollable overview of the whole score; key signatures and flats, beams, tuplets, and several voices per staff; a look-ahead scheduler (Web Audio) so playback stays on time in a background tab.
 - From Phase 8: pinch-to-zoom or a setting for the key width; a "rotate to landscape" hint; tapping the ruler to move the base range; centring the scrolled view on the held notes of a chord.
 - From Phase 7: an Install button outside Home (for example in the header) after the card was dismissed; a localized manifest name; manifest screenshots and app shortcuts (richer install UI); a designed app icon to replace the agent-drawn one.
 - From Phase 5: streak freezes, badges, a progress history, and syncing progress between tabs (a `storage` event listener).

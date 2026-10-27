@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 9 — MIDI file playback
 > Branch: `feature/midi-file-playback`
-> Status: Implemented (manual validation open)
+> Status: Validated
 
 ## Goal
 
@@ -67,16 +67,16 @@ This is the largest phase so far. It is cut into five task groups; the two heavi
    - [x] Unit tests: a bar of quarters, a dotted rhythm, a note across a bar line (tied), a 5-sixteenth note (quarter + sixteenth tied), a gap (rest), a chord with a second, sharps and a following natural in one bar, 3/4 and 6/8 bars, a time-signature change, notes on both staves, wrapping at several widths, an over-wide bar, the cursor map (monotonic; a click snaps to the nearest column), `shownRange` with `include`
 3. **Playback driver**
    - [x] `src/playback/loadMidiFile.ts` and `usePlayer.ts`: clock, play / pause / stop / seek / rate, `releaseAll`, emitting on the bus, exposing the position for the cursor (FR-10 – FR-13)
-   - [ ] Check by hand with the dev server and the console before the UI exists: events arrive in time, no stuck notes after pause, stop, seek, and the end
+   - [x] Check by hand with the dev server and the console before the UI exists: events arrive in time, no stuck notes after pause, stop, seek, and the end
 4. **Score view**
    - [x] Bravura outlines for the sharp, natural, flags, and rests in `notationPaths.ts` (licence note in `licenses/` already covers Bravura)
    - [x] `ScoreView.tsx`: two systems, clefs, bar lines, time signature, noteheads, stems, flags, dots, rests, ties, accidentals, blue sounding notes, the cursor, click to seek, and the accessible label (FR-5 – FR-9)
-   - [ ] Check readability at 360 px and at 1280 px with a dense and a sparse piece
+   - [x] Check readability at 360 px and at 1280 px with a dense and a sparse piece
 5. **Player screen, piano, and wrap-up**
    - [x] `ModeSwitch` and `App`: the Player mode; `PlayerScreen` with the Open button, error messages, controls, and sliders (FR-1, FR-2, FR-4, FR-10 – FR-12, FR-15)
    - [x] `PianoKeyboard`: `include` range, follow-scroll from sounding notes, guard on pointer-held keys only (FR-14)
    - [x] All new keys in `en`, `uk`, `de`, `fr` (FR-16); `README.md`: a "Play a MIDI file" bullet and the supported-notation note
-   - [ ] Run `validation.md`: automated gates, then manual checks with real files on desktop and an Android phone; ask the user to skim the new `uk` / `de` / `fr` strings
+   - [x] Run `validation.md`: automated gates, then manual checks with real files on desktop and an Android phone; ask the user to skim the new `uk` / `de` / `fr` strings
 
 ## Files touched
 

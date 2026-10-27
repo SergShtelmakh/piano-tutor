@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-28 — Phase 9: MIDI file playback
+
+### Added
+
+- A new **Player** mode: open a MIDI file (`.mid`) and see it as sheet music on the grand staff, with sharps, note values, rests, bars, and ties. The file is read on your device and never uploaded.
+- **Play, Pause, and Stop**, a tempo slider (50–150 %), and a position slider. Click the score to jump to that place.
+- A **moving cursor** follows the music across the staves, and the notes that sound are drawn in blue. The matching piano keys light up blue too, and the on-screen piano shows the range of the piece and scrolls along on a narrow screen.
+- Playing keys yourself while a file plays still works.
+- Clear messages for files that cannot be shown (not MIDI, unsupported, no notes, too large, damaged), translated into Ukrainian, German, and French.
+
+### Notes
+
+- The score is a simplified reading of the file: one voice per staff, no key signatures, beams, or tuplets. The sound always follows the original file. Drum tracks are skipped.
+
 ## 2026-10-28 — Phase 8: responsive on-screen keyboard
 
 ### Added
