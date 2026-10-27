@@ -95,4 +95,22 @@ export const de: PartialTranslations = {
   installText: 'Öffne die App vom Startbildschirm und übe auch ohne Internet.',
   installAction: 'Installieren',
   installNotNow: 'Nicht jetzt',
+  modePlayer: 'Player',
+  playerOpen: 'MIDI-Datei öffnen',
+  playerHint:
+    'Öffne eine MIDI-Datei (.mid), um sie als Noten zu sehen und abzuspielen. Die Datei bleibt auf deinem Gerät.',
+  playerPlay: 'Abspielen',
+  playerPause: 'Pause',
+  playerStop: 'Stopp',
+  playerTempo: 'Tempo',
+  playerPosition: 'Position',
+  playerErrorNotMidi: 'Das ist keine MIDI-Datei.',
+  playerErrorUnsupported: 'Diese Art von MIDI-Datei wird nicht unterstützt.',
+  playerErrorEmpty: 'Diese Datei enthält keine Klaviernoten zum Anzeigen.',
+  playerErrorTooLarge: 'Diese Datei ist zu groß oder zu lang (bis 2 MB und 4 Stunden).',
+  playerErrorDamaged: 'Diese Datei ist beschädigt und kann nicht gelesen werden.',
+  playerScoreLabel: {
+    one: 'Noten von {name}: {count} Takt',
+    other: 'Noten von {name}: {count} Takte',
+  },
 };

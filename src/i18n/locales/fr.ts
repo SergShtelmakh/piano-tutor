@@ -96,4 +96,22 @@ export const fr: PartialTranslations = {
   installText: "Ouvrez-le depuis votre écran d'accueil et exercez-vous même sans connexion.",
   installAction: 'Installer',
   installNotNow: 'Pas maintenant',
+  modePlayer: 'Lecteur',
+  playerOpen: 'Ouvrir un fichier MIDI',
+  playerHint:
+    'Ouvrez un fichier MIDI (.mid) pour le voir en partition et l’écouter. Le fichier reste sur votre appareil.',
+  playerPlay: 'Lire',
+  playerPause: 'Pause',
+  playerStop: 'Arrêter',
+  playerTempo: 'Tempo',
+  playerPosition: 'Position',
+  playerErrorNotMidi: 'Ce n’est pas un fichier MIDI.',
+  playerErrorUnsupported: 'Ce type de fichier MIDI n’est pas pris en charge.',
+  playerErrorEmpty: 'Ce fichier ne contient aucune note de piano à afficher.',
+  playerErrorTooLarge: 'Ce fichier est trop volumineux ou trop long (jusqu’à 2 Mo et 4 heures).',
+  playerErrorDamaged: 'Ce fichier est endommagé et ne peut pas être lu.',
+  playerScoreLabel: {
+    one: 'Partition de {name} : {count} mesure',
+    other: 'Partition de {name} : {count} mesures',
+  },
 };

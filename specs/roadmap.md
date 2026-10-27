@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–8 are done; the MVP scope from `mission.md` is covered. Phase 9 comes from the Backlog (keyboard size).
+> Phases 1–8 are done; the MVP scope from `mission.md` is covered. Phase 9 (MIDI file playback) and Phase 10 (keyboard size) come from the Backlog.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -108,11 +108,22 @@ Spec: [`specs/phase-08-responsive-keyboard/`](phase-08-responsive-keyboard/). Br
 - The piano uses the full window width; extra whole octaves are added around the computer-keyboard range while white keys stay ≥ 40 px, up to all 88 keys.
 - When even the base range doesn't fit (phones), the piano scrolls horizontally on an octave ruler; keys always play. The view follows octave changes and the lesson's current step.
 
-## Phase 9 — Keyboard size & calibration 📋
+## Phase 9 — MIDI file playback 🔨
+
+Goal: open a `.mid` file and watch and hear it play: the piece is shown as sheet music, a cursor moves along the staff, and the sounding keys light up blue.
+
+Spec: [`specs/phase-09-midi-file-playback/`](phase-09-midi-file-playback/). Branch `feature/midi-file-playback`. From the backlog item "Load a `.mid` file".
+
+- In-house Standard MIDI File parser (formats 0 and 1, tempo map, time signatures, sustain pedal; percussion ignored). Opened with a file chooser; nothing leaves the device.
+- A new **Player** mode: the score as sheet music (sharps, note values, rests, bars, ties; a simplified one-voice reduction) in systems, with a moving cursor and blue sounding notes.
+- Playback through the note bus as a new source (`playback`), so the synth and the key highlight need no special code. Play / pause / stop, tempo 50–150 %, seeking by slider and by clicking the score.
+- The on-screen piano shows the piece's range and follows what is playing on narrow screens.
+
+## Phase 10 — Keyboard size & calibration 📋
 
 Goal: lessons and the on-screen piano know how many keys the learner's real keyboard has.
 
-From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec.
+From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added.
 
 - A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
 - Re-check the open questions in the backlog note when the spec is written.
@@ -121,9 +132,9 @@ From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 
 
 Ideas not yet scheduled — see `specs/backlog/` for notes.
 
-- Load a `.mid` file and play it step by step (custom MIDI parser).
+- Play along with a `.mid` file: wait for the learner's notes step by step, judge them, and score the run (the player from Phase 9 only plays). Also: loop a section, mute a hand or track, drag and drop, a built-in example, a metronome / count-in.
 - Chord / interval / key analyzer with a chord dictionary.
-- Sheet-music view (started in Phase 4 with single notes on a grand staff; chords, rhythm, and melodies remain) and falling-notes ("waterfall") view.
+- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; key signatures and flats, beams, tuplets, and several voices remain) and falling-notes ("waterfall") view.
 - Session recorder with `.mid` export.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.

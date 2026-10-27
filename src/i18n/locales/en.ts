@@ -94,6 +94,24 @@ export const en = {
   installText: 'Open it from your home screen and practise offline.',
   installAction: 'Install',
   installNotNow: 'Not now',
+  modePlayer: 'Player',
+  playerOpen: 'Open MIDI file',
+  playerHint:
+    'Open a MIDI file (.mid) to see it as sheet music and hear it play. The file stays on your device.',
+  playerPlay: 'Play',
+  playerPause: 'Pause',
+  playerStop: 'Stop',
+  playerTempo: 'Tempo',
+  playerPosition: 'Position',
+  playerErrorNotMidi: 'This is not a MIDI file.',
+  playerErrorUnsupported: 'This kind of MIDI file is not supported.',
+  playerErrorEmpty: 'This file has no piano notes to show.',
+  playerErrorTooLarge: 'This file is too large or too long (up to 2 MB and 4 hours).',
+  playerErrorDamaged: 'This file is damaged and cannot be read.',
+  playerScoreLabel: {
+    one: 'Score of {name}: {count} bar',
+    other: 'Score of {name}: {count} bars',
+  },
 } as const;
 
 type Entries = typeof en;

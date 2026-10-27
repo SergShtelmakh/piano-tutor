@@ -8,7 +8,7 @@ import {
   shownRange,
   whiteKeyCount,
 } from './keyboardLayout.ts';
-import { keyboardRange } from './notes.ts';
+import { isBlackKey, keyboardRange } from './notes.ts';
 
 function baseEnds(octave: number) {
   const notes = keyboardRange(octave);
@@ -145,5 +145,36 @@ describe('scrollTarget', () => {
     expect(scrollTarget(layout, [layout.keys[0].note], { left: 200, width: 330 })).toBe(0);
     const last = layout.keys[layout.keys.length - 1].note;
     expect(scrollTarget(layout, [last], { left: 0, width: 330 })).toBe(layout.totalWidth - 330);
+  });
+});
+
+describe('shownRange with include', () => {
+  const base = baseEnds(3);
+
+  it('does not change anything for a piece inside the base range', () => {
+    expect(shownRange(330, 3, { low: 50, high: 70 })).toEqual(shownRange(330, 3));
+  });
+
+  it('covers a piece that reaches outside the base range, even on a narrow screen', () => {
+    const range = shownRange(330, 3, { low: 36, high: 84 });
+    expect(range.low).toBeLessThanOrEqual(36);
+    expect(range.high).toBeGreaterThanOrEqual(84);
+    expect(keyLayout(range, 330).scrolls).toBe(true);
+  });
+
+  it('starts and ends on a white key', () => {
+    // 37 = C♯2 and 86 = D♯5 would be black-key ends.
+    const range = shownRange(330, 3, { low: 37, high: 82 });
+    expect(isBlackKey(range.low)).toBe(false);
+    expect(isBlackKey(range.high)).toBe(false);
+  });
+
+  it('clips the piece to the piano', () => {
+    expect(shownRange(330, 3, { low: 0, high: 127 })).toEqual({ low: PIANO_LOW, high: PIANO_HIGH });
+  });
+
+  it('adds octaves around the covered range as before when the screen is wide', () => {
+    const wide = shownRange(2560, 3, { low: base.low, high: base.high });
+    expect(wide).toEqual({ low: PIANO_LOW, high: PIANO_HIGH });
   });
 });

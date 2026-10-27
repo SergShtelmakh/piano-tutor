@@ -40,10 +40,21 @@ export function whiteKeyCount({ low, high }: NoteRange): number {
  * The keys to show for a container width. It starts from the base range (the computer-keyboard
  * keys) and adds whole octaves, alternating below and above (below first), while the white keys
  * stay at least `MIN_WHITE_KEY_WIDTH` wide. Octaves are clipped to A0–C8.
+ * With `include` (the notes of a piece being played) the starting range also covers those notes,
+ * even when that is wider than `width`: the piano then keeps 40 px keys and scrolls.
  */
-export function shownRange(width: number, baseOctave: number): NoteRange {
+export function shownRange(width: number, baseOctave: number, include?: NoteRange): NoteRange {
   const base = keyboardRange(baseOctave);
   let range: NoteRange = { low: base[0], high: base[base.length - 1] };
+  if (include) {
+    range = {
+      low: Math.min(range.low, Math.max(PIANO_LOW, include.low)),
+      high: Math.max(range.high, Math.min(PIANO_HIGH, include.high)),
+    };
+    // A range starts and ends on a white key, so every black key has a white neighbour.
+    if (isBlackKey(range.low)) range.low -= 1;
+    if (isBlackKey(range.high)) range.high += 1;
+  }
   const maxWhites = Math.floor(width / MIN_WHITE_KEY_WIDTH);
   let side: 'below' | 'above' = 'below';
 

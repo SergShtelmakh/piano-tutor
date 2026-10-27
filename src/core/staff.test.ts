@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { NOTE_READING_POOL } from './lessons.ts';
-import { staffPosition } from './staff.ts';
+import { spellNote, staffPosition } from './staff.ts';
 
 const C4 = 60;
 
@@ -65,5 +65,27 @@ describe('staffPosition', () => {
     ]);
     const clefs = NOTE_READING_POOL.map((n) => staffPosition(n)?.clef);
     expect(clefs.filter((clef) => clef === 'bass')).toHaveLength(1);
+  });
+});
+
+describe('spellNote', () => {
+  it('spells a white key like staffPosition, without a sharp', () => {
+    expect(spellNote(60)).toEqual({ position: staffPosition(60), sharp: false });
+  });
+
+  it('spells a black key as the white key below it, with a sharp', () => {
+    expect(spellNote(61)).toEqual({ position: staffPosition(60), sharp: true }); // C♯4
+    expect(spellNote(70)).toEqual({ position: staffPosition(69), sharp: true }); // A♯4
+  });
+
+  it('puts C♯4 on the treble staff and A♯3 on the bass staff', () => {
+    expect(spellNote(61).position.clef).toBe('treble');
+    expect(spellNote(58).position.clef).toBe('bass');
+  });
+
+  it('spells every key from A0 to C8', () => {
+    for (let note = 21; note <= 108; note++) {
+      expect(() => spellNote(note)).not.toThrow();
+    }
   });
 });
