@@ -14,7 +14,7 @@ export default function OctaveControl() {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-slate-600">{t('rangeLabel')}</span>
+      <span className="text-sm text-slate-600">{t('computerKeysLabel')}</span>
       <button
         type="button"
         className={buttonClass}
