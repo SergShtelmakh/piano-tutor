@@ -58,3 +58,17 @@ export function staffPosition(note: number): StaffPosition | null {
   const clef: Clef = note >= FIRST_TREBLE_NOTE ? 'treble' : 'bass';
   return { clef, index, ledger: ledgerLines(index, clef === 'treble' ? TREBLE_LINES : BASS_LINES) };
 }
+
+export interface SpelledNote {
+  position: StaffPosition;
+  /** True for a black key: it is drawn as the white key below it, with a sharp. */
+  sharp: boolean;
+}
+
+/** Where a note sits on the staff, black keys included (spelled with sharps only, no flats). */
+export function spellNote(note: number): SpelledNote {
+  const sharp = isBlackKey(note);
+  // The key below a black key is always a white key, so `staffPosition` can't be null here.
+  const position = staffPosition(sharp ? note - 1 : note)!;
+  return { position, sharp };
+}

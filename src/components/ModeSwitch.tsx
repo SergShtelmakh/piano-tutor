@@ -1,10 +1,11 @@
 import { useT } from '../i18n/context.ts';
 
-export type Mode = 'home' | 'free';
+export type Mode = 'home' | 'free' | 'player';
 
-const MODES: { mode: Mode; labelKey: 'modeHome' | 'modeFree' }[] = [
+const MODES: { mode: Mode; labelKey: 'modeHome' | 'modeFree' | 'modePlayer' }[] = [
   { mode: 'home', labelKey: 'modeHome' },
   { mode: 'free', labelKey: 'modeFree' },
+  { mode: 'player', labelKey: 'modePlayer' },
 ];
 
 /** `mode` is null while a lesson is open: neither button is selected. */

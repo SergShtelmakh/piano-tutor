@@ -33,10 +33,19 @@ function keyColor(note: number, black: boolean, lit: ReadonlySet<number>, feedba
 export default function PianoKeyboard({
   feedback,
   focusNotes,
+  include,
+  followPlayback = false,
 }: {
   feedback?: KeyFeedback | null;
   /** Notes the view should bring into sight when it scrolls (a lesson's current step). */
   focusNotes?: readonly number[];
+  /** The notes of a piece being played: the piano shows at least this range (clipped to A0–C8). */
+  include?: { low: number; high: number };
+  /**
+   * The view follows notes that are held by playback, so only a finger or the mouse holding a
+   * key stops it from scrolling (a lesson also waits for keys of the computer keyboard).
+   */
+  followPlayback?: boolean;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -50,7 +59,19 @@ export default function PianoKeyboard({
 
   const viewportWidth = useElementWidth(getRoot, getRoot().clientWidth);
   const width = Math.max(0, viewportWidth - 2 * GUTTER);
-  const range = useMemo(() => shownRange(width, baseOctave), [width, baseOctave]);
+  const includeLow = include?.low;
+  const includeHigh = include?.high;
+  const range = useMemo(
+    () =>
+      shownRange(
+        width,
+        baseOctave,
+        includeLow !== undefined && includeHigh !== undefined
+          ? { low: includeLow, high: includeHigh }
+          : undefined,
+      ),
+    [width, baseOctave, includeLow, includeHigh],
+  );
   const layout = useMemo(() => keyLayout(range, width), [range, width]);
   const { low, high } = range;
 
@@ -88,7 +109,7 @@ export default function PianoKeyboard({
     scroller.current?.scrollTo({ left: 0, behavior: 'smooth' });
   }, [baseOctave]);
 
-  // Bring the lesson's current notes into view, but never while a key is held down.
+  // Bring the current notes into view (a lesson's step, or what plays), but not while a key is held.
   const focusKey = focusNotes?.join(',') ?? '';
   const focus = useMemo(() => (focusKey ? focusKey.split(',').map(Number) : []), [focusKey]);
   const heldCount = lit.size;
@@ -98,14 +119,15 @@ export default function PianoKeyboard({
   }, [focusKey, layout]);
   useEffect(() => {
     const el = scroller.current;
-    if (!el || !pendingFocus.current || heldCount > 0) return;
+    const blocked = followPlayback ? pressed.current.size > 0 : heldCount > 0;
+    if (!el || !pendingFocus.current || blocked) return;
     pendingFocus.current = false;
     const target = scrollTarget(layout, focus, {
       left: el.scrollLeft,
       width: el.clientWidth,
     });
     if (target !== null) el.scrollTo({ left: target, behavior: 'smooth' });
-  }, [focus, layout, heldCount]);
+  }, [focus, layout, heldCount, followPlayback]);
 
   function press(event: PointerEvent<HTMLElement>, note: number) {
     if (event.button !== 0) return;

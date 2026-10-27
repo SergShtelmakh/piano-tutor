@@ -53,6 +53,12 @@ describe('heldNotes', () => {
     expect(after.actions).toEqual([{ type: 'stop', note: 60 }]);
   });
 
+  it('keeps a key lit when playback releases a note the learner also holds', () => {
+    const { state } = run([on(60, 'screen'), on(60, 'playback'), off(60, 'playback')]);
+    expect(isHeld(state, 60)).toBe(true);
+    expect(state.sounding.has(60)).toBe(true);
+  });
+
   it('restarts a note that is already sounding', () => {
     const { actions } = run([on(60), on(60)]);
     expect(actions).toEqual([
