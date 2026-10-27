@@ -2,7 +2,7 @@
 
 ## Context
 
-Roadmap Phase 8, from [`backlog/responsive-keyboard.md`](../backlog/responsive-keyboard.md). Today the on-screen piano always shows the same 26 keys (`keyboardRange(baseOctave)`: the B below the base C, two octaves, and the top C, so 16 white keys). It sits in the 768 px text column and stretches the keys to fill it:
+Roadmap Phase 8, from a backlog note on the responsive on-screen keyboard (removed after this phase; its decisions are in the table below). Today the on-screen piano always shows the same 26 keys (`keyboardRange(baseOctave)`: the B below the base C, two octaves, and the top C, so 16 white keys). It sits in the 768 px text column and stretches the keys to fill it:
 
 - On a phone in portrait (about 330 px for the piano), a white key is about 20 px wide, which is too thin to hit with a finger.
 - On a wide monitor, the column wastes most of the screen, and nothing beyond the 26 keys can be played with the mouse.

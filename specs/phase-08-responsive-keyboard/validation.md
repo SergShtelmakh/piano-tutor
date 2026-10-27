@@ -34,5 +34,5 @@ Run `bun run dev` and open http://localhost:3000 in Chrome. Use DevTools device 
 
 - [x] `specs/roadmap.md`: Phase 8 status updated, with the outcome
 - [x] `specs/tech-stack.md`: `keyboardLayout.ts` in the project layout; final key-width values
-- [x] `specs/backlog/responsive-keyboard.md`: closed (or what's left noted)
+- [x] `specs/backlog/responsive-keyboard.md`: removed; what is left open is in the roadmap Backlog
 - [x] `CHANGELOG.md` and `README.md` updated
