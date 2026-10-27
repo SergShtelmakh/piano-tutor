@@ -1,13 +1,19 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { codeForNote, QWERTY_LABELS } from '../core/computerKeymap.ts';
-import { isBlackKey, keyboardRange, pitchClass } from '../core/notes.ts';
+import { keyLayout, scrollTarget, shownRange } from '../core/keyboardLayout.ts';
+import { pitchClass } from '../core/notes.ts';
 import { useLocale, useT } from '../i18n/context.ts';
 import { noteLabelFor, noteNameFor } from '../i18n/noteNames.ts';
 import { useBaseOctave, useHeldNotes, useNoteBus } from '../input/context.ts';
 import { loadKeyLabels } from '../input/keyboardLabels.ts';
+import { useElementWidth } from './useElementWidth.ts';
 
 const SCREEN_VELOCITY = 90;
-const BLACK_KEY_WIDTH = 0.6; // relative to a white key
+/** Space kept free on each side of the full-width piano. */
+const GUTTER = 16;
+
+/** The piano is as wide as the window (minus the scrollbar), not as wide as the text column. */
+const getRoot = () => document.documentElement;
 
 /** A key that briefly flashes after it was judged in a lesson. */
 export interface KeyFeedback {
@@ -24,7 +30,14 @@ function keyColor(note: number, black: boolean, lit: ReadonlySet<number>, feedba
   return black ? 'bg-slate-800' : 'bg-white';
 }
 
-export default function PianoKeyboard({ feedback }: { feedback?: KeyFeedback | null }) {
+export default function PianoKeyboard({
+  feedback,
+  focusNotes,
+}: {
+  feedback?: KeyFeedback | null;
+  /** Notes the view should bring into sight when it scrolls (a lesson's current step). */
+  focusNotes?: readonly number[];
+}) {
   const t = useT();
   const { locale } = useLocale();
   const bus = useNoteBus();
@@ -33,6 +46,13 @@ export default function PianoKeyboard({ feedback }: { feedback?: KeyFeedback | n
   const [keyLabels, setKeyLabels] = useState<Record<string, string>>({ ...QWERTY_LABELS });
   // pointerId -> note, so several fingers can hold several keys
   const pressed = useRef(new Map<number, number>());
+  const scroller = useRef<HTMLDivElement>(null);
+
+  const viewportWidth = useElementWidth(getRoot, getRoot().clientWidth);
+  const width = Math.max(0, viewportWidth - 2 * GUTTER);
+  const range = useMemo(() => shownRange(width, baseOctave), [width, baseOctave]);
+  const layout = useMemo(() => keyLayout(range, width), [range, width]);
+  const { low, high } = range;
 
   useEffect(() => {
     let cancelled = false;
@@ -44,9 +64,48 @@ export default function PianoKeyboard({ feedback }: { feedback?: KeyFeedback | n
     };
   }, []);
 
-  const notes = keyboardRange(baseOctave);
-  const whiteNotes = notes.filter((note) => !isBlackKey(note));
-  const whiteWidth = 100 / whiteNotes.length;
+  // A resize can remove a key that a finger is holding: release it, so no note gets stuck.
+  useEffect(() => {
+    for (const [pointerId, note] of pressed.current) {
+      if (note < low || note > high) {
+        pressed.current.delete(pointerId);
+        bus.emit({ type: 'noteoff', note, source: 'screen' });
+      }
+    }
+  }, [low, high, bus]);
+
+  // Centre the keys on first show and after a resize or rotation.
+  useEffect(() => {
+    const el = scroller.current;
+    if (el && layout.scrolls) el.scrollLeft = (layout.totalWidth - el.clientWidth) / 2;
+  }, [layout.scrolls, layout.totalWidth, width]);
+
+  // After Z / X or the octave buttons, show the new range from its lower end.
+  const previousOctave = useRef(baseOctave);
+  useEffect(() => {
+    if (previousOctave.current === baseOctave) return;
+    previousOctave.current = baseOctave;
+    scroller.current?.scrollTo({ left: 0, behavior: 'smooth' });
+  }, [baseOctave]);
+
+  // Bring the lesson's current notes into view, but never while a key is held down.
+  const focusKey = focusNotes?.join(',') ?? '';
+  const focus = useMemo(() => (focusKey ? focusKey.split(',').map(Number) : []), [focusKey]);
+  const heldCount = lit.size;
+  const pendingFocus = useRef(false);
+  useEffect(() => {
+    pendingFocus.current = focusKey !== '';
+  }, [focusKey, layout]);
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el || !pendingFocus.current || heldCount > 0) return;
+    pendingFocus.current = false;
+    const target = scrollTarget(layout, focus, {
+      left: el.scrollLeft,
+      width: el.clientWidth,
+    });
+    if (target !== null) el.scrollTo({ left: target, behavior: 'smooth' });
+  }, [focus, layout, heldCount]);
 
   function press(event: PointerEvent<HTMLElement>, note: number) {
     if (event.button !== 0) return;
@@ -84,50 +143,88 @@ export default function PianoKeyboard({ feedback }: { feedback?: KeyFeedback | n
     return code ? keyLabels[code] : undefined;
   }
 
+  const feedbackOrUndefined = feedback ?? undefined;
+
   return (
-    <div
-      role="group"
-      aria-label={t('pianoLabel')}
-      className="relative flex h-44 w-full touch-none select-none overflow-hidden rounded-b-lg border border-slate-400 bg-slate-400"
-    >
-      {whiteNotes.map((note) => (
-        <button
-          key={note}
-          {...keyProps(note)}
-          className={`flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-0.5 border-r border-slate-300 pb-1.5 text-slate-700 last:border-r-0 ${keyColor(
-            note,
-            false,
-            lit,
-            feedback ?? undefined,
-          )}`}
+    <div className="flex w-full justify-center">
+      <div
+        style={{ width }}
+        className="shrink-0 overflow-hidden rounded-b-lg bg-slate-400 ring-1 ring-slate-400"
+      >
+        <div
+          ref={scroller}
+          className={layout.scrolls ? 'overflow-x-auto overscroll-x-contain' : 'overflow-x-hidden'}
         >
-          <span className="text-[10px] font-semibold text-slate-500">{computerKey(note)}</span>
-          <span className="text-[10px] leading-none sm:text-xs">
-            {pitchClass(note) === 0 ? noteLabelFor(locale, note) : noteNameFor(locale, note)}
-          </span>
-        </button>
-      ))}
-      {notes.filter(isBlackKey).map((note) => {
-        const whitesBefore = notes.filter((n) => n < note && !isBlackKey(n)).length;
-        return (
-          <button
-            key={note}
-            {...keyProps(note)}
-            style={{
-              left: `${whitesBefore * whiteWidth - (whiteWidth * BLACK_KEY_WIDTH) / 2}%`,
-              width: `${whiteWidth * BLACK_KEY_WIDTH}%`,
-            }}
-            className={`absolute top-0 flex h-28 items-end justify-center rounded-b-md pb-1.5 text-[10px] font-semibold text-slate-200 ${keyColor(
-              note,
-              true,
-              lit,
-              feedback ?? undefined,
-            )}`}
-          >
-            {computerKey(note)}
-          </button>
-        );
-      })}
+          <div style={{ width: layout.totalWidth }}>
+            {layout.scrolls && (
+              <div
+                role="group"
+                aria-label={t('pianoScrollLabel')}
+                className="relative h-7 touch-pan-x select-none border-b border-slate-400 bg-slate-100"
+              >
+                {layout.keys
+                  .filter((key) => !key.black && pitchClass(key.note) === 0)
+                  .map((key) => (
+                    <span
+                      key={key.note}
+                      style={{ left: key.x }}
+                      className="absolute top-0 flex h-full items-center border-l border-slate-400 pl-1 text-xs font-semibold text-slate-600"
+                    >
+                      {noteLabelFor(locale, key.note)}
+                    </span>
+                  ))}
+              </div>
+            )}
+            <div
+              role="group"
+              aria-label={t('pianoLabel')}
+              className="relative h-44 w-full touch-none select-none"
+            >
+              {layout.keys
+                .filter((key) => !key.black)
+                .map((key) => (
+                  <button
+                    key={key.note}
+                    {...keyProps(key.note)}
+                    style={{ left: key.x, width: key.w }}
+                    className={`absolute top-0 flex h-full flex-col items-center justify-end gap-0.5 border-r border-slate-300 pb-1.5 text-slate-700 ${keyColor(
+                      key.note,
+                      false,
+                      lit,
+                      feedbackOrUndefined,
+                    )}`}
+                  >
+                    <span className="text-[10px] font-semibold text-slate-500">
+                      {computerKey(key.note)}
+                    </span>
+                    <span className="text-[10px] leading-none sm:text-xs">
+                      {pitchClass(key.note) === 0
+                        ? noteLabelFor(locale, key.note)
+                        : noteNameFor(locale, key.note)}
+                    </span>
+                  </button>
+                ))}
+              {layout.keys
+                .filter((key) => key.black)
+                .map((key) => (
+                  <button
+                    key={key.note}
+                    {...keyProps(key.note)}
+                    style={{ left: key.x, width: key.w }}
+                    className={`absolute top-0 flex h-28 items-end justify-center rounded-b-md pb-1.5 text-[10px] font-semibold text-slate-200 ${keyColor(
+                      key.note,
+                      true,
+                      lit,
+                      feedbackOrUndefined,
+                    )}`}
+                  >
+                    {computerKey(key.note)}
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -90,7 +90,7 @@ export default function LessonScreen({
         </>
       )}
 
-      <PianoKeyboard feedback={feedback} />
+      <PianoKeyboard feedback={feedback} focusNotes={targets} />
     </div>
   );
 }

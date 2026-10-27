@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–7 are done; the MVP scope from `mission.md` is covered. The next phase is picked from the Backlog.
+> Phases 1–7 are done; the MVP scope from `mission.md` is covered. Phases 8–9 come from the Backlog (responsive keyboard, keyboard size).
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -99,6 +99,24 @@ Spec: [`specs/phase-07-pwa-offline/`](phase-07-pwa-offline/). Branch `feature/pw
 - **Outcome:** `vite-plugin-pwa` 2 (supports Vite 8) generates the manifest and a Workbox service worker that precaches the whole build. `start_url`, `scope`, and the navigation fallback follow the base path, so both hosts work. The service worker is off in `bun run dev`. Updates use **prompt** mode: a "new version" banner with Reload / Later, held back while a lesson is open; the app never reloads by itself. A one-time "works offline" note. An install card on Home (`beforeinstallprompt`, captured before React renders); "Not now" is saved under `piano-tutor.installHint`. The show/hide rule is pure (`src/pwa/installHint.ts`) and unit-tested. The app icon is an agent-drawn `public/icon.svg`; `bun run icons` (`@vite-pwa/assets-generator`, dev only) makes the PNG / ICO sizes, which are committed.
 - The user confirmed the production build works in local `preview`. Still open when this replan was written: the update flow and the install card checked step by step, Android install + airplane mode on the Cloudflare preview, the GitHub Pages check after merge, and a skim of the new `uk` / `de` / `fr` strings.
 
+## Phase 8 — Responsive on-screen keyboard 🔨
+
+Goal: the on-screen piano fits every screen, from a phone in portrait to a wide monitor.
+
+Spec: [`specs/phase-08-responsive-keyboard/`](phase-08-responsive-keyboard/). Branch `feature/responsive-keyboard`. From [`backlog/responsive-keyboard.md`](backlog/responsive-keyboard.md).
+
+- The piano uses the full window width; extra whole octaves are added around the computer-keyboard range while white keys stay ≥ 40 px, up to all 88 keys.
+- When even the base range doesn't fit (phones), the piano scrolls horizontally on an octave ruler; keys always play. The view follows octave changes and the lesson's current step.
+
+## Phase 9 — Keyboard size & calibration 📋
+
+Goal: lessons and the on-screen piano know how many keys the learner's real keyboard has.
+
+From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec.
+
+- A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
+- Re-check the open questions in the backlog note when the spec is written.
+
 ## Backlog 💡
 
 Ideas not yet scheduled — see `specs/backlog/` for notes.
@@ -110,8 +128,6 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
-- Keyboard size: a setting for the number of keys per device and a calibration step (press the lowest and highest key), so lessons stay within the real keyboard; see [`backlog/keyboard-size.md`](backlog/keyboard-size.md).
-- Responsive on-screen keyboard: choose the number of visible keys from the container width (comfortable key width, touch-friendly), stretch to full width, keep lesson notes visible; see [`backlog/responsive-keyboard.md`](backlog/responsive-keyboard.md).
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
 - From Phase 7: an Install button outside Home (for example in the header) after the card was dismissed; a localized manifest name; manifest screenshots and app shortcuts (richer install UI); a designed app icon to replace the agent-drawn one.
 - From Phase 5: streak freezes, badges, a progress history, and syncing progress between tabs (a `storage` event listener).

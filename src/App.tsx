@@ -29,7 +29,7 @@ export default function App() {
   return (
     <ProgressProvider>
       <NoteInputProvider>
-        <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
+        <div className="flex min-h-screen flex-col overflow-x-clip bg-slate-50 text-slate-900">
           <header className="flex justify-end px-4 py-3">
             <LanguageSelector />
           </header>
