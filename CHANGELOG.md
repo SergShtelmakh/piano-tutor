@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-28 — Phase 8: responsive on-screen keyboard
+
+### Added
+
+- The on-screen piano now **fits your screen**: it uses the full window width and shows more octaves when they fit, up to all 88 keys on a wide monitor.
+- On a narrow phone the keys stay finger-sized and the piano **scrolls sideways**. Swipe the octave ruler above the keys to scroll; touching the keys always plays.
+- The piano follows the music: it scrolls when you change octave and to the current note in a lesson.
+
+### Changed
+
+- The octave control is now labelled **Computer keys** (it moves the range the computer keyboard plays).
+- The new labels are translated into Ukrainian, German, and French.
+
 ## 2026-10-26 — Phase 7: PWA & offline
 
 ### Added

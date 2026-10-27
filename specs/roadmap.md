@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–7 are done; the MVP scope from `mission.md` is covered. Phases 8–9 come from the Backlog (responsive keyboard, keyboard size).
+> Phases 1–8 are done; the MVP scope from `mission.md` is covered. Phase 9 comes from the Backlog (keyboard size).
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -99,7 +99,7 @@ Spec: [`specs/phase-07-pwa-offline/`](phase-07-pwa-offline/). Branch `feature/pw
 - **Outcome:** `vite-plugin-pwa` 2 (supports Vite 8) generates the manifest and a Workbox service worker that precaches the whole build. `start_url`, `scope`, and the navigation fallback follow the base path, so both hosts work. The service worker is off in `bun run dev`. Updates use **prompt** mode: a "new version" banner with Reload / Later, held back while a lesson is open; the app never reloads by itself. A one-time "works offline" note. An install card on Home (`beforeinstallprompt`, captured before React renders); "Not now" is saved under `piano-tutor.installHint`. The show/hide rule is pure (`src/pwa/installHint.ts`) and unit-tested. The app icon is an agent-drawn `public/icon.svg`; `bun run icons` (`@vite-pwa/assets-generator`, dev only) makes the PNG / ICO sizes, which are committed.
 - The user confirmed the production build works in local `preview`. Still open when this replan was written: the update flow and the install card checked step by step, Android install + airplane mode on the Cloudflare preview, the GitHub Pages check after merge, and a skim of the new `uk` / `de` / `fr` strings.
 
-## Phase 8 — Responsive on-screen keyboard 🔨
+## Phase 8 — Responsive on-screen keyboard ✅
 
 Goal: the on-screen piano fits every screen, from a phone in portrait to a wide monitor.
 
@@ -129,6 +129,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
+- From Phase 8: pinch-to-zoom or a setting for the key width; a "rotate to landscape" hint; tapping the ruler to move the base range; centring the scrolled view on the held notes of a chord.
 - From Phase 7: an Install button outside Home (for example in the header) after the card was dismissed; a localized manifest name; manifest screenshots and app shortcuts (richer install UI); a designed app icon to replace the agent-drawn one.
 - From Phase 5: streak freezes, badges, a progress history, and syncing progress between tabs (a `storage` event listener).
 - From Phase 2: a setting for the note-name convention independent of the language (e.g. letters in `uk`); a MIDI device picker; glissando on the on-screen piano (sliding a finger onto the next key plays it); a sustain key for computer / touch input.

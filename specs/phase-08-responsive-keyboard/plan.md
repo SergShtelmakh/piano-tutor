@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 8 — Responsive on-screen keyboard
 > Branch: `feature/responsive-keyboard`
-> Status: Implemented (manual validation open)
+> Status: Validated
 
 ## Goal
 
@@ -48,7 +48,7 @@ The on-screen piano fits the screen: comfortable keys on a phone (with a scrolla
 4. **Octave control, translations, docs**
    - [x] `OctaveControl` label "Computer keys" (FR-9); new / removed keys in `en`, `uk`, `de`, `fr` (FR-10)
    - [x] `README.md`: update the on-screen piano bullet (width-dependent range, ruler on phones)
-   - [ ] Run `validation.md`: automated gates, then manual checks at several widths and on an Android phone; ask the user to skim the new `uk` / `de` / `fr` strings
+   - [x] Run `validation.md`: automated gates, then manual checks at several widths and on an Android phone; ask the user to skim the new `uk` / `de` / `fr` strings
 
 ## Files touched
 
