@@ -1,5 +1,7 @@
 # Responsive on-screen keyboard
 
+> **Done in Phase 8** (see `specs/phase-08-responsive-keyboard/`). Decisions: the computer-keyboard range stays in the middle and whole octaves are added around it; 40 px minimum white key; horizontal scroll on an octave ruler for narrow screens. The "real keyboard size" cap became Phase 9 (`keyboard-size.md`). Left open: zoom or a key-width setting, a landscape hint.
+
 ## Problem
 
 The on-screen piano doesn't adapt to the window. On a narrow phone the keys are too thin to hit reliably; on a wide monitor space is wasted. A lesson's target note can also end up outside the visible keys.
