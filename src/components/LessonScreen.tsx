@@ -1,12 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
+import { HAND_KEYS } from '../core/course.ts';
 import { accuracy, pageOf } from '../core/lesson.ts';
 import { hasChords, type LessonEntry } from '../core/lessons.ts';
 import type { RunReward } from '../core/progress.ts';
 import { usePluralT, useT } from '../i18n/context.ts';
+import type { MessageKey } from '../i18n/locales/en.ts';
 import { useLesson } from '../lesson/useLesson.ts';
 import { useProgress } from '../progress/context.ts';
 
 import LessonSummary from './LessonSummary.tsx';
+import NotationView from './NotationView.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import StaffView, { type StaffFlash } from './StaffView.tsx';
 
@@ -16,9 +19,12 @@ const buttonClass =
 export default function LessonScreen({
   entry,
   onExit,
+  backKey = 'lessonBack',
 }: {
   entry: LessonEntry;
   onExit: () => void;
+  /** The label of the back buttons: Home (default), or the course for a course lesson. */
+  backKey?: MessageKey;
 }) {
   const t = useT();
   const tp = usePluralT();
@@ -42,6 +48,17 @@ export default function LessonScreen({
     () => lesson.steps.slice(start, start + length),
     [lesson.steps, start, length],
   );
+  const title = t(lesson.titleKey, lesson.titleParams);
+  const heading = lesson.hand
+    ? t('courseHeading', { hand: t(HAND_KEYS[lesson.hand]), title })
+    : title;
+  // A lesson of a piece shows its whole note range on the piano, so notes outside the computer keys
+  // can be played on screen.
+  const range = useMemo(() => {
+    if (!lesson.notation) return undefined;
+    const notes = lesson.steps.flat();
+    return { low: Math.min(...notes), high: Math.max(...notes) };
+  }, [lesson.notation, lesson.steps]);
   const flash: StaffFlash | null =
     completedStep !== null
       ? { step: completedStep - start, kind: 'right' }
@@ -51,24 +68,39 @@ export default function LessonScreen({
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      <h2 className="text-xl font-bold">{t(lesson.titleKey)}</h2>
+      {lesson.pieceTitle && <p className="text-sm text-slate-600">{lesson.pieceTitle}</p>}
+      <h2 className="text-xl font-bold">{heading}</h2>
 
       {state.finished ? (
-        <LessonSummary state={state} reward={reward} onAgain={startAgain} onExit={onExit} />
+        <LessonSummary
+          state={state}
+          reward={reward}
+          onAgain={startAgain}
+          onExit={onExit}
+          exitKey={backKey}
+        />
       ) : (
         <>
           <p className="text-slate-700">
             {t(hasChords(lesson) ? 'lessonInstructionChords' : 'lessonInstructionNotes')}
           </p>
-          <div className="flex w-full justify-center rounded-lg bg-white p-3 shadow-sm">
-            <StaffView
-              steps={pageSteps}
-              current={state.stepIndex - start}
-              playedNotes={state.playedInStep}
-              flash={flash}
-              labelNotes={targets}
+          {lesson.notation ? (
+            <NotationView
+              notation={lesson.notation}
+              stepIndex={state.stepIndex}
+              targets={targets}
             />
-          </div>
+          ) : (
+            <div className="flex w-full justify-center rounded-lg bg-white p-3 shadow-sm">
+              <StaffView
+                steps={pageSteps}
+                current={state.stepIndex - start}
+                playedNotes={state.playedInStep}
+                flash={flash}
+                labelNotes={targets}
+              />
+            </div>
+          )}
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm text-slate-700">
             <span>
               {t('lessonProgress', {
@@ -84,13 +116,13 @@ export default function LessonScreen({
               {t('lessonRestart')}
             </button>
             <button type="button" onClick={onExit} className={buttonClass}>
-              {t('lessonBack')}
+              {t(backKey)}
             </button>
           </div>
         </>
       )}
 
-      <PianoKeyboard feedback={feedback} focusNotes={targets} />
+      <PianoKeyboard feedback={feedback} focusNotes={targets} include={range} />
     </div>
   );
 }

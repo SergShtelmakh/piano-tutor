@@ -1,4 +1,5 @@
 import { LIBRARY_COMPOSERS, type LibraryPiece } from '../core/libraryCatalog.ts';
+import { useCourse } from '../course/context.ts';
 import { useT } from '../i18n/context.ts';
 import DifficultyDots from './DifficultyDots.tsx';
 import MarkToggles from './MarkToggles.tsx';
@@ -7,6 +8,7 @@ import Portrait from './Portrait.tsx';
 /** The title, composer, difficulty, source, and marks of the library piece that is open. */
 export default function PieceInfo({ piece }: { piece: LibraryPiece }) {
   const t = useT();
+  const { openCourse } = useCourse();
   const composer = LIBRARY_COMPOSERS.find((item) => item.id === piece.composer);
 
   return (
@@ -29,7 +31,16 @@ export default function PieceInfo({ piece }: { piece: LibraryPiece }) {
         </a>{' '}
         · {t('libraryLicencePublicDomain')}
       </p>
-      <MarkToggles piece={piece} labelled />
+      <span className="flex flex-wrap items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => openCourse(piece)}
+          className="min-h-11 rounded-md bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-700"
+        >
+          {t('libraryLearn')}
+        </button>
+        <MarkToggles piece={piece} labelled />
+      </span>
     </section>
   );
 }

@@ -1,6 +1,18 @@
 // Pure lesson model and judge: no React, DOM, or audio imports.
 import type { MessageKey } from '../i18n/locales/en.ts';
+import type { Score } from './score.ts';
 import type { NoteEvent } from './types.ts';
+
+/** Which hand a lesson of a piece's course practises. */
+export type Hand = 'right' | 'left' | 'both';
+
+/** The notation a lesson is drawn with, when it comes from a piece (see `course.ts`). */
+export interface LessonNotation {
+  /** The bars to draw (a subset of a piece's score, or a made-up score for a drill). */
+  score: Score;
+  /** For each step, the time (seconds in `score`) of its column: where the current step is marked. */
+  stepTimes: readonly number[];
+}
 
 /** A lesson is a list of steps; a step is the set of notes to play (one note, or a chord). */
 export interface Lesson {
@@ -11,6 +23,13 @@ export interface Lesson {
   steps: readonly (readonly number[])[];
   /** How many steps each page of the staff row holds, in order; the sum is `steps.length`. */
   pages: readonly number[];
+  /** Values for the `{…}` places of the title text. */
+  titleParams?: Readonly<Record<string, string | number>>;
+  /** Set for the lessons of a piece's course. */
+  hand?: Hand;
+  pieceTitle?: string;
+  /** When set, the lesson is drawn with the piece's real notation instead of the plain note row. */
+  notation?: LessonNotation;
 }
 
 export interface LessonState {

@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–10 are done; the MVP scope from `mission.md` is covered. Phase 11 (keyboard size) is next.
+> Phases 1–10 are done; the MVP scope from `mission.md` is covered. Phase 11 (melody learning) is in progress and Phase 12 (keyboard size) follows.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -133,11 +133,22 @@ Spec: [`specs/phase-10-midi-library/`](phase-10-midi-library/). Branch `feature/
 - **Outcome:** the catalogue (`src/core/libraryCatalog.ts`) is the single source of truth: 34 pieces in `public/library/<composer>/` rated 1–5 by hand (5 / 6 / 12 / 8 / 3 per level) and 10 composers with portraits. `library.ts` holds the pure rules (`browse`: filter by level and favourites, group by composer ordered by the name in the UI language, pieces by difficulty then title; the licence and host allowlists; URLs; initials) and `libraryMarks.ts` the marks (versioned JSON, `piano-tutor.library`). Tests enforce the policy and read the real files (`config/libraryFiles.test.ts`: each file exists, parses, matches its catalogue duration within 2 s, and is small; each portrait is a small JPEG). `PlayerProvider` gained `openLibraryPiece`; a host that answers a missing file with an HTML fallback page counts as a `network` error. Workbox caches `/library/*.mid` at runtime (`CacheFirst`, at most 60) and precaches the portraits. The user validated the library (licence spot check, difficulty ratings, layout, offline) and confirmed the licence policy.
 - Mutopia's own "Public Domain" listing filter also returned CC-BY and CC-BY-SA pieces, so every piece was checked on its own page (the field is called "Copyright"). Several composers had no usable pieces: all of Satie on the first page is CC-BY-SA, and Clementi's sonatina is only offered as a zip.
 
-## Phase 11 — Keyboard size & calibration 📋
+## Phase 11 — Melody learning 🔨
+
+Goal: the learner picks a piece from the library and the app turns it into a course of lessons, from the simplest to the hardest, that teaches the opening of the piece.
+
+Spec: [`specs/phase-11-melody-learning/`](phase-11-melody-learning/). Branch `feature/melody-learning` (started from `feature/midi-library`, because Phase 10 is not merged yet; rebase onto `main` once it is).
+
+- A **Learn** button on every library piece opens a course built from the piece's own notation: the text is split into **parts** (phrases) of up to 4 bars, and the course covers the first 6 parts.
+- Three stages: **right hand**, **left hand**, **both hands**. In a hand stage: read the notes the piece uses, then its chords, then the parts one by one, then the parts joined (1–2, 3–4, 5–6, 1–4, 1–6). In the both-hands stage: the parts, then the merges.
+- Lessons show the real notation (sharps, note values, bars) with the current step marked, and use the existing judge (pitches only, no timing), stars, XP, and streak. No locks; a **Next** badge marks the first lesson not yet finished.
+- A **"Pieces you are learning"** section on Home.
+
+## Phase 12 — Keyboard size & calibration 📋
 
 Goal: lessons and the on-screen piano know how many keys the learner's real keyboard has.
 
-From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added, and on to Phase 11 when the MIDI library was added.
+From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added, on to Phase 11 when the MIDI library was added, and on to Phase 12 when melody learning was added.
 
 - A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
 - Re-check the open questions in the backlog note when the spec is written.

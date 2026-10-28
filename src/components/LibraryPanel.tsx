@@ -14,6 +14,7 @@ import {
   type LibraryPiece,
 } from '../core/libraryCatalog.ts';
 import { useLocale, useT } from '../i18n/context.ts';
+import { useCourse } from '../course/context.ts';
 import { useLibraryMarks } from '../library/context.ts';
 import { usePlayerValue } from '../playback/context.ts';
 import DifficultyDots from './DifficultyDots.tsx';
@@ -30,6 +31,7 @@ export default function LibraryPanel({ id, onClose }: { id: string; onClose: () 
   const { locale } = useLocale();
   const { marks } = useLibraryMarks();
   const { loading, openLibraryPiece } = usePlayerValue();
+  const { openCourse } = useCourse();
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [favouritesOnly, setFavouritesOnly] = useState(false);
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
@@ -56,6 +58,11 @@ export default function LibraryPanel({ id, onClose }: { id: string; onClose: () 
 
   const choose = async (piece: LibraryPiece) => {
     if (await openLibraryPiece(piece)) onClose();
+  };
+
+  const learn = (piece: LibraryPiece) => {
+    openCourse(piece);
+    onClose();
   };
 
   const [creditBefore, creditAfter] = t('libraryCredit').split('{link}');
@@ -136,6 +143,13 @@ export default function LibraryPanel({ id, onClose }: { id: string; onClose: () 
                         <span className="tabular-nums">{formatDuration(piece.duration)}</span>
                         {loading === piece.id && <span>{t('libraryLoading')}</span>}
                       </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => learn(piece)}
+                      className="min-h-11 rounded-md bg-sky-600 px-3 text-sm font-semibold text-white hover:bg-sky-700"
+                    >
+                      {t('libraryLearn')}
                     </button>
                     <MarkToggles piece={piece} />
                   </li>

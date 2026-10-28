@@ -422,7 +422,7 @@ interface SystemViewProps {
   playing: boolean;
   getPosition: () => number;
   scroller: RefObject<HTMLDivElement | null>;
-  onSeek: (seconds: number) => void;
+  onSeek?: (seconds: number) => void;
 }
 
 const SystemView = memo(function SystemView({
@@ -446,7 +446,7 @@ const SystemView = memo(function SystemView({
 
   const seek = (event: MouseEvent<SVGSVGElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    onSeek(timeAtX(system, ((event.clientX - rect.left) / rect.width) * viewWidth));
+    onSeek?.(timeAtX(system, ((event.clientX - rect.left) / rect.width) * viewWidth));
   };
 
   return (
@@ -455,8 +455,8 @@ const SystemView = memo(function SystemView({
       width={displayWidth}
       height={geometry.height * scale}
       aria-hidden="true"
-      className="block cursor-pointer text-slate-900"
-      onClick={seek}
+      className={`block text-slate-900 ${onSeek ? 'cursor-pointer' : ''}`}
+      onClick={onSeek ? seek : undefined}
     >
       {[TREBLE_LINES, BASS_LINES].flatMap((lines) =>
         lines.map((index) => (
@@ -526,7 +526,7 @@ export interface ScoreViewProps {
   getPosition: () => number;
   /** The accessible name of the whole score (file name and bar count). */
   label: string;
-  onSeek: (seconds: number) => void;
+  onSeek?: (seconds: number) => void;
 }
 
 export default function ScoreView({
