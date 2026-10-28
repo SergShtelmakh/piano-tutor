@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–9 are done; the MVP scope from `mission.md` is covered. Phase 10 (keyboard size) comes from the Backlog.
+> Phases 1–9 are done; the MVP scope from `mission.md` is covered. Phase 10 (MIDI library) is in progress and Phase 11 (keyboard size) follows.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -120,11 +120,21 @@ Spec: [`specs/phase-09-midi-file-playback/`](phase-09-midi-file-playback/). Bran
 - The on-screen piano shows the piece's range and follows what is playing on narrow screens.
 - **Outcome:** `src/core/smf.ts` (parser; limits 2 MB, 50,000 notes, 4 hours; five error kinds, never throws), `playback.ts` (sorted schedule, `drain`, `indexAtTime`), `score.ts` (rounding to sixteenths, bars from time signatures, one voice per staff, rests, ties, sharps / naturals per bar) and `scoreLayout.ts` (systems stretched up to 2×, the time-to-x map for the cursor, two visible systems) are pure and unit-tested; `NoteSource` gained `playback`. `src/playback/player.ts` drives the clock (position from the clock, so no drift; events every 10 ms; every exit releases all notes) and is tested with a fake clock. `PlayerProvider` keeps the player and the open file for the whole app, so the file stays when the learner switches modes (playback stops). `ScoreView` draws Bravura outlines (sharp, natural, flags, rests), stems limited to their own staff, a per-frame cursor, and blue sounding notes. `PianoKeyboard` got `include` (the piece's range) and `followPlayback` (only a finger or the mouse stops the follow-scroll). The user validated the player on desktop and a phone.
 
-## Phase 10 — Keyboard size & calibration 📋
+## Phase 10 — MIDI library 🔨
+
+Goal: the Player comes with a library of free, public-domain classical piano pieces, grouped by composer and rated for difficulty, so there is something to play from the first minute.
+
+Spec: [`specs/phase-10-midi-library/`](phase-10-midi-library/). Branch `feature/midi-library`.
+
+- About 30 pieces by 8 or more composers, from the **Mutopia Project**, only pieces whose own Mutopia page says **Public Domain** (no CC-BY or CC-BY-SA, so there is no licence burden). Every piece records its source, licence, and check date; a test enforces the allowlist and checks the files.
+- Five difficulty levels, rated by hand; a Library panel inside the Player with composer sections, a difficulty filter, and a Favourites filter.
+- Marks (favourite, done) saved on the device. Files are fetched on demand and cached by the service worker after the first open, so opened pieces work offline.
+
+## Phase 11 — Keyboard size & calibration 📋
 
 Goal: lessons and the on-screen piano know how many keys the learner's real keyboard has.
 
-From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added.
+From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added, and on to Phase 11 when the MIDI library was added.
 
 - A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
 - Re-check the open questions in the backlog note when the spec is written.

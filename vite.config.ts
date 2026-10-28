@@ -40,9 +40,22 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,jpg}'],
         navigateFallback: `${basePath}index.html`,
         cleanupOutdatedCaches: true,
+        // Library pieces (public/library/**/*.mid) are not precached, so the install stays small.
+        // A piece the learner opens is kept the first time, so it opens again offline.
+        runtimeCaching: [
+          {
+            urlPattern: /\/library\/.+\.mid$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'piano-tutor-library',
+              expiration: { maxEntries: 60 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+        ],
       },
     }),
   ],

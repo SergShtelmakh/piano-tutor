@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { layoutSystems, visibleSystems } from '../core/scoreLayout.ts';
-import type { ParseError } from '../core/smf.ts';
 import { useLocale, usePluralT, useT } from '../i18n/context.ts';
 import { formatPercent } from '../i18n/core.ts';
-import { usePlayerState, usePlayerValue } from '../playback/context.ts';
+import { usePlayerState, usePlayerValue, type PlayerError } from '../playback/context.ts';
 import { MAX_RATE, MIN_RATE } from '../playback/player.ts';
+import LibraryPanel from './LibraryPanel.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
+import PieceInfo from './PieceInfo.tsx';
 import ScoreView from './ScoreView.tsx';
 import { useElementWidth } from './useElementWidth.ts';
 
@@ -18,7 +19,8 @@ const ERROR_KEYS = {
   empty: 'playerErrorEmpty',
   tooLarge: 'playerErrorTooLarge',
   damaged: 'playerErrorDamaged',
-} as const satisfies Record<ParseError, string>;
+  network: 'playerErrorNetwork',
+} as const satisfies Record<PlayerError, string>;
 
 /** Seconds as m:ss. */
 function formatTime(seconds: number): string {
@@ -33,6 +35,8 @@ export default function PlayerScreen() {
   const { player, loaded, error, openFile } = usePlayerValue();
   const state = usePlayerState();
   const fileInput = useRef<HTMLInputElement>(null);
+  const libraryId = useId();
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const getBox = useCallback(() => box.current, []);
   const boxWidth = useElementWidth(getBox, 328 + PADDING);
@@ -57,6 +61,15 @@ export default function PlayerScreen() {
         <button type="button" className={buttonClass} onClick={() => fileInput.current?.click()}>
           {t('playerOpen')}
         </button>
+        <button
+          type="button"
+          className={buttonClass}
+          aria-expanded={libraryOpen}
+          aria-controls={libraryId}
+          onClick={() => setLibraryOpen((open) => !open)}
+        >
+          {t('playerLibrary')}
+        </button>
         <input
           ref={fileInput}
           type="file"
@@ -65,10 +78,15 @@ export default function PlayerScreen() {
           onChange={(event) => {
             const file = event.target.files?.[0];
             event.target.value = ''; // so choosing the same file again still counts
-            if (file) void openFile(file);
+            if (file) {
+              setLibraryOpen(false);
+              void openFile(file);
+            }
           }}
         />
-        {loaded && <span className="font-semibold text-slate-800">{loaded.name}</span>}
+        {loaded && !loaded.library && (
+          <span className="font-semibold text-slate-800">{loaded.name}</span>
+        )}
       </div>
 
       {error && (
@@ -76,6 +94,10 @@ export default function PlayerScreen() {
           {t(ERROR_KEYS[error])}
         </p>
       )}
+
+      {libraryOpen && <LibraryPanel id={libraryId} onClose={() => setLibraryOpen(false)} />}
+
+      {loaded?.library && <PieceInfo piece={loaded.library} />}
 
       <div ref={box} className="w-full">
         {loaded && layout ? (

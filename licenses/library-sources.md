@@ -1,0 +1,63 @@
+# Library sources
+
+Everything in `public/library/` comes from a source that carries **no licence conditions**, and every item was checked on its own page on 2026-10-28.
+
+This list is a record, not legal advice. To add a piece, see "Library" in the README.
+
+## Pieces
+
+Every `.mid` file is from the [Mutopia Project](https://www.mutopiaproject.org/). The piece's own Mutopia page says **Public Domain** (its "Copyright" field), which carries no conditions. The Mutopia Project also offers pieces under CC-BY and CC-BY-SA; those are **not** used, and a unit test (`src/core/library.test.ts`) rejects any piece whose licence is not `Public Domain`. There are no composers of Russian origin in the library.
+
+| Composer            | Title on Mutopia                                           | Opus / catalogue      | Mutopia page                                                         | Licence       | File                                         |
+| ------------------- | ---------------------------------------------------------- | --------------------- | -------------------------------------------------------------------- | ------------- | -------------------------------------------- |
+| J. S. Bach          | Aria                                                       | BWV 515               | [78](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=78)     | Public Domain | `bach/bwv-515-aria.mid`                      |
+| J. S. Bach          | Aus meines Herzens Grunde (Chorale 1)                      | BWV 269               | [378](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=378)   | Public Domain | `bach/bwv-269-aus-meines-herzens-grunde.mid` |
+| J. S. Bach          | Ich dank dir, lieber Herre                                 | BWV 347               | [379](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=379)   | Public Domain | `bach/bwv-347-ich-dank-dir-lieber-herre.mid` |
+| J. S. Bach          | Polonaise in F major                                       | BWV Anh. 117a         | [1013](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1013) | Public Domain | `bach/bwv-anh-117a-polonaise-in-f.mid`       |
+| J. S. Bach          | Das Wohltemperierte Clavier I, Praeludium I                | BWV 846               | [5](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=5)       | Public Domain | `bach/bwv-846-prelude-in-c.mid`              |
+| J. S. Bach          | Invention 2                                                | BWV 773               | [58](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=58)     | Public Domain | `bach/bwv-773-invention-2.mid`               |
+| J. F. F. Burgmüller | La Candeur                                                 | Opus 100.             | [202](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=202)   | Public Domain | `burgmuller/op-100-01-la-candeur.mid`        |
+| J. F. F. Burgmüller | Innocence                                                  | Opus 100.             | [214](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=214)   | Public Domain | `burgmuller/op-100-05-innocence.mid`         |
+| J. F. F. Burgmüller | Progrès                                                    | Opus 100.             | [215](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=215)   | Public Domain | `burgmuller/op-100-06-progres.mid`           |
+| J. F. F. Burgmüller | La Pastorale                                               | Opus 100.             | [218](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=218)   | Public Domain | `burgmuller/op-100-03-la-pastorale.mid`      |
+| J. F. F. Burgmüller | l'Arabesque                                                | Opus 100.             | [203](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=203)   | Public Domain | `burgmuller/op-100-02-l-arabesque.mid`       |
+| G. F. Handel        | Sonatina in B-flat Major                                   | HWV 585               | [98](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=98)     | Public Domain | `handel/hwv-585-sonatina-in-b-flat.mid`      |
+| G. F. Handel        | Menuet                                                     |                       | [161](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=161)   | Public Domain | `handel/menuet.mid`                          |
+| F. J. Haydn         | Sonate I, II - Menuetto                                    | Hob. XVI:27           | [186](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=186)   | Public Domain | `haydn/hob-xvi-27-menuetto.mid`              |
+| W. A. Mozart        | Sonate Opus KV 331 - Tema                                  | KV 331                | [614](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=614)   | Public Domain | `mozart/kv-331-theme.mid`                    |
+| W. A. Mozart        | Gigue in G Major                                           | KV 574                | [239](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=239)   | Public Domain | `mozart/kv-574-gigue.mid`                    |
+| W. A. Mozart        | Piano Sonata in C Major - KV 309 (1st Part)                | KV 309                | [1379](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1379) | Public Domain | `mozart/kv-309-first-movement.mid`           |
+| L. V. Beethoven     | Für Elise                                                  | WoO 59                | [931](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=931)   | Public Domain | `beethoven/woo-59-fur-elise.mid`             |
+| L. V. Beethoven     | Sonata No. 20 (2nd Movement: Tempo di Menuetto)            | Op. 49, No. 2         | [777](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=777)   | Public Domain | `beethoven/op-49-2-tempo-di-menuetto.mid`    |
+| L. V. Beethoven     | Sonata No. 20 (1st Movement: Allegro, ma non troppo)       | Op. 49, No. 2         | [776](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=776)   | Public Domain | `beethoven/op-49-2-allegro.mid`              |
+| L. V. Beethoven     | Sonata No. 8 “Pathétique” (2nd Movement: Adagio cantabile) | Op. 13                | [295](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=295)   | Public Domain | `beethoven/op-13-adagio-cantabile.mid`       |
+| R. Schumann         | Kinderscenen - Von fremden Ländern und Menschen            | O 15 N 1              | [354](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=354)   | Public Domain | `schumann/op-15-01-von-fremden-landern.mid`  |
+| R. Schumann         | Kinderscenen - Traümerei                                   | O 15 N 7              | [504](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=504)   | Public Domain | `schumann/op-15-07-traumerei.mid`            |
+| R. Schumann         | Romanzen                                                   | Op. 28, No. 2         | [314](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=314)   | Public Domain | `schumann/op-28-02-romanze.mid`              |
+| F. Schubert         | Moments Musicaux No. 3 in F Minor                          | D.780 (Op. 94, No. 3) | [1023](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1023) | Public Domain | `schubert/d-780-moments-musicaux-3.mid`      |
+| F. Schubert         | Ungarische Melodie                                         | D.817                 | [758](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=758)   | Public Domain | `schubert/d-817-ungarische-melodie.mid`      |
+| J. Brahms           | Waltz No. 15                                               | Op. 39                | [794](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=794)   | Public Domain | `brahms/op-39-15-waltz.mid`                  |
+| J. Brahms           | Waltz No. 10                                               | Op. 39                | [2164](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=2164) | Public Domain | `brahms/op-39-10-waltz.mid`                  |
+| F. F. Chopin        | Prelude: Op. 28, No. 7                                     | Op. 28                | [470](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=470)   | Public Domain | `chopin/op-28-07-prelude.mid`                |
+| F. F. Chopin        | Prelude: Op. 28, No. 4 ('Suffocation')                     | Op. 28                | [468](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=468)   | Public Domain | `chopin/op-28-04-prelude.mid`                |
+| F. F. Chopin        | Valse Op. 64, No. 1 ('Minute Waltz')                       | Op. 64                | [483](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=483)   | Public Domain | `chopin/op-64-01-minute-waltz.mid`           |
+| F. F. Chopin        | Etüde C-Dur                                                | Opus 10, No. 1        | [914](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=914)   | Public Domain | `chopin/op-10-01-etude.mid`                  |
+| F. F. Chopin        | Etüde c-moll                                               | Opus 10, No. 12       | [743](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=743)   | Public Domain | `chopin/op-10-12-etude.mid`                  |
+| F. F. Chopin        | Fantaisie-Impromptu                                        | Op. 66                | [1693](https://www.mutopiaproject.org/cgibin/piece-info.cgi?id=1693) | Public Domain | `chopin/op-66-fantaisie-impromptu.mid`       |
+
+## Portraits
+
+Each portrait is a public-domain painting, drawing, or photograph from [Wikimedia Commons](https://commons.wikimedia.org/), whose Commons page says **Public domain**. The images were cropped to a square and scaled to 200 × 200 px. The tests allow only the licences `Public domain` and `CC0`.
+
+| Composer   | Commons file                                                                                                                             | Author                        | Year    | Licence       | File                       |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ------- | ------------- | -------------------------- |
+| bach       | [Johann Sebastian Bach.jpg](https://commons.wikimedia.org/wiki/File:Johann_Sebastian_Bach.jpg)                                           | Elias Gottlob Haussmann       | 1748    | Public domain | `portraits/bach.jpg`       |
+| beethoven  | [Beethoven.jpg](https://commons.wikimedia.org/wiki/File:Beethoven.jpg)                                                                   | Joseph Karl Stieler           | 1820    | Public domain | `portraits/beethoven.jpg`  |
+| brahms     | [JohannesBrahms.jpg](https://commons.wikimedia.org/wiki/File:JohannesBrahms.jpg)                                                         | C. Brasch                     | 1889    | Public domain | `portraits/brahms.jpg`     |
+| burgmuller | [Friedrich Burgmüller.jpg](https://commons.wikimedia.org/wiki/File:Friedrich_Burgm%C3%BCller.jpg)                                        | Fr. Meyer                     | c. 1840 | Public domain | `portraits/burgmuller.jpg` |
+| chopin     | [Frederic Chopin photo.jpeg](https://commons.wikimedia.org/wiki/File:Frederic_Chopin_photo.jpeg)                                         | Louis-Auguste Bisson          | 1849    | Public domain | `portraits/chopin.jpg`     |
+| handel     | [George Frideric Handel by Balthasar Denner.jpg](https://commons.wikimedia.org/wiki/File:George_Frideric_Handel_by_Balthasar_Denner.jpg) | Balthasar Denner (attributed) | c. 1727 | Public domain | `portraits/handel.jpg`     |
+| haydn      | [Joseph Haydn.jpg](https://commons.wikimedia.org/wiki/File:Joseph_Haydn.jpg)                                                             | Thomas Hardy                  | 1791    | Public domain | `portraits/haydn.jpg`      |
+| mozart     | [Wolfgang-amadeus-mozart 1.jpg](https://commons.wikimedia.org/wiki/File:Wolfgang-amadeus-mozart_1.jpg)                                   | Barbara Krafft                | 1819    | Public domain | `portraits/mozart.jpg`     |
+| schubert   | [Franz Schubert.jpg](https://commons.wikimedia.org/wiki/File:Franz_Schubert.jpg)                                                         | Josef Kriehuber               | 1846    | Public domain | `portraits/schubert.jpg`   |
+| schumann   | [Robert Schumann 1839.jpg](https://commons.wikimedia.org/wiki/File:Robert_Schumann_1839.jpg)                                             | Josef Kriehuber               | 1839    | Public domain | `portraits/schumann.jpg`   |
