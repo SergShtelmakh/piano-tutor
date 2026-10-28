@@ -2,7 +2,8 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { layoutSystems, visibleSystems } from '../core/scoreLayout.ts';
 import { useLocale, usePluralT, useT } from '../i18n/context.ts';
 import { formatPercent } from '../i18n/core.ts';
-import { usePlayerState, usePlayerValue, type PlayerError } from '../playback/context.ts';
+import { usePlayerState, usePlayerValue } from '../playback/context.ts';
+import { PLAYER_ERROR_KEYS } from '../playback/errorKeys.ts';
 import { MAX_RATE, MIN_RATE } from '../playback/player.ts';
 import LibraryPanel from './LibraryPanel.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
@@ -13,14 +14,6 @@ import { useElementWidth } from './useElementWidth.ts';
 const buttonClass =
   'rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-white';
 const PADDING = 16; // the score box has 8 px of padding on each side
-const ERROR_KEYS = {
-  notMidi: 'playerErrorNotMidi',
-  unsupported: 'playerErrorUnsupported',
-  empty: 'playerErrorEmpty',
-  tooLarge: 'playerErrorTooLarge',
-  damaged: 'playerErrorDamaged',
-  network: 'playerErrorNetwork',
-} as const satisfies Record<PlayerError, string>;
 
 /** Seconds as m:ss. */
 function formatTime(seconds: number): string {
@@ -91,7 +84,7 @@ export default function PlayerScreen() {
 
       {error && (
         <p role="alert" className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-800">
-          {t(ERROR_KEYS[error])}
+          {t(PLAYER_ERROR_KEYS[error])}
         </p>
       )}
 

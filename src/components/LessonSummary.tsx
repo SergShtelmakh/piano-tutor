@@ -1,5 +1,6 @@
 import { accuracy, type LessonState } from '../core/lesson.ts';
 import type { RunReward } from '../core/progress.ts';
+import type { MessageKey } from '../i18n/locales/en.ts';
 import { useLocale, usePluralT, useT } from '../i18n/context.ts';
 import { formatPercent } from '../i18n/core.ts';
 import StarRating from './StarRating.tsx';
@@ -11,9 +12,17 @@ interface LessonSummaryProps {
   reward: RunReward | null;
   onAgain: () => void;
   onExit: () => void;
+  /** The label of the exit button: back to Home (default) or back to the course. */
+  exitKey?: MessageKey;
 }
 
-export default function LessonSummary({ state, reward, onAgain, onExit }: LessonSummaryProps) {
+export default function LessonSummary({
+  state,
+  reward,
+  onAgain,
+  onExit,
+  exitKey = 'lessonBack',
+}: LessonSummaryProps) {
   const t = useT();
   const tp = usePluralT();
   const { locale } = useLocale();
@@ -61,7 +70,7 @@ export default function LessonSummary({ state, reward, onAgain, onExit }: Lesson
           onClick={onExit}
           className={`${buttonClass} border border-slate-300 bg-white hover:bg-slate-100`}
         >
-          {t('lessonBack')}
+          {t(exitKey)}
         </button>
       </div>
     </section>

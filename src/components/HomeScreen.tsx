@@ -2,6 +2,7 @@ import { LESSON_CATALOG, LESSON_UNITS, nextLessonId } from '../core/lessons.ts';
 import { useT } from '../i18n/context.ts';
 import { useProgress } from '../progress/context.ts';
 import InstallCard from './InstallCard.tsx';
+import LearningPieces from './LearningPieces.tsx';
 import LessonCard from './LessonCard.tsx';
 import ResetProgress from './ResetProgress.tsx';
 import StatsBar from './StatsBar.tsx';
@@ -29,13 +30,15 @@ export default function HomeScreen({ onStart }: { onStart: (lessonId: string) =>
           {unit.lessons.map((entry) => (
             <LessonCard
               key={entry.id}
-              entry={entry}
+              id={entry.id}
+              title={t(entry.titleKey)}
               isNext={entry.id === nextId}
               onStart={() => onStart(entry.id)}
             />
           ))}
         </section>
       ))}
+      <LearningPieces />
       <ResetProgress />
     </div>
   );
