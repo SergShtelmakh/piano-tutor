@@ -1,8 +1,12 @@
+**English** · [Українська](README.uk.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
+
 # Piano Tutor
 
 A gamified piano-learning web app: connect a MIDI keyboard (Web MIDI) and get real-time feedback on whether you play the right notes. Client-side only, no backend. See [specs/mission.md](specs/mission.md).
 
-> Status: free play, a first lesson, and local progress (stars, XP, levels, daily streak) work and are deployed online (roadmap Phases 2–4): MIDI keyboard, computer keyboard, and on-screen piano all make sound, and a 13-lesson first-week curriculum trains note reading, melodies, intervals, and chords on a music staff. More content comes in later phases — see [specs/roadmap.md](specs/roadmap.md).
+> Status: Phases 1–11 are done. Free play with a MIDI keyboard, the computer keyboard, or the on-screen piano; a 13-lesson first-week curriculum; local progress (stars, XP, levels, daily streak); an installable offline app (PWA); a responsive on-screen piano; a Player for MIDI files with sheet music; a library of 34 public-domain classical pieces; and **courses** that teach the opening of a library piece, hand by hand. The app is deployed online (see Deployment). Next: keyboard size and calibration — see [specs/roadmap.md](specs/roadmap.md).
+
+> **Keeping the translations in sync:** this file is the source. `README.uk.md`, `README.de.md`, and `README.fr.md` are translations of it; update them whenever this file changes.
 
 ## Prerequisites
 
