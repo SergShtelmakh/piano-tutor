@@ -54,6 +54,15 @@ The service worker exists only in production builds: to check offline mode, inst
 
 Note: `typescript` is pinned to `^6` until `typescript-eslint` supports TypeScript 7.
 
+## Library content policy
+
+The Player's library (`public/library/`, catalogue in `src/core/libraryCatalog.ts`) has a fixed licence policy, decided by the user. Don't relax it without being asked:
+
+- MIDI pieces only from the [Mutopia Project](https://www.mutopiaproject.org/), and only if the piece's **own page** says Public Domain (Mutopia's list filter is unreliable: it also shows CC-BY and CC-BY-SA). Never CC-BY, CC-BY-SA, or files from other sites.
+- Composer portraits only from Wikimedia Commons images that are marked Public domain (or CC0).
+- No composers of Russian origin.
+- Record the source, licence, and check date of everything in the catalogue and in `licenses/library-sources.md`; the tests enforce the allowlists. See "Library" in the README for how to add a piece.
+
 ## Language
 
 - Docs, specs, code comments, commit messages, PR descriptions: **English**.

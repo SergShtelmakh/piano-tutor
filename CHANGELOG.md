@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-28 — Phase 10: MIDI library
+
+### Added
+
+- A **Library** in the Player: 34 classical piano pieces by 10 composers (Bach, Beethoven, Brahms, Burgmüller, Chopin, Handel, Haydn, Mozart, Schubert, Schumann), grouped by composer, each with a **portrait**. Pick a piece, see it as sheet music, and press Play.
+- Every piece has a **difficulty** from 1 (Beginner) to 5 (Expert), shown as dots and as a word. Filter the list by difficulty or by your favourites.
+- Mark pieces as **favourite** (★) or **done** (☑). Your marks stay on your device.
+- A piece you have opened once also opens **offline**, and the portraits are available offline too.
+- The source and licence of each piece are shown above the score, with a link to its page. All pieces are **public domain** (from the Mutopia Project) and all portraits are public-domain images (from Wikimedia Commons).
+- Composer names, difficulty names, and all new messages are translated into Ukrainian, German, and French.
+
+### Notes
+
+- The files are generated from the printed score, so the rhythm is exact but the playing is not expressive.
+
 ## 2026-10-28 — Phase 9: MIDI file playback
 
 ### Added
