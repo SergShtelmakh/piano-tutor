@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 10 — MIDI library
 > Branch: `feature/midi-library`
-> Status: Implemented (manual validation open)
+> Status: Validated
 
 ## Goal
 
@@ -59,14 +59,14 @@ The Player comes with a library of about 30 public-domain classical piano pieces
 3. **Marks, loading, and offline**
    - [x] `libraryMarks` storage and provider (`src/library/`), wired into `App`
    - [x] `loadLibraryPiece.ts` and `PlayerProvider.openLibraryPiece`; the `network` error
-   - [ ] Workbox runtime caching for `/library/*.mid`; check with `bun run build && bun run preview` that an opened piece loads offline and an unopened one shows the message (FR-11, FR-12)
+   - [x] Workbox runtime caching for `/library/*.mid`; check with `bun run build && bun run preview` that an opened piece loads offline and an unopened one shows the message (FR-11, FR-12)
 4. **Library UI in the Player**
    - [x] `LibraryPanel`, `DifficultyDots`, `PieceInfo`; the Library button in `PlayerScreen` (FR-5 – FR-10)
-   - [ ] Check at 360 px and 1280 px, with the keyboard only (Tab, Enter, Space)
+   - [x] Check at 360 px and 1280 px, with the keyboard only (Tab, Enter, Space)
 5. **Translations, credits, validation**
    - [x] All new keys in `en`, `uk`, `de`, `fr`, including the composer names (FR-14)
    - [x] `README.md`: the library, the licence policy, the Mutopia credit, and "how to add a piece" (FR-13)
-   - [ ] Run `validation.md`: automated gates, then manual checks on desktop and an Android phone; ask the user to skim the new `uk` / `de` / `fr` strings and to confirm the licence policy
+   - [x] Run `validation.md`: automated gates, then manual checks on desktop and an Android phone; ask the user to skim the new `uk` / `de` / `fr` strings and to confirm the licence policy
 
 ## Files touched
 
