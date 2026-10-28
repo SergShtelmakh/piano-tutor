@@ -23,7 +23,20 @@ bun run dev      # http://localhost:3000
 - **On-screen piano:** click or touch the keys. The piano is as wide as the window and shows more octaves when they fit (keys stay at least 40 px wide, up to all 88 keys on a wide monitor). On a narrow phone it keeps finger-sized keys and scrolls sideways: swipe the octave ruler above the keys (swiping the keys plays them). The octave buttons and `Z` / `X` move the range the computer keyboard plays (B2–C5 by default: the B below the first C, two octaves, and the top C), and the view follows.
 - **Home and lessons:** the app opens on **Home**, with 13 lessons in five units: right hand (treble clef), left hand (bass clef), both clefs, melodies (Mary Had a Little Lamb, Ode to Joy, Twinkle Twinkle), and intervals and chords. Press **Start** on a lesson card; the lesson marked **Next** is the first one you haven't finished, but nothing is locked. The staff shows a row of notes: the highlighted one is the one to play, played ones turn grey. For a chord, play all its notes in any order. A wrong key counts as a mistake and the target stays until you play it right. At the end you get your accuracy, 1–3 stars, and XP. Random lessons give a new order on every start.
 - **Player:** the **Player** mode opens a MIDI file (`.mid`, formats 0 and 1, up to 2 MB) with a file chooser. The file is read on your device and never uploaded. It is shown as sheet music (sharps, note values, rests, bars, ties; a simplified, one-voice version, without key signatures, beams, or tuplets) in lines, and plays with a moving cursor while the keys that sound light up blue. **Play** / **Pause** / **Stop**, a tempo slider (50–150 %), and a position slider (or a click on the score) let you move around. Percussion is skipped.
+- **Library:** the **Library** button in the Player opens 34 classical piano pieces by 10 composers (Bach, Beethoven, Brahms, Burgmüller, Chopin, Handel, Haydn, Mozart, Schubert, Schumann), grouped by composer, with a portrait of each, and rated from 1 (Beginner) to 5 (Expert). Filter by difficulty or favourites, pick a piece, and press **Play**. Mark pieces as favourite (★) or done (☑); the marks stay on your device. A piece you have opened once also opens offline. The files are mechanical renderings of the score, so they sound exact but not expressive.
 - **Progress:** XP raises your level, and finishing at least one lesson per day builds a daily streak. Everything is saved on your device only; **Reset progress** on Home clears it.
+
+## Library
+
+The pieces are MIDI files from the [Mutopia Project](https://www.mutopiaproject.org/), kept in `public/library/<composer>/`. **Only pieces whose own Mutopia page says "Public Domain"** (its "Copyright" field) are used. The Mutopia Project also publishes pieces under CC-BY and CC-BY-SA, which need credit or share-alike; those are left out, and `src/core/library.test.ts` fails if a piece has any other licence. The composers' portraits are public-domain paintings, drawings, and photographs from [Wikimedia Commons](https://commons.wikimedia.org/) (the Commons page must say "Public domain"; a test allows nothing else). The source, licence, and check date of every piece and every portrait are in [licenses/library-sources.md](licenses/library-sources.md) and in the catalogue (`src/core/libraryCatalog.ts`). This is a record, not legal advice. Note that Mutopia's own "Public Domain" filter also lists CC pieces, so always read the piece's page.
+
+To add a piece:
+
+1. Open the piece's page on mutopiaproject.org and check that it says **Copyright: Public Domain**. Take the single `.mid` file (not a zip).
+2. Save it as `public/library/<composer>/<slug>.mid`, with a lower-case slug of letters, digits, and hyphens.
+3. Add an entry to `LIBRARY_PIECES` in `src/core/libraryCatalog.ts`: the Mutopia id, the usual title with its opus or catalogue number, the duration in seconds, and a difficulty from 1 to 5 (see the rubric in [specs/phase-10-midi-library/requirements.md](specs/phase-10-midi-library/requirements.md), FR-4). A new composer also needs an entry in `LIBRARY_COMPOSERS` (with a public-domain portrait from Wikimedia Commons, saved as a square JPEG of at most 40 KB in `public/library/portraits/`) and a `composer…` name in all four locales.
+4. Add a line to `licenses/library-sources.md`.
+5. Run `bun run test`: it checks the licence, the file, its duration, and its size.
 
 ## Install and offline
 
@@ -77,6 +90,8 @@ Cloudflare sets `CF_PAGES*` (Pages) or `WORKERS_CI*` (Workers Builds, which is w
 ## Credits
 
 The treble and bass clef shapes, and the sharps, naturals, flags, and rests of the MIDI player's score, are outlines from the [Bravura](https://github.com/steinbergmedia/bravura) music font, © Steinberg Media Technologies GmbH, used under the SIL Open Font License 1.1 (see [licenses/Bravura-OFL-1.1.txt](licenses/Bravura-OFL-1.1.txt)).
+
+The library pieces are from the [Mutopia Project](https://www.mutopiaproject.org/), public domain editions, and the composers' portraits are public-domain images from [Wikimedia Commons](https://commons.wikimedia.org/) (see [licenses/library-sources.md](licenses/library-sources.md)).
 
 ## Language
 

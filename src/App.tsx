@@ -13,6 +13,7 @@ import VolumeControl from './components/VolumeControl.tsx';
 import { LESSON_CATALOG } from './core/lessons.ts';
 import { useT } from './i18n/context.ts';
 import { NoteInputProvider } from './input/NoteInputProvider.tsx';
+import { LibraryMarksProvider } from './library/LibraryMarksProvider.tsx';
 import { PlayerProvider } from './playback/PlayerProvider.tsx';
 import { ProgressProvider } from './progress/ProgressProvider.tsx';
 
@@ -31,39 +32,41 @@ export default function App() {
   return (
     <ProgressProvider>
       <NoteInputProvider>
-        <PlayerProvider>
-          <div className="flex min-h-screen flex-col overflow-x-clip bg-slate-50 text-slate-900">
-            <header className="flex justify-end px-4 py-3">
-              <LanguageSelector />
-            </header>
-            <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-5 px-4 pb-10 text-center">
-              <h1 className="text-4xl font-bold tracking-tight">{t('appName')}</h1>
-              <p className="text-lg text-slate-700">{t('tagline')}</p>
-              <ModeSwitch mode={entry ? null : mode} onChange={changeMode} />
-              {!entry && mode === 'free' && (
-                <p className="rounded-lg bg-white px-4 py-3 text-slate-600 shadow-sm">
-                  {t('playHint')}
-                </p>
-              )}
-              <MidiStatus />
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-                <VolumeControl />
-                {!entry && mode === 'free' && <OctaveControl />}
-              </div>
-              {entry ? (
-                <LessonScreen entry={entry} onExit={() => changeMode('home')} />
-              ) : mode === 'free' ? (
-                <PianoKeyboard />
-              ) : mode === 'player' ? (
-                <PlayerScreen />
-              ) : (
-                <HomeScreen onStart={setLessonId} />
-              )}
-            </main>
-            <BuildInfo />
-            <PwaNotices lessonOpen={entry !== undefined} />
-          </div>
-        </PlayerProvider>
+        <LibraryMarksProvider>
+          <PlayerProvider>
+            <div className="flex min-h-screen flex-col overflow-x-clip bg-slate-50 text-slate-900">
+              <header className="flex justify-end px-4 py-3">
+                <LanguageSelector />
+              </header>
+              <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-5 px-4 pb-10 text-center">
+                <h1 className="text-4xl font-bold tracking-tight">{t('appName')}</h1>
+                <p className="text-lg text-slate-700">{t('tagline')}</p>
+                <ModeSwitch mode={entry ? null : mode} onChange={changeMode} />
+                {!entry && mode === 'free' && (
+                  <p className="rounded-lg bg-white px-4 py-3 text-slate-600 shadow-sm">
+                    {t('playHint')}
+                  </p>
+                )}
+                <MidiStatus />
+                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+                  <VolumeControl />
+                  {!entry && mode === 'free' && <OctaveControl />}
+                </div>
+                {entry ? (
+                  <LessonScreen entry={entry} onExit={() => changeMode('home')} />
+                ) : mode === 'free' ? (
+                  <PianoKeyboard />
+                ) : mode === 'player' ? (
+                  <PlayerScreen />
+                ) : (
+                  <HomeScreen onStart={setLessonId} />
+                )}
+              </main>
+              <BuildInfo />
+              <PwaNotices lessonOpen={entry !== undefined} />
+            </div>
+          </PlayerProvider>
+        </LibraryMarksProvider>
       </NoteInputProvider>
     </ProgressProvider>
   );
