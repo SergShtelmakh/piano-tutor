@@ -29,6 +29,7 @@ Rules:
 - Commit spec files together with the code they describe. One roadmap phase = one branch = one PR.
 - `specs/tech-stack.md` is **confirmed** (Phase 1). If a choice there turns out wrong, change the spec first. Check its "Known technical debt" section before touching tooling.
 - Translations for `uk`, `de`, `fr` are written by the agent. Ask the user to skim new strings during validation.
+- `README.md` is the source of the README; `README.uk.md`, `README.de.md`, and `README.fr.md` are its translations, each with the same language switcher on the first line. When `README.md` changes, update all three in the same commit.
 
 ## About the project
 
