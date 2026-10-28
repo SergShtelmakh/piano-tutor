@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–10 are done; the MVP scope from `mission.md` is covered. Phase 11 (melody learning) is in progress and Phase 12 (keyboard size) follows.
+> Phases 1–11 are done; the MVP scope from `mission.md` is covered. Phase 12 (keyboard size) is next.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -133,16 +133,17 @@ Spec: [`specs/phase-10-midi-library/`](phase-10-midi-library/). Branch `feature/
 - **Outcome:** the catalogue (`src/core/libraryCatalog.ts`) is the single source of truth: 34 pieces in `public/library/<composer>/` rated 1–5 by hand (5 / 6 / 12 / 8 / 3 per level) and 10 composers with portraits. `library.ts` holds the pure rules (`browse`: filter by level and favourites, group by composer ordered by the name in the UI language, pieces by difficulty then title; the licence and host allowlists; URLs; initials) and `libraryMarks.ts` the marks (versioned JSON, `piano-tutor.library`). Tests enforce the policy and read the real files (`config/libraryFiles.test.ts`: each file exists, parses, matches its catalogue duration within 2 s, and is small; each portrait is a small JPEG). `PlayerProvider` gained `openLibraryPiece`; a host that answers a missing file with an HTML fallback page counts as a `network` error. Workbox caches `/library/*.mid` at runtime (`CacheFirst`, at most 60) and precaches the portraits. The user validated the library (licence spot check, difficulty ratings, layout, offline) and confirmed the licence policy.
 - Mutopia's own "Public Domain" listing filter also returned CC-BY and CC-BY-SA pieces, so every piece was checked on its own page (the field is called "Copyright"). Several composers had no usable pieces: all of Satie on the first page is CC-BY-SA, and Clementi's sonatina is only offered as a zip.
 
-## Phase 11 — Melody learning 🔨
+## Phase 11 — Melody learning ✅
 
 Goal: the learner picks a piece from the library and the app turns it into a course of lessons, from the simplest to the hardest, that teaches the opening of the piece.
 
-Spec: [`specs/phase-11-melody-learning/`](phase-11-melody-learning/). Branch `feature/melody-learning` (started from `feature/midi-library`, because Phase 10 is not merged yet; rebase onto `main` once it is).
+Spec: [`specs/phase-11-melody-learning/`](phase-11-melody-learning/). Branch `feature/melody-learning`.
 
 - A **Learn** button on every library piece opens a course built from the piece's own notation: the text is split into **parts** (phrases) of up to 4 bars, and the course covers the first 6 parts.
 - Three stages: **right hand**, **left hand**, **both hands**. In a hand stage: read the notes the piece uses, then its chords, then the parts one by one, then the parts joined (1–2, 3–4, 5–6, 1–4, 1–6). In the both-hands stage: the parts, then the merges.
 - Lessons show the real notation (sharps, note values, bars) with the current step marked, and use the existing judge (pitches only, no timing), stars, XP, and streak. No locks; a **Next** badge marks the first lesson not yet finished.
 - A **"Pieces you are learning"** section on Home.
+- **Outcome:** the course builder is pure (`src/core/course.ts`): steps come from the score's columns (a tied note is pressed once, rests are skipped), parts are at most 4 bars and 32 steps (first 6 parts), and a hand stage has at most 37 lessons per piece. A notes drill needs at least 2 distinct pitches and a chord drill at least 2 distinct chords; the both-hands stage exists only when both hand stages do. Lesson ids are stable (`melody:<pieceId>:<hand>:<kind>[-n]`), so the saved progress format is unchanged (`version: 1`). `src/course/` loads the piece and caches its course; lessons show their bars through the Player's `ScoreView` (`NotationView`; the current step is the "sounding" note and the cursor position), drills show quarter notes; the on-screen piano shows the lesson's whole range and the computer-key octave is picked to fit. `Lesson` gained optional `hand`, `pieceTitle`, `titleParams`, and `notation`; the judge is unchanged. Back from a course lesson returns to the course. No new dependencies. A test builds the course of all 34 library pieces from their real files. The user validated the feature by hand.
 
 ## Phase 12 — Keyboard size & calibration 📋
 
@@ -165,6 +166,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
+- From Phase 11: **timing and play-along** inside a course lesson (judge rhythm, not only pitches; tempo; a metronome); a hand override for pieces where the staff split puts a melody in the wrong hand; a "Next lesson" button on the summary; lessons for the rest of a long piece (beyond the first 6 parts) or a chosen section; a mastery mark on a piece when all its lessons have 3 stars; a course shortcut on the Player screen for the piece that is open.
 - From Phase 10: a search box and sorting (by title or length); more pieces and composers, always Public Domain on the piece's own Mutopia page (for example Scarlatti, Liszt, Mendelssohn, and more of Haydn and Handel); a default tempo per piece (some Mutopia files carry the default 60 bpm, which is why the Rondo alla Turca was left out); showing a short note or biography per composer; recently played pieces; deep links to a piece; a computed difficulty to cross-check the hand ratings; letting a done mark count towards progress. CC-BY pieces with visible credit only if the licence policy is ever relaxed.
 - From Phase 9: playing along with a file (see above); loop a section, mute a hand or a track, a metronome / count-in; drag and drop, a built-in example, remembering the last file; a scrollable overview of the whole score; key signatures and flats, beams, tuplets, and several voices per staff; a look-ahead scheduler (Web Audio) so playback stays on time in a background tab.
 - From Phase 8: pinch-to-zoom or a setting for the key width; a "rotate to landscape" hint; tapping the ruler to move the base range; centring the scrolled view on the held notes of a chord.

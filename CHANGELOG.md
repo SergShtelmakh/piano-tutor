@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-28 — Phase 11: melody learning
+
+### Added
+
+- A **Learn** button on every library piece opens a **course**: the piece is split into parts of up to 4 bars, and the course teaches the first 6 parts.
+- Three stages: **right hand**, **left hand**, **both hands**. Each hand stage starts with reading the notes the piece uses, then its chords, then the parts one by one, then the parts joined together. The both-hands stage has the parts and their joins. Lessons go from the simplest to the hardest, nothing is locked, and **Next** marks where to continue.
+- Lessons show the **real sheet music** of the piece, with the current step in blue and a line on it. Stars, XP, and your streak work as in the other lessons.
+- A course screen with stars and accuracy for each lesson, and **Open in Player** to hear the piece.
+- **Pieces you are learning** on Home, with a **Continue** button.
+- The on-screen piano shows the whole range of a lesson, and the computer-key octave is chosen to fit it.
+- All new messages are translated into Ukrainian, German, and French.
+
+### Notes
+
+- Lessons check which notes you press, not the rhythm.
+
 ## 2026-10-28 — Phase 10: MIDI library
 
 ### Added
