@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-30 — Phase 15: beams
+
+### Added
+
+- Eighth and sixteenth notes are joined by **beams** within a beat, as in printed music: in pairs of eighths or fours of sixteenths in 2/4, 3/4, and 4/4, and in threes of eighths in 6/8, 9/8, and 12/8.
+- The beam follows the melody with a gentle slope; sixteenths get a second beam, and a sixteenth next to a dotted eighth gets a short one.
+- Works in the Player (MIDI and MusicXML files, the library) and in course lessons.
+
+### Notes
+
+- A rest, a longer note, or a bar line ends a beam; a single short note keeps its flag.
+- Beams are worked out by the app for every file; the beams written in a MusicXML file are not used yet.
+
 ## 2026-10-30 — Phase 14: key signatures
 
 ### Added
