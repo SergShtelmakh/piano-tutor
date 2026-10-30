@@ -99,6 +99,45 @@ interface DraftNote {
   endTick: number;
   hand?: PieceHand;
   spelling?: NoteSpelling;
+  /** The `<voice>` number of the file and the staff the note is written on (1 when a part has one). */
+  voiceNumber: number;
+  staff: number;
+  voice?: 1 | 2;
+}
+
+/**
+ * Ranks the voices of every staff of a part: the lowest voice number is the upper voice, the
+ * next one the lower voice, and a third or fourth voice joins whichever of the two has the closer
+ * average pitch. Only the lower voice is marked (`voice: 2`).
+ */
+function rankVoices(notes: readonly DraftNote[]): void {
+  const byStaff = new Map<number, DraftNote[]>();
+  for (const note of notes) {
+    const list = byStaff.get(note.staff);
+    if (list) list.push(note);
+    else byStaff.set(note.staff, [note]);
+  }
+  for (const staffNotes of byStaff.values()) {
+    const numbers = [...new Set(staffNotes.map((note) => note.voiceNumber))].sort((a, b) => a - b);
+    if (numbers.length < 2) continue;
+    const mean = (voice: number) => {
+      const own = staffNotes.filter((note) => note.voiceNumber === voice);
+      return own.reduce((sum, note) => sum + note.note, 0) / own.length;
+    };
+    const [upper, lower] = numbers;
+    const rank = new Map<number, 1 | 2>([
+      [upper, 1],
+      [lower, 2],
+    ]);
+    for (const extra of numbers.slice(2)) {
+      const closer =
+        Math.abs(mean(extra) - mean(upper)) <= Math.abs(mean(extra) - mean(lower)) ? upper : lower;
+      rank.set(extra, rank.get(closer)!);
+    }
+    for (const note of staffNotes) {
+      if (rank.get(note.voiceNumber) === 2) note.voice = 2;
+    }
+  }
 }
 
 interface PartResult {
@@ -140,7 +179,8 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
   let cursor = 0; // ticks as a float, so a rounded duration never drifts
   let lastStart = 0;
   // Tied notes that continue into the next note of the same pitch.
-  const openTies = new Map<number, DraftNote>();
+  // A tie joins notes of one voice, so the voice is part of the key.
+  const openTies = new Map<string, DraftNote>();
   const toTicks = (duration: number) => (duration * ticksPerQuarter) / divisions;
 
   childrenNamed(part, 'measure').forEach((measure, measureIndex) => {
@@ -219,7 +259,9 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
         const tieStop = tieTypes.includes('stop');
         const tieStart = tieTypes.includes('start');
 
-        const open = tieStop ? openTies.get(midi) : undefined;
+        const voiceNumber = Math.max(1, Math.floor(numberOf(childText(item, 'voice')) ?? 1));
+        const tieKey = `${voiceNumber}:${midi}`;
+        const open = tieStop ? openTies.get(tieKey) : undefined;
         let draft: DraftNote;
         if (open) {
           open.endTick = endTick;
@@ -235,6 +277,8 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
             endTick,
             ...(hand ? { hand } : {}),
             ...(spelling ? { spelling } : {}),
+            voiceNumber,
+            staff: staves >= 2 ? staff : 1,
           };
           result.notes.push(draft);
           if (result.notes.length > MAX_NOTES) {
@@ -242,8 +286,8 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
             return;
           }
         }
-        if (tieStart) openTies.set(midi, draft);
-        else openTies.delete(midi);
+        if (tieStart) openTies.set(tieKey, draft);
+        else openTies.delete(tieKey);
       }
     }
 
@@ -270,6 +314,7 @@ export function parseMusicXml(text: string): ParseResult {
   for (const part of childrenNamed(root, 'part')) {
     if (skipped.has(part.attributes.id ?? '\0')) continue;
     const result = readPart(part, ticksPerQuarter);
+    rankVoices(result.notes); // voices are ranked per part, so parts are never voices of each other
     total += result.notes.length;
     if (result.tooMany || total > MAX_NOTES) return { ok: false, error: 'tooLarge' };
     parts.push(result);
@@ -316,6 +361,7 @@ export function parseMusicXml(text: string): ParseResult {
         velocity: VELOCITY,
         ...(draft.hand ? { hand: draft.hand } : {}),
         ...(draft.spelling ? { spelling: draft.spelling } : {}),
+        ...(draft.voice ? { voice: draft.voice } : {}),
       };
     })
     .sort((a, b) => a.startTick - b.startTick || a.note - b.note);

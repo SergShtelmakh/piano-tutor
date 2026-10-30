@@ -273,3 +273,26 @@ describe('layoutSystems: key signatures', () => {
     }
   });
 });
+
+describe('layoutSystems: two voices', () => {
+  it('gives a slot room for the lower voice moved aside, and only that slot', () => {
+    const piece = (lower: number): Piece => ({
+      ...makePiece([
+        [72, 0, 4],
+        [72, 4, 8],
+        [lower, 0, 4],
+      ]),
+      notes: makePiece([
+        [72, 0, 4],
+        [72, 4, 8],
+        [lower, 0, 4],
+      ]).notes.map((note, i) => (i === 2 ? { ...note, voice: 2 as const } : note)),
+    });
+    const touching = layoutSystems(buildScore(piece(71)), 1200).systems[0].bars[0];
+    const apart = layoutSystems(buildScore(piece(60)), 1200).systems[0].bars[0];
+    const gap = (bar: typeof touching) => bar.slots[1].x - bar.slots[0].x;
+    expect(touching.bar.columns.treble.some((c) => c.offset)).toBe(true);
+    expect(apart.bar.columns.treble.some((c) => c.offset)).toBe(false);
+    expect(gap(touching)).toBeGreaterThan(gap(apart));
+  });
+});

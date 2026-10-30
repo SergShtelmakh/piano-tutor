@@ -378,3 +378,96 @@ describe('parseMusicXml: key signature and spelling', () => {
     expect(piece.notes[0].spelling).toEqual({ step: 6, alter: -1 }); // B♭
   });
 });
+
+describe('parseMusicXml: voices', () => {
+  const voiced = (...content: string[]) =>
+    parse(score([part('P1', measure(attributes({ divisions: 1, beats: '4' }), ...content))]));
+  const voicesOf = (piece: Piece) => piece.notes.map((n) => [n.note, n.voice]);
+
+  it('marks the lower of two voices on a staff and leaves the upper voice unmarked', () => {
+    const piece = voiced(
+      note('E', 5, 2, { voice: 1 }),
+      note('D', 5, 2, { voice: 1 }),
+      backup(4),
+      note('C', 4, 4, { voice: 2 }),
+    );
+    expect(voicesOf(piece)).toEqual([
+      [60, 2],
+      [76, undefined],
+      [74, undefined],
+    ]);
+  });
+
+  it('ranks MuseScore voice numbers per staff (voices 5 and 6 on the second staff)', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(
+            attributes({ divisions: 1, beats: '4', staves: 2 }),
+            note('E', 5, 4, { voice: 1, staff: 1 }),
+            backup(4),
+            note('G', 3, 4, { voice: 5, staff: 2 }),
+            backup(4),
+            note('C', 3, 4, { voice: 6, staff: 2 }),
+          ),
+        ),
+      ]),
+    );
+    const byNote = Object.fromEntries(piece.notes.map((n) => [n.note, n.voice]));
+    expect(byNote).toEqual({ 76: undefined, 55: undefined, 48: 2 });
+  });
+
+  it('joins a third voice to the voice with the closer average pitch', () => {
+    const piece = voiced(
+      note('C', 6, 4, { voice: 1 }),
+      backup(4),
+      note('C', 3, 4, { voice: 2 }),
+      backup(4),
+      note('D', 6, 4, { voice: 3 }), // near the upper voice
+      backup(4),
+      note('D', 3, 4, { voice: 4 }), // near the lower voice
+    );
+    const byNote = Object.fromEntries(piece.notes.map((n) => [n.note, n.voice]));
+    expect(byNote).toEqual({ 84: undefined, 86: undefined, 48: 2, 50: 2 });
+  });
+
+  it('treats a note without a voice as the first voice', () => {
+    const piece = voiced(note('E', 5, 4), backup(4), note('C', 4, 4, { voice: 2 }));
+    expect(voicesOf(piece)).toEqual([
+      [60, 2],
+      [76, undefined],
+    ]);
+  });
+
+  it('does not make a second part a voice of the first', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4' }), note('E', 5, 4, { voice: 1 })),
+        ),
+        part('P2', measure(attributes({ divisions: 1 }), note('C', 4, 4, { voice: 1 }))),
+      ]),
+    );
+    expect(piece.notes.every((n) => n.voice === undefined)).toBe(true);
+  });
+
+  it('leaves a staff with one voice unmarked', () => {
+    expect(voicesOf(voiced(note('E', 5, 4, { voice: 5 })))).toEqual([[76, undefined]]);
+  });
+
+  it('keeps a tie inside its voice', () => {
+    const piece = voiced(
+      note('C', 4, 2, { voice: 1, tie: 'start' }),
+      note('C', 4, 2, { voice: 1, tie: 'stop' }),
+      backup(4),
+      note('C', 4, 4, { voice: 2 }),
+    );
+    expect(piece.notes.filter((n) => n.voice === undefined)).toHaveLength(1);
+    expect(piece.notes.find((n) => n.voice === undefined)).toMatchObject({
+      startTick: 0,
+      endTick: 4,
+    });
+  });
+});

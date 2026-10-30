@@ -95,7 +95,9 @@ function shapeOf(bar: ScoreBar): BarShape {
       const length = (list[i + 1] ?? barEnd) - unit;
       const notes = here.flatMap((column) => column.notes);
       const room = notes.some((note) => note.accidental) ? ACCIDENTAL_ROOM : 0;
-      const shift = notes.some((note) => note.shifted) ? SHIFT_ROOM : 0;
+      // A second, or the lower voice moved aside, needs the room of one more notehead.
+      const shift =
+        notes.some((note) => note.shifted) || here.some((column) => column.offset) ? SHIFT_ROOM : 0;
       return {
         unit,
         time: here[0].time,

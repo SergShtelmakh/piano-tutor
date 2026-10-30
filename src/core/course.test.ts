@@ -624,3 +624,30 @@ describe('the key of a course', () => {
     expect(bars[0].columns.treble[0].notes[0]).toMatchObject({ alter: -1, accidental: null });
   });
 });
+
+describe('course steps of a two-voice score', () => {
+  it('are the moments where notes start, whatever their voice', () => {
+    const result = parseMusicXml(
+      score([
+        part(
+          'P1',
+          measure(
+            attributes({ divisions: 1, beats: '4' }),
+            note('C', 6, 1, { voice: 1 }),
+            note('D', 6, 1, { voice: 1 }),
+            note('E', 6, 1, { voice: 1 }),
+            note('F', 6, 1, { voice: 1 }),
+            backup(4),
+            note('C', 5, 4, { voice: 2 }),
+          ),
+        ),
+      ]),
+    );
+    if (!result.ok) throw new Error('parse failed');
+    const built = buildScore(result.piece);
+    // The lower voice's whole note is one column, drawn separately from the melody.
+    expect(built.bars[0].columns.treble.filter((c) => c.voice === 2)).toHaveLength(1);
+    const steps = stepsOf(built.bars, 'right');
+    expect(steps.map((step) => step.notes)).toEqual([[72, 84], [86], [88], [89]]);
+  });
+});

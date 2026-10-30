@@ -629,3 +629,146 @@ describe('gapStepsFor', () => {
     expect(gapStepsFor(-9, -2)).toBe(15);
   });
 });
+
+describe('buildScore: two voices on a staff', () => {
+  // 4 ticks per quarter, a 4/4 bar is 16 ticks; voice 2 is the lower voice.
+  const voiced = (notes: [note: number, start: number, end: number, voice?: 2][]): Piece => {
+    const piece = makePiece(notes.map(([note, start, end]) => [note, start, end]));
+    return {
+      ...piece,
+      notes: piece.notes.map((note, i) =>
+        notes[i][3] === 2 ? { ...note, voice: 2 as const } : note,
+      ),
+    };
+  };
+  const columns = (score: Score, bar = 0) => score.bars[bar].columns.treble;
+  const melody = (pitch = 84): [number, number, number][] => [
+    [pitch, 0, 4],
+    [pitch, 4, 8],
+    [pitch, 8, 12],
+    [pitch, 12, 16],
+  ];
+
+  it('keeps a held note of the lower voice whole while the upper voice moves', () => {
+    const score = buildScore(voiced([...melody(), [60, 0, 16, 2]]));
+    const all = columns(score);
+    expect(all.map((c) => [c.unit, c.voice, c.value])).toEqual([
+      [0, 1, 'quarter'],
+      [0, 2, 'whole'],
+      [4, 1, 'quarter'],
+      [8, 1, 'quarter'],
+      [12, 1, 'quarter'],
+    ]);
+  });
+
+  it('points the upper voice up and the lower voice down in a two-voice bar', () => {
+    const all = columns(buildScore(voiced([...melody(), [60, 0, 16, 2]])));
+    expect(all.filter((c) => c.voice === 1).every((c) => c.stem === 'up')).toBe(true);
+    expect(all.filter((c) => c.voice === 2).every((c) => c.stem === 'down')).toBe(true);
+  });
+
+  it('draws a bar with one voice as before: no forced stems, no lower columns', () => {
+    const score = buildScore(voiced([...melody(), [60, 0, 16, 2], [84, 16, 32]]));
+    const second = columns(score, 1);
+    expect(second.every((c) => c.voice === 1 && c.stem === undefined)).toBe(true);
+    expect(second.some((c) => c.voice === 2)).toBe(false);
+  });
+
+  it('draws a bar where only the lower voice plays as one voice', () => {
+    const score = buildScore(
+      voiced([
+        [84, 0, 16],
+        [60, 16, 20, 2],
+        [84, 32, 48],
+      ]),
+    );
+    const second = columns(score, 1);
+    expect(second.every((c) => c.voice === 1 && c.stem === undefined)).toBe(true);
+    expect(second.filter((c) => !c.rest).map((c) => c.notes[0].note)).toEqual([60]);
+  });
+
+  it('draws lower-voice rests only in bars where it plays, moved down', () => {
+    // Bar 1: the lower voice plays one quarter on the third beat; bar 2 has no lower voice.
+    const score = buildScore(
+      voiced([
+        ...melody(),
+        [60, 8, 12, 2],
+        ...melody().map(([n, s, e]): [number, number, number] => [n, s + 16, e + 16]),
+      ]),
+    );
+    const first = columns(score, 0);
+    const lowerRests = first.filter((c) => c.voice === 2 && c.rest);
+    expect(lowerRests.length).toBeGreaterThan(0);
+    expect(lowerRests.every((c) => c.restShift === -2)).toBe(true);
+    expect(columns(score, 1).some((c) => c.voice === 2)).toBe(false);
+  });
+
+  it('moves the rests of the upper voice up in a two-voice bar', () => {
+    const score = buildScore(
+      voiced([
+        [84, 0, 4],
+        [60, 0, 16, 2],
+      ]),
+    );
+    const rests = columns(score).filter((c) => c.voice === 1 && c.rest);
+    expect(rests.length).toBeGreaterThan(0);
+    expect(rests.every((c) => c.restShift === 2)).toBe(true);
+  });
+
+  it('shares an accidental across voices on one staff position', () => {
+    // C♯5 in the upper voice, then C♯5 in the lower voice in the same bar: the sign is drawn once.
+    const score = buildScore(
+      voiced([
+        [73, 0, 4],
+        [73, 4, 8, 2],
+        [84, 8, 12],
+      ]),
+    );
+    const signs = columns(score)
+      .filter((c) => !c.rest)
+      .map((c) => c.notes[0].accidental);
+    expect(signs).toEqual(['sharp', null, null]);
+  });
+
+  it('moves the lower voice aside where the noteheads would touch', () => {
+    const near = buildScore(
+      voiced([
+        [72, 0, 4],
+        [71, 0, 4, 2],
+      ]),
+    );
+    expect(columns(near).find((c) => c.voice === 2 && !c.rest)?.offset).toBe(true);
+    const unison = buildScore(
+      voiced([
+        [72, 0, 4],
+        [72, 0, 4, 2],
+      ]),
+    );
+    expect(columns(unison).find((c) => c.voice === 2 && !c.rest)?.offset).toBe(true);
+    const far = buildScore(
+      voiced([
+        [72, 0, 4],
+        [64, 0, 4, 2],
+      ]),
+    );
+    expect(columns(far).find((c) => c.voice === 2 && !c.rest)?.offset).toBeUndefined();
+  });
+
+  it('builds a score without voices exactly as one voice', () => {
+    const score = buildScore(
+      makePiece([
+        [60, 0, 4],
+        [64, 4, 8],
+        [48, 0, 16],
+      ]),
+    );
+    for (const bar of score.bars) {
+      for (const column of [...bar.columns.treble, ...bar.columns.bass]) {
+        expect(column.voice).toBe(1);
+        expect(column.stem).toBeUndefined();
+        expect(column.restShift).toBeUndefined();
+        expect(column.offset).toBeUndefined();
+      }
+    }
+  });
+});

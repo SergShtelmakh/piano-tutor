@@ -371,3 +371,59 @@ describe('beamLine', () => {
     expect(heightAt({ x1: 4, x2: 4, h1: 9, h2: 9 }, 4)).toBe(9);
   });
 });
+
+describe('beamGroups: two voices', () => {
+  const twoVoices = (notes: [number, number, number, 2?][]): ScoreBar => {
+    const piece: Piece = {
+      ticksPerQuarter: 4,
+      notes: notes.map(([note, startTick, endTick, voice]) => ({
+        note,
+        startTick,
+        endTick,
+        start: startTick * 0.125,
+        end: endTick * 0.125,
+        velocity: 80,
+        ...(voice === 2 ? { voice: 2 as const } : {}),
+      })),
+      pedal: [],
+      tempos: [{ tick: 0, time: 0, microsPerQuarter: 500_000 }],
+      timeSignatures: [{ tick: 0, numerator: 4, denominator: 4 }],
+      duration: 0,
+    };
+    return buildScore(piece).bars[0];
+  };
+
+  it('beams each voice on its own, with stems up for the upper and down for the lower', () => {
+    const bar = twoVoices([
+      [84, 0, 2],
+      [84, 2, 4],
+      [72, 0, 2, 2],
+      [72, 2, 4, 2],
+      [84, 4, 16],
+      [72, 4, 16, 2],
+    ]);
+    const groups = beamGroups(bar, 'treble');
+    expect(groups.map((g) => g.columns)).toEqual([
+      [0, 2],
+      [1, 3],
+    ]);
+    expect(groups.map((g) => g.direction)).toEqual(['up', 'down']);
+    // A group only holds columns of one voice.
+    for (const group of groups) {
+      const voices = new Set(group.columns.map((i) => bar.columns.treble[i].voice));
+      expect(voices.size).toBe(1);
+    }
+  });
+
+  it('is not broken by a long note of the other voice', () => {
+    const bar = twoVoices([
+      [84, 0, 2],
+      [84, 2, 4],
+      [72, 0, 16, 2],
+      [84, 4, 16],
+    ]);
+    const groups = beamGroups(bar, 'treble');
+    expect(groups).toHaveLength(1);
+    expect(groups[0].direction).toBe('up');
+  });
+});

@@ -124,7 +124,7 @@ function beamsOfSystem(system: System): SystemBeams {
         const columns = group.columns.map((i) => layoutBar.bar.columns[clef][i]);
         const up = group.direction === 'up';
         const stemXs = columns.map((column) => {
-          const x = columnX(layoutBar, column);
+          const x = columnX(layoutBar, column) + (column.offset ? SHIFT : 0);
           return up ? x + RX - 0.7 : x - RX + 0.7;
         });
         const stems = columns.map((column, i) => {
@@ -209,7 +209,7 @@ function RestView({
 }) {
   const middle = MIDDLE_LINE[clef];
   // A whole rest hangs from the second line from the top, a half rest sits on the middle line.
-  const index = column.value === 'whole' ? middle + 2 : middle;
+  const index = (column.value === 'whole' ? middle + 2 : middle) + (column.restShift ?? 0);
   const y = yOf(geometry, index, clef);
   return (
     <g>
@@ -226,7 +226,7 @@ function RestView({
 function NoteColumn({
   column,
   clef,
-  x,
+  x: columnX,
   geometry,
   sounding,
   position,
@@ -242,7 +242,9 @@ function NoteColumn({
   beam?: BeamedColumn;
 }) {
   const notes = column.notes;
-  const direction = beam?.direction ?? stemDirection(notes, clef);
+  // The lower voice moves one notehead right where it would touch the upper voice's noteheads.
+  const x = columnX + (column.offset ? SHIFT : 0);
+  const direction = beam?.direction ?? column.stem ?? stemDirection(notes, clef);
   const noteX = (note: ScoreNote) => x + (note.shifted ? SHIFT : 0);
   const ys = notes.map((note) => yOf(geometry, note.index, clef));
   const yHigh = Math.min(...ys);
@@ -466,9 +468,14 @@ function Ties({
   const marks: { key: string; d: string }[] = [];
   (['treble', 'bass'] as const).forEach((clef) => {
     const staff = columns.filter((placed) => placed.clef === clef && !placed.column.rest);
-    staff.forEach((placed, i) => {
+    staff.forEach((placed) => {
       const direction =
-        beams.get(placed.column)?.direction ?? stemDirection(placed.column.notes, clef);
+        beams.get(placed.column)?.direction ??
+        placed.column.stem ??
+        stemDirection(placed.column.notes, clef);
+      const voiceColumns = staff.filter((other) => other.column.voice === placed.column.voice);
+      const nextOfVoice = voiceColumns[voiceColumns.indexOf(placed) + 1];
+      const firstOfVoice = voiceColumns[0] === placed;
       const side = direction === 'up' ? 1 : -1; // the tie is on the side opposite the stem
       for (const note of placed.column.notes) {
         const y = yOf(geometry, note.index, clef) + side * (RY + 1);
@@ -476,14 +483,14 @@ function Ties({
         const curve = (from: number, to: number) =>
           `M${from} ${y}Q${(from + to) / 2} ${y + side * 8} ${to} ${y}`;
         if (note.tieNext) {
-          const next = staff[i + 1]?.column.notes.find((n) => n.note === note.note);
-          const to = next ? staff[i + 1].x - RX - 1 : x + 26;
+          const next = nextOfVoice?.column.notes.find((n) => n.note === note.note);
+          const to = next ? nextOfVoice.x - RX - 1 : x + 26;
           marks.push({
             key: `n-${clef}-${placed.column.unit}-${note.note}`,
             d: curve(x + RX + 1, to),
           });
         }
-        if (note.tiePrev && i === 0) {
+        if (note.tiePrev && firstOfVoice) {
           marks.push({
             key: `p-${clef}-${placed.column.unit}-${note.note}`,
             d: curve(x - 26, x - RX - 1),
