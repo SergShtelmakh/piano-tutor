@@ -145,9 +145,11 @@ Spec: [`specs/phase-11-melody-learning/`](phase-11-melody-learning/). Branch `fe
 - A **"Pieces you are learning"** section on Home.
 - **Outcome:** the course builder is pure (`src/core/course.ts`): steps come from the score's columns (a tied note is pressed once, rests are skipped), parts are at most 4 bars and 32 steps (first 6 parts), and a hand stage has at most 37 lessons per piece. A notes drill needs at least 2 distinct pitches and a chord drill at least 2 distinct chords; the both-hands stage exists only when both hand stages do. Lesson ids are stable (`melody:<pieceId>:<hand>:<kind>[-n]`), so the saved progress format is unchanged (`version: 1`). `src/course/` loads the piece and caches its course; lessons show their bars through the Player's `ScoreView` (`NotationView`; the current step is the "sounding" note and the cursor position), drills show quarter notes; the on-screen piano shows the lesson's whole range and the computer-key octave is picked to fit. `Lesson` gained optional `hand`, `pieceTitle`, `titleParams`, and `notation`; the judge is unchanged. Back from a course lesson returns to the course. No new dependencies. A test builds the course of all 34 library pieces from their real files. The user validated the feature by hand.
 
-## Phase 12 — Keyboard size & calibration 📋
+## Phase 12 — Keyboard size & calibration 🔨
 
 Goal: lessons and the on-screen piano know how many keys the learner's real keyboard has.
+
+Spec: [`specs/phase-12-keyboard-size-calibration/`](phase-12-keyboard-size-calibration/). Branch `feature/keyboard-size-calibration`.
 
 From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added, on to Phase 11 when the MIDI library was added, and on to Phase 12 when melody learning was added.
 
