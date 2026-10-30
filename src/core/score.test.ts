@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { buildScore, stemDirection, type Column, type Score, type ScoreNote } from './score.ts';
+import {
+  buildScore,
+  gapStepsFor,
+  stemDirection,
+  type Column,
+  type Score,
+  type ScoreNote,
+} from './score.ts';
 import type { Piece, TimeSignature } from './smf.ts';
 
 // One tick is one sixteenth note here (4 ticks per quarter), at 120 bpm: a sixteenth is 0.125 s.
@@ -437,5 +444,188 @@ describe('buildScore with hands', () => {
     expect(score.bars[0].columns.treble.find((c) => !c.rest)!.notes.map((n) => n.note)).toEqual([
       62,
     ]);
+  });
+});
+
+describe('buildScore: key signature and spelling', () => {
+  // 4 ticks per quarter, so a quarter note is [start, start + 4] and a 4/4 bar is 16 ticks.
+  const inKey = (
+    fifths: number,
+    notes: [number, number, number, { step: number; alter: -1 | 0 | 1 }?][],
+    extraKeys: { tick: number; fifths: number }[] = [],
+  ): Piece => {
+    const piece = makePiece(notes.map(([note, start, end]) => [note, start, end]));
+    return {
+      ...piece,
+      keySignatures: [{ tick: 0, fifths }, ...extraKeys],
+      notes: piece.notes.map((note, i) =>
+        notes[i][3] ? { ...note, spelling: notes[i][3] } : note,
+      ),
+    };
+  };
+  const columnNotes = (score: Score, clef: 'treble' | 'bass', bar = 0) =>
+    score.bars[bar].columns[clef].filter((c) => !c.rest).flatMap((c) => c.notes);
+
+  it('records the key of each bar and where it changes', () => {
+    const score = buildScore(
+      inKey(
+        -2,
+        [
+          [60, 0, 4],
+          [62, 16, 20],
+          [64, 32, 36],
+        ],
+        [{ tick: 32, fifths: 1 }],
+      ),
+    );
+    expect(score.bars.map((b) => [b.keySignature, b.showKeySignature])).toEqual([
+      [-2, true],
+      [-2, false],
+      [1, true],
+    ]);
+  });
+
+  it('spells a black key with a flat in a flat key and puts it on the flat letter', () => {
+    const score = buildScore(inKey(-5, [[61, 0, 4]])); // D♭4 in D♭ major
+    const [note] = columnNotes(score, 'treble');
+    expect(note.index).toBe(1); // the D position, not C
+    expect(note.alter).toBe(-1);
+    expect(note.accidental).toBeNull(); // the key signature already has D♭
+  });
+
+  it('draws no sign for notes the key signature gives', () => {
+    const score = buildScore(
+      inKey(-3, [
+        [63, 0, 4],
+        [68, 4, 8],
+        [70, 8, 12],
+      ]),
+    ); // E♭ A♭ B♭
+    expect(columnNotes(score, 'treble').map((n) => n.accidental)).toEqual([null, null, null]);
+  });
+
+  it('draws a natural against the key, and it holds for the bar only', () => {
+    // B♭ major (one flat): B natural, then B natural again, then next bar B♭ and B natural.
+    const score = buildScore(
+      inKey(-1, [
+        [71, 0, 4],
+        [71, 4, 8],
+        [70, 16, 20],
+        [71, 20, 24],
+      ]),
+    );
+    expect(columnNotes(score, 'treble', 0).map((n) => n.accidental)).toEqual(['natural', null]);
+    expect(columnNotes(score, 'treble', 1).map((n) => n.accidental)).toEqual([null, 'natural']);
+  });
+
+  it('draws a flat when a note is lowered against the key, and a sharp when it is raised', () => {
+    const inC = buildScore(inKey(0, [[70, 0, 4, { step: 6, alter: -1 }]])); // B♭ written in C major
+    expect(columnNotes(inC, 'treble')[0].accidental).toBe('flat');
+    const inG = buildScore(inKey(1, [[65, 0, 4]])); // F natural in G major (F♯ in the key)
+    expect(columnNotes(inG, 'treble')[0].accidental).toBe('natural');
+    // A spelling that is not that pitch (a G written as F♯) falls back to the key.
+    const mismatch = buildScore(inKey(1, [[67, 0, 4, { step: 3, alter: 1 }]]));
+    expect(columnNotes(mismatch, 'treble')[0].alter).toBe(0);
+  });
+
+  it('writes sharp keys with sharps', () => {
+    const score = buildScore(
+      inKey(2, [
+        [66, 0, 4],
+        [73, 4, 8],
+      ]),
+    ); // F♯4, C♯5 in D major
+    const notes = columnNotes(score, 'treble');
+    expect(notes.map((n) => [n.index, n.alter, n.accidental])).toEqual([
+      [3, 1, null],
+      [7, 1, null],
+    ]);
+  });
+
+  it('keeps a spelling from the file even against the key (E♯ in C major)', () => {
+    const score = buildScore(inKey(0, [[65, 0, 4, { step: 2, alter: 1 }]])); // E♯4 sounds as F4
+    const [note] = columnNotes(score, 'treble');
+    expect(note.index).toBe(2); // the E position
+    expect(note.accidental).toBe('sharp');
+  });
+
+  it('does not repeat a sign on a note tied over the bar line', () => {
+    const score = buildScore(inKey(0, [[61, 12, 20]])); // C♯4 tied across the bar
+    expect(columnNotes(score, 'treble', 0)[0].accidental).toBe('sharp');
+    expect(columnNotes(score, 'treble', 1)[0].accidental).toBeNull();
+  });
+
+  it('is unchanged for a piece without a key signature (C major, sharps)', () => {
+    const score = buildScore(
+      makePiece([
+        [61, 0, 4],
+        [60, 4, 8],
+        [61, 8, 12],
+      ]),
+    );
+    expect(columnNotes(score, 'treble').map((n) => n.accidental)).toEqual([
+      'sharp',
+      'natural',
+      'sharp',
+    ]);
+    expect(score.bars[0].keySignature).toBe(0);
+  });
+});
+
+describe('measureBars: space between the staves', () => {
+  const gapOf = (notes: [number, number, number, 'right' | 'left' | undefined][]) => {
+    const piece = makePiece(notes.map(([note, start, end]) => [note, start, end]));
+    const withHands = {
+      ...piece,
+      notes: piece.notes.map((note, i) => (notes[i][3] ? { ...note, hand: notes[i][3]! } : note)),
+    };
+    return buildScore(withHands).gapSteps;
+  };
+
+  it('is four staff spaces (8 steps) when nothing sits between the staves', () => {
+    expect(
+      gapOf([
+        [72, 0, 4, undefined],
+        [48, 0, 4, undefined],
+      ]),
+    ).toBe(8);
+  });
+
+  it('grows with a left-hand note above middle C (F4 on the bass staff)', () => {
+    // F4 is index 3 on the bass staff, 1 above the treble staff's bottom line? (index 2): 8 + 3 - 2.
+    expect(gapOf([[65, 0, 4, 'left']])).toBe(9);
+    expect(
+      gapOf([
+        [65, 0, 4, 'left'],
+        [74, 0, 4, 'left'],
+      ]),
+    ).toBe(8 + 8 - 2); // D5 = index 8
+  });
+
+  it('grows with a right-hand note far below middle C', () => {
+    // A2 is index -9 on the treble staff: the bass staff has to move down by that much more.
+    expect(gapOf([[45, 0, 4, 'right']])).toBe(8 + -2 - -9);
+  });
+
+  it('reports the highest treble and the lowest bass index for the vertical room', () => {
+    const piece = makePiece([
+      [84, 0, 4],
+      [36, 0, 4],
+    ]); // C6 and C2
+    const score = buildScore(piece);
+    expect(score.highIndex).toBe(7 * 2 + 0); // C6 = index 14
+    expect(score.lowIndex).toBe(-14); // C2
+  });
+});
+
+describe('gapStepsFor', () => {
+  it('is four staff spaces for the white-key lessons (middle C above, B3 below)', () => {
+    expect(gapStepsFor(0, -1)).toBe(8);
+  });
+
+  it('grows with a bass note above the lowest treble note, and ignores treble notes above the staff edge', () => {
+    expect(gapStepsFor(2, 3)).toBe(9);
+    expect(gapStepsFor(12, -1)).toBe(8); // the treble low is the staff edge (2) at most
+    expect(gapStepsFor(-9, -2)).toBe(15);
   });
 });

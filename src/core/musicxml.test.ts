@@ -280,3 +280,101 @@ describe('parseMusicXml: errors', () => {
     expect(parseMusicXml(xml)).toEqual({ ok: false, error: 'tooLarge' });
   });
 });
+
+describe('parseMusicXml: key signature and spelling', () => {
+  const inKey = (fifths: number, ...content: string[]) =>
+    parse(
+      score([part('P1', measure(attributes({ divisions: 1, beats: '4', fifths }), ...content))]),
+    );
+
+  it('is C major when the file has no key', () => {
+    expect(simple(note('C', 4, 4)).keySignatures).toEqual([{ tick: 0, fifths: 0 }]);
+  });
+
+  it('reads the key and keeps the spelling of the file', () => {
+    const piece = inKey(
+      -5,
+      note('D', 4, 1, { alter: -1 }),
+      note('E', 4, 1, { alter: 1 }),
+      note('C', 4, 1),
+      note('C', 4, 1, { alter: 1 }),
+    );
+    expect(piece.keySignatures).toEqual([{ tick: 0, fifths: -5 }]);
+    expect(piece.notes.map((n) => [n.note, n.spelling])).toEqual([
+      [61, { step: 1, alter: -1 }], // D♭4
+      [65, { step: 2, alter: 1 }], // E♯4 sounds as F4
+      [60, { step: 0, alter: 0 }],
+      [61, { step: 0, alter: 1 }], // C♯4
+    ]);
+  });
+
+  it('writes B♯3 and C♭4 in the pitch they sound', () => {
+    const piece = inKey(0, note('B', 3, 2, { alter: 1 }), note('C', 4, 2, { alter: -1 }));
+    expect(piece.notes.map((n) => [n.note, n.spelling])).toEqual([
+      [60, { step: 6, alter: 1 }], // B♯3
+      [59, { step: 0, alter: -1 }], // C♭4
+    ]);
+  });
+
+  it('leaves a double sharp or flat without a spelling (the key writes it)', () => {
+    const piece = inKey(0, note('F', 4, 2, { alter: 2 }), note('G', 4, 2, { alter: -2 }));
+    expect(piece.notes.map((n) => [n.note, n.spelling])).toEqual([
+      [67, undefined], // F𝄪4 sounds as G4
+      [65, undefined], // G𝄫4 sounds as F4
+    ]);
+  });
+
+  it('keeps a key change at its position, the first part winning at a tick', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4', fifths: 2 }), note('C', 4, 4)),
+          measure(attributes({ fifths: -1 }), note('D', 4, 4)),
+        ),
+        part('P2', measure(attributes({ divisions: 1, fifths: 5 }), note('C', 3, 4))),
+      ]),
+    );
+    expect(piece.keySignatures).toEqual([
+      { tick: 0, fifths: 2 },
+      { tick: 4, fifths: -1 },
+    ]);
+  });
+
+  it('shifts a key change by the pickup padding, not the key at the start', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4', fifths: 1 }), note('G', 4, 1)),
+          measure(attributes({ fifths: 2 }), note('C', 5, 4)),
+        ),
+      ]),
+    );
+    expect(piece.keySignatures).toEqual([
+      { tick: 0, fifths: 1 },
+      { tick: 4, fifths: 2 }, // measure 2 starts at tick 1, moved by the 3-tick pickup padding
+    ]);
+  });
+
+  it('ignores a key outside −7 … 7', () => {
+    expect(inKey(9, note('C', 4, 4)).keySignatures).toEqual([{ tick: 0, fifths: 0 }]);
+  });
+
+  it('moves the written step by the diatonic part of a transposition', () => {
+    // A B♭ instrument: written C5 sounds B♭4 (−2 semitones, −1 step).
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(
+            attributes({ divisions: 1, beats: '4', transpose: -2, diatonic: -1 }),
+            note('C', 5, 4),
+          ),
+        ),
+      ]),
+    );
+    expect(piece.notes[0].note).toBe(70);
+    expect(piece.notes[0].spelling).toEqual({ step: 6, alter: -1 }); // B♭
+  });
+});

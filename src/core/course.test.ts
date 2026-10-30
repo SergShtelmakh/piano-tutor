@@ -583,3 +583,44 @@ describe('a course built from MusicXML', () => {
     expect(course.stages.map((stage) => stage.hand)).toEqual(['right', 'left', 'both']);
   });
 });
+
+describe('the key of a course', () => {
+  it('writes a drill by the key at the start of the piece', () => {
+    const inFlats = drillNotation([[61], [70]], -5).score; // D♭4 and B♭4 in D♭ major
+    const notes = inFlats.bars[0].columns.treble.flatMap((column) => column.notes);
+    expect(notes.map((n) => [n.alter, n.accidental])).toEqual([
+      [-1, null],
+      [-1, null],
+    ]);
+    expect(inFlats.bars[0].keySignature).toBe(-5);
+    const inC = drillNotation([[61]]).score.bars[0].columns.treble[0].notes[0];
+    expect(inC.alter).toBe(1);
+  });
+
+  it('keeps the key of the bars in a part lesson', () => {
+    const result = parseMusicXml(
+      score([
+        part(
+          'P1',
+          measure(
+            attributes({ divisions: 1, beats: '4', staves: 2, fifths: -5 }),
+            note('D', 5, 2, { alter: -1, staff: 1 }),
+            note('C', 5, 2, { staff: 1 }),
+            backup(4),
+            note('B', 2, 4, { alter: -1, staff: 2 }),
+          ),
+        ),
+      ]),
+    );
+    if (!result.ok) throw new Error('parse failed');
+    const built = buildScore(result.piece);
+    expect(built.bars[0].keySignature).toBe(-5);
+    const course = buildCourse(built, { id: 'file-flats', title: 'Flats' });
+    const lesson = courseLessons(course).find(
+      (item) => item.kind === 'part' && item.hand === 'right',
+    )!;
+    const bars = lesson.create(() => 0).notation!.score.bars;
+    expect(bars[0].keySignature).toBe(-5);
+    expect(bars[0].columns.treble[0].notes[0]).toMatchObject({ alter: -1, accidental: null });
+  });
+});

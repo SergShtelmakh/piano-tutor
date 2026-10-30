@@ -11,6 +11,7 @@ import {
   BAR_PAD_LEFT,
   CLEF_WIDTH,
   columnX,
+  KEY_SIGN_WIDTH,
   MIN_SCALE,
   timeAtX,
   xAtTime,
@@ -18,13 +19,15 @@ import {
   type ScoreLayout,
   type System,
 } from '../core/scoreLayout.ts';
-import { spellNote, type Clef } from '../core/staff.ts';
+import { keySignatureIndexes } from '../core/spelling.ts';
+import type { Clef } from '../core/staff.ts';
 import { BASS_CLEF_PATH, TREBLE_CLEF_PATH } from './clefPaths.ts';
 import {
   FLAG_EIGHTH_DOWN_PATH,
   FLAG_EIGHTH_UP_PATH,
   FLAG_SIXTEENTH_DOWN_PATH,
   FLAG_SIXTEENTH_UP_PATH,
+  FLAT_PATH,
   NATURAL_PATH,
   REST_EIGHTH_PATH,
   REST_HALF_PATH,
@@ -43,6 +46,8 @@ const STEM_LENGTH = 33;
 const LEDGER_HALF = 11;
 const SHIFT = 14;
 const MARGIN = 26;
+/** Staff steps from the bottom line of the treble staff to the top line of the bass staff. */
+const BASE_GAP_STEPS = 4;
 const TREBLE_LINES = [10, 8, 6, 4, 2];
 const BASS_LINES = [-2, -4, -6, -8, -10];
 const SEEK_SLACK = 0.1; // seconds: a column counts as sounding a little before its rounded start
@@ -63,18 +68,25 @@ interface Geometry {
   /** y of the top treble line. */
   top: number;
   height: number;
+  /** How far the bass staff is moved down to leave room between the staves. */
+  bassShift: number;
 }
 
-/** Room above and below the staves for the highest and lowest notes of the whole piece. */
+/** Room above and below the staves for the notes of the whole piece, and between the staves. */
 function measure(score: Score): Geometry {
-  const high = spellNote(score.high).position.index;
-  const low = spellNote(score.low).position.index;
-  const top = MARGIN + Math.max(0, high - 10) * STEP;
-  const bottom = top + 20 * STEP + MARGIN + Math.max(0, -10 - low) * STEP;
-  return { top, height: bottom };
+  const top = MARGIN + Math.max(0, score.highIndex - 10) * STEP;
+  const bassShift = (score.gapSteps - BASE_GAP_STEPS) * STEP;
+  const bottom = top + 20 * STEP + bassShift + MARGIN + Math.max(0, -10 - score.lowIndex) * STEP;
+  return { top, height: bottom, bassShift };
 }
 
-const yOf = (geometry: Geometry, index: number) => geometry.top + (10 - index) * STEP;
+/** y of a staff index on a staff: the bass staff sits lower by the extra room between the staves. */
+const yOf = (geometry: Geometry, index: number, clef: Clef) =>
+  geometry.top + (10 - index) * STEP + (clef === 'bass' ? geometry.bassShift : 0);
+
+/** Widths of the signs (in SVG units), so a sign ends just before its notehead. */
+const SIGN_WIDTH = { sharp: 10, flat: 9, natural: 6.7 } as const;
+const SIGN_PATH = { sharp: SHARP_PATH, flat: FLAT_PATH, natural: NATURAL_PATH } as const;
 
 interface PlacedColumn {
   column: Column;
@@ -108,7 +120,7 @@ function RestView({
   const middle = MIDDLE_LINE[clef];
   // A whole rest hangs from the second line from the top, a half rest sits on the middle line.
   const index = column.value === 'whole' ? middle + 2 : middle;
-  const y = yOf(geometry, index);
+  const y = yOf(geometry, index, clef);
   return (
     <g>
       <path
@@ -139,7 +151,7 @@ function NoteColumn({
   const notes = column.notes;
   const direction = stemDirection(notes, clef);
   const noteX = (note: ScoreNote) => x + (note.shifted ? SHIFT : 0);
-  const ys = notes.map((note) => yOf(geometry, note.index));
+  const ys = notes.map((note) => yOf(geometry, note.index, clef));
   const yHigh = Math.min(...ys);
   const yLow = Math.max(...ys);
   const open = column.value === 'whole' || column.value === 'half';
@@ -149,9 +161,9 @@ function NoteColumn({
   // A stem stops at the edge of its own staff, so it does not run into the other one.
   const stemEnd =
     clef === 'bass' && direction === 'up'
-      ? Math.max(stemTip, yOf(geometry, -2))
+      ? Math.max(stemTip, yOf(geometry, -2, 'bass'))
       : clef === 'treble' && direction === 'down'
-        ? Math.min(stemTip, yOf(geometry, 2))
+        ? Math.min(stemTip, yOf(geometry, 2, 'treble'))
         : stemTip;
   const anyShifted = notes.some((note) => note.shifted);
 
@@ -163,8 +175,8 @@ function NoteColumn({
             key={`${note.note}-${index}`}
             x1={noteX(note) - LEDGER_HALF}
             x2={noteX(note) + LEDGER_HALF}
-            y1={yOf(geometry, index)}
-            y2={yOf(geometry, index)}
+            y1={yOf(geometry, index, clef)}
+            y2={yOf(geometry, index, clef)}
             stroke="currentColor"
             strokeWidth={1.2}
           />
@@ -198,8 +210,8 @@ function NoteColumn({
           <g key={note.note} className={blue ? 'text-sky-600' : 'text-slate-900'}>
             {note.accidental && (
               <path
-                d={note.accidental === 'sharp' ? SHARP_PATH : NATURAL_PATH}
-                transform={`translate(${nx - RX - 2.5 - (note.accidental === 'sharp' ? 10 : 6.7)} ${y}) scale(${GAP})`}
+                d={SIGN_PATH[note.accidental]}
+                transform={`translate(${nx - RX - 2.5 - SIGN_WIDTH[note.accidental]} ${y}) scale(${GAP})`}
                 fill="currentColor"
               />
             )}
@@ -242,8 +254,8 @@ function BarView({
 }) {
   const { bar } = layoutBar;
   const right = layoutBar.x + layoutBar.width;
-  const y1 = yOf(geometry, 10);
-  const y2 = yOf(geometry, -10);
+  const y1 = yOf(geometry, 10, 'treble');
+  const y2 = yOf(geometry, -10, 'bass');
   return (
     <g className="text-slate-900">
       <line
@@ -254,8 +266,15 @@ function BarView({
         stroke="currentColor"
         strokeWidth={isLast ? 3 : 1.2}
       />
+      {layoutBar.keyX !== null && (
+        <KeySignature x={layoutBar.keyX} fifths={bar.keySignature} geometry={geometry} />
+      )}
       {bar.showTimeSignature && (
-        <TimeSignature bar={bar} x={layoutBar.x + BAR_PAD_LEFT + 8} geometry={geometry} />
+        <TimeSignature
+          bar={bar}
+          x={layoutBar.x + BAR_PAD_LEFT + layoutBar.keyRoom + 8}
+          geometry={geometry}
+        />
       )}
       {(['treble', 'bass'] as const).flatMap((clef) =>
         bar.columns[clef].map((column) => {
@@ -285,6 +304,24 @@ function BarView({
   );
 }
 
+/** The sharps or flats of a key signature, on both staves, left to right from `x`. */
+function KeySignature({ x, fifths, geometry }: { x: number; fifths: number; geometry: Geometry }) {
+  const path = fifths > 0 ? SHARP_PATH : FLAT_PATH;
+  return (
+    <g fill="currentColor">
+      {(['treble', 'bass'] as const).flatMap((clef) =>
+        keySignatureIndexes(fifths, clef).map((index, i) => (
+          <path
+            key={`${clef}-${i}`}
+            d={path}
+            transform={`translate(${x + i * KEY_SIGN_WIDTH} ${yOf(geometry, index, clef)}) scale(${GAP})`}
+          />
+        )),
+      )}
+    </g>
+  );
+}
+
 function TimeSignature({ bar, x, geometry }: { bar: ScoreBar; x: number; geometry: Geometry }) {
   const { numerator, denominator } = bar.timeSignature;
   const props = {
@@ -298,7 +335,7 @@ function TimeSignature({ bar, x, geometry }: { bar: ScoreBar; x: number; geometr
   return (
     <g>
       {(['treble', 'bass'] as const).map((clef) => {
-        const middle = yOf(geometry, MIDDLE_LINE[clef]);
+        const middle = yOf(geometry, MIDDLE_LINE[clef], clef);
         return (
           <g key={clef}>
             <text {...props} y={middle - 2}>
@@ -323,7 +360,7 @@ function Ties({ columns, geometry }: { columns: PlacedColumn[]; geometry: Geomet
       const direction = stemDirection(placed.column.notes, clef);
       const side = direction === 'up' ? 1 : -1; // the tie is on the side opposite the stem
       for (const note of placed.column.notes) {
-        const y = yOf(geometry, note.index) + side * (RY + 1);
+        const y = yOf(geometry, note.index, clef) + side * (RY + 1);
         const x = placed.x + (note.shifted ? SHIFT : 0);
         const curve = (from: number, to: number) =>
           `M${from} ${y}Q${(from + to) / 2} ${y + side * 8} ${to} ${y}`;
@@ -403,8 +440,8 @@ function CursorLine({
     <line
       x1={x}
       x2={x}
-      y1={yOf(geometry, 10) - 14}
-      y2={yOf(geometry, -10) + 14}
+      y1={yOf(geometry, 10, 'treble') - 14}
+      y2={yOf(geometry, -10, 'bass') + 14}
       stroke="#0ea5e9"
       strokeWidth={2}
       strokeLinecap="round"
@@ -458,14 +495,19 @@ const SystemView = memo(function SystemView({
       className={`block text-slate-900 ${onSeek ? 'cursor-pointer' : ''}`}
       onClick={onSeek ? seek : undefined}
     >
-      {[TREBLE_LINES, BASS_LINES].flatMap((lines) =>
+      {(
+        [
+          ['treble', TREBLE_LINES],
+          ['bass', BASS_LINES],
+        ] as const
+      ).flatMap(([clef, lines]) =>
         lines.map((index) => (
           <line
-            key={index}
+            key={`${clef}-${index}`}
             x1={6}
             x2={system.width}
-            y1={yOf(geometry, index)}
-            y2={yOf(geometry, index)}
+            y1={yOf(geometry, index, clef)}
+            y2={yOf(geometry, index, clef)}
             stroke="currentColor"
             strokeWidth={1}
           />
@@ -474,19 +516,19 @@ const SystemView = memo(function SystemView({
       <line
         x1={6}
         x2={6}
-        y1={yOf(geometry, 10)}
-        y2={yOf(geometry, -10)}
+        y1={yOf(geometry, 10, 'treble')}
+        y2={yOf(geometry, -10, 'bass')}
         stroke="currentColor"
         strokeWidth={1.6}
       />
       <path
         d={TREBLE_CLEF_PATH}
-        transform={`translate(12 ${yOf(geometry, 4)}) scale(${GAP})`}
+        transform={`translate(12 ${yOf(geometry, 4, 'treble')}) scale(${GAP})`}
         fill="currentColor"
       />
       <path
         d={BASS_CLEF_PATH}
-        transform={`translate(12 ${yOf(geometry, -4)}) scale(${GAP})`}
+        transform={`translate(12 ${yOf(geometry, -4, 'bass')}) scale(${GAP})`}
         fill="currentColor"
       />
       {system.bars.map((layoutBar, i) => (

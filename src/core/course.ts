@@ -7,7 +7,7 @@ import { evenPages, randomPicks, type RandomSource } from './lessons.ts';
 import type { LibraryPiece } from './libraryCatalog.ts';
 import { MAX_BASE_OCTAVE, MIN_BASE_OCTAVE } from './notes.ts';
 import type { LessonRecord } from './progress.ts';
-import { buildScore, type Score, type ScoreBar } from './score.ts';
+import { buildScore, measureBars, type Score, type ScoreBar } from './score.ts';
 import type { Piece } from './smf.ts';
 import type { Clef } from './staff.ts';
 
@@ -139,6 +139,7 @@ export function notationOf(bars: readonly ScoreBar[]): Score {
     bars: [...bars],
     low: notes.length ? Math.min(...notes) : 60,
     high: notes.length ? Math.max(...notes) : 60,
+    ...measureBars(bars),
   };
 }
 
@@ -147,9 +148,13 @@ const QUARTER_SECONDS = 0.5; // 120 bpm
 
 /**
  * The notation of a drill: every step is a quarter note (a chord is one column), in 4/4 bars. The
- * time of step `i` in the returned score is `i * 0.5`.
+ * time of step `i` in the returned score is `i * 0.5`. Notes are written by the key signature `fifths`
+ * (the key at the start of the piece).
  */
-export function drillNotation(steps: readonly (readonly number[])[]): {
+export function drillNotation(
+  steps: readonly (readonly number[])[],
+  fifths = 0,
+): {
   score: Score;
   stepTimes: number[];
 } {
@@ -168,6 +173,7 @@ export function drillNotation(steps: readonly (readonly number[])[]): {
     pedal: [],
     tempos: [{ tick: 0, time: 0, microsPerQuarter: 500_000 }],
     timeSignatures: [{ tick: 0, numerator: 4, denominator: 4 }],
+    keySignatures: [{ tick: 0, fifths }],
     duration: steps.length * QUARTER_SECONDS,
   };
   return { score: buildScore(piece), stepTimes: steps.map((_, i) => i * QUARTER_SECONDS) };
@@ -327,6 +333,7 @@ function drillLesson(
   pieceId: string,
   pieceTitle: string,
   pool: readonly (readonly number[])[],
+  fifths: number,
 ): CourseLesson {
   const limits = kind === 'notes' ? NOTE_DRILL : CHORD_DRILL;
   const length = clamp(pool.length * 2, limits);
@@ -341,7 +348,7 @@ function drillLesson(
     stepCount: length,
     create: (random) => {
       const steps = randomPicks(pool, length, random, (step) => step.join(','));
-      return lessonFrom(base, pieceTitle, steps, drillNotation(steps));
+      return lessonFrom(base, pieceTitle, steps, drillNotation(steps, fifths));
     },
   };
 }
@@ -357,6 +364,7 @@ function handStage(
   hand: 'right' | 'left',
   parts: readonly CoursePart[],
   piece: { id: string; title: string },
+  fifths: number,
 ): CourseStage | null {
   const mine = parts.filter((part) => stepsOf(part.bars, hand).length > 0);
   if (mine.length === 0) return null;
@@ -367,8 +375,10 @@ function handStage(
 
   const lessons: CourseLesson[] = [];
   // A drill needs two different items, or it would have to repeat the same one.
-  if (pitches.length >= 2) lessons.push(drillLesson('notes', hand, piece.id, piece.title, pitches));
-  if (chords.length >= 2) lessons.push(drillLesson('chords', hand, piece.id, piece.title, chords));
+  if (pitches.length >= 2)
+    lessons.push(drillLesson('notes', hand, piece.id, piece.title, pitches, fifths));
+  if (chords.length >= 2)
+    lessons.push(drillLesson('chords', hand, piece.id, piece.title, chords, fifths));
   for (const part of mine) lessons.push(playLesson('part', hand, piece.id, piece.title, [part]));
   for (const group of mergeGroups(mine.map((part) => part.number))) {
     const members = mine.filter((part) => group.includes(part.number));
@@ -382,8 +392,9 @@ export function buildCourse(score: Score, piece: { id: string; title: string }):
   const { parts, truncated, covered } = splitParts(score);
   const stages: CourseStage[] = [];
 
-  const right = handStage('right', parts, piece);
-  const left = handStage('left', parts, piece);
+  const fifths = score.bars[0]?.keySignature ?? 0; // the key at the start of the piece
+  const right = handStage('right', parts, piece, fifths);
+  const left = handStage('left', parts, piece, fifths);
   if (right) stages.push(right);
   if (left) stages.push(left);
 

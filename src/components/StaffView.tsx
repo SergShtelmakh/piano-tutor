@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import type { Clef } from '../core/staff.ts';
+import { gapStepsFor } from '../core/score.ts';
+import { positionAt, type Clef } from '../core/staff.ts';
 import { ROW_LEFT, ROW_RIGHT, SECOND_SHIFT, staffRow, type RowStep } from '../core/staffRow.ts';
 import { useLocale, useT } from '../i18n/context.ts';
 import { noteLabelFor } from '../i18n/noteNames.ts';
@@ -9,8 +10,12 @@ import { BASS_CLEF_PATH, TREBLE_CLEF_PATH } from './clefPaths.ts';
 const LINE_GAP = 10;
 const STEP = LINE_GAP / 2;
 const TOP = 36; // y of the top treble line (index 10); room above for ledger lines
-const HEIGHT = 168;
-const MARKER_Y = 154; // the triangle under the current step
+const BASE_GAP_STEPS = 4; // from the bottom treble line to the top bass line, without extra room
+// The built-in lessons are white keys: the lowest treble note is middle C (index 0) and the highest
+// bass note is B3 (index −1), so this is the minimum of four staff spaces, as in the score view.
+const BASS_SHIFT = (gapStepsFor(0, -1) - BASE_GAP_STEPS) * STEP;
+const HEIGHT = 168 + BASS_SHIFT;
+const MARKER_Y = 154 + BASS_SHIFT; // the triangle under the current step
 const NOTE_RX = 7;
 const NOTE_RY = 4.8;
 const LEDGER_HALF = 11;
@@ -18,9 +23,9 @@ const LEDGER_HALF = 11;
 const TREBLE_LINES = [10, 8, 6, 4, 2];
 const BASS_LINES = [-2, -4, -6, -8, -10];
 
-/** y of a staff index (10 is the top treble line, -10 the bottom bass line). */
-function yOf(index: number): number {
-  return TOP + (10 - index) * STEP;
+/** y of a staff index on a staff (10 is the top treble line, -10 the bottom bass line). */
+function yOf(index: number, clef: Clef): number {
+  return TOP + (10 - index) * STEP + (clef === 'bass' ? BASS_SHIFT : 0);
 }
 
 // The treble clef curls around the G line (G4 = index 4), the bass clef is built on the F line
@@ -96,18 +101,37 @@ export default function StaffView({
       className="h-auto w-full max-w-xl text-slate-900"
     >
       <g stroke="currentColor" strokeWidth={1} aria-hidden="true">
-        {[...TREBLE_LINES, ...BASS_LINES].map((index) => (
-          <line key={index} x1={ROW_LEFT} x2={ROW_RIGHT} y1={yOf(index)} y2={yOf(index)} />
-        ))}
+        {(
+          [
+            ['treble', TREBLE_LINES],
+            ['bass', BASS_LINES],
+          ] as const
+        ).flatMap(([clef, lines]) =>
+          lines.map((index) => (
+            <line
+              key={`${clef}-${index}`}
+              x1={ROW_LEFT}
+              x2={ROW_RIGHT}
+              y1={yOf(index, clef)}
+              y2={yOf(index, clef)}
+            />
+          )),
+        )}
         {/* The barline that joins the two staves. */}
-        <line x1={ROW_LEFT} x2={ROW_LEFT} y1={yOf(10)} y2={yOf(-10)} strokeWidth={1.5} />
+        <line
+          x1={ROW_LEFT}
+          x2={ROW_LEFT}
+          y1={yOf(10, 'treble')}
+          y2={yOf(-10, 'bass')}
+          strokeWidth={1.5}
+        />
       </g>
 
       {(['treble', 'bass'] as const).map((clef) => (
         <path
           key={clef}
           d={CLEFS[clef].path}
-          transform={`translate(${ROW_LEFT + 5} ${yOf(CLEFS[clef].lineIndex)}) scale(${LINE_GAP})`}
+          transform={`translate(${ROW_LEFT + 5} ${yOf(CLEFS[clef].lineIndex, clef)}) scale(${LINE_GAP})`}
           fill="currentColor"
           aria-hidden="true"
         />
@@ -144,22 +168,26 @@ function StepNotes({
   colorClass: string;
   playedNotes: readonly number[];
 }) {
+  // Ledger lines belong to the staff of their note, now that the staves are apart.
+  const ledgers = step.notes.flatMap((n) =>
+    positionAt(n.index, n.clef).ledger.map((index) => ({ clef: n.clef, index })),
+  );
   return (
     <g aria-hidden="true" className={colorClass}>
-      {step.ledger.map((index) => (
+      {ledgers.map(({ clef, index }) => (
         <line
-          key={index}
+          key={`${clef}-${index}`}
           x1={step.x - LEDGER_HALF}
           x2={step.x + LEDGER_HALF}
-          y1={yOf(index)}
-          y2={yOf(index)}
+          y1={yOf(index, clef)}
+          y2={yOf(index, clef)}
           stroke="currentColor"
           strokeWidth={1}
         />
       ))}
       {step.notes.map((n) => {
         const cx = step.x + (n.shifted ? SECOND_SHIFT : 0);
-        const cy = yOf(n.index);
+        const cy = yOf(n.index, n.clef);
         return (
           <g key={n.note} className={playedNotes.includes(n.note) ? COLOR.right : undefined}>
             {/* A whole note: a filled ellipse with a tilted hole. */}

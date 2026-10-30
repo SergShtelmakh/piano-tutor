@@ -1,7 +1,8 @@
 // Pure: turns a parsed piece into a simplified score (bars, columns, rests, ties, sharps).
 // Playback never uses it; it exists to be read. Drawing lives in `components/ScoreView.tsx`.
-import { tickToSeconds, type Piece } from './smf.ts';
-import { spellNote, type Clef } from './staff.ts';
+import { spell, keyAlterations, staffIndex } from './spelling.ts';
+import { tickToSeconds, type NoteSpelling, type Piece } from './smf.ts';
+import { positionAt, spellNote, type Clef } from './staff.ts';
 
 /** Columns and bars are counted in sixteenth notes. */
 export const UNITS_PER_QUARTER = 4;
@@ -26,8 +27,10 @@ export interface ScoreNote {
   /** Staff index, as in `StaffPosition`. */
   index: number;
   ledger: readonly number[];
-  /** The sign drawn before the notehead, or null. There is no key signature. */
-  accidental: 'sharp' | 'natural' | null;
+  /** How the note is written: a flat, natural, or sharp (the key signature may already give it). */
+  alter: -1 | 0 | 1;
+  /** The sign drawn before the notehead, or null when the key or the bar already gives it. */
+  accidental: 'sharp' | 'flat' | 'natural' | null;
   /** True for the upper note of a second, drawn to the right of the lower one. */
   shifted: boolean;
   /** Tied to the same note in the next column / from the previous column. */
@@ -62,20 +65,76 @@ export interface ScoreBar {
   timeSignature: TimeSignatureMark;
   /** True for the first bar and where the time signature changes. */
   showTimeSignature: boolean;
+  /** Sharps (positive) or flats (negative) of the key signature in this bar. */
+  keySignature: number;
+  /** True where the key signature changes (a system start draws its key anyway). */
+  showKeySignature: boolean;
   startTime: number;
   endTime: number;
   columns: Record<Clef, Column[]>;
 }
 
-export interface Score {
+export interface ScoreExtents {
+  /** The highest staff index on the treble staff (10 when it holds no note). */
+  highIndex: number;
+  /** The lowest staff index on the bass staff (−10 when it holds no note). */
+  lowIndex: number;
+  /**
+   * Staff steps (half a line gap) from the bottom line of the treble staff to the top line of the
+   * bass staff: at least 8 (four staff spaces), and more when notes written between the staves
+   * would otherwise touch.
+   */
+  gapSteps: number;
+}
+
+export interface Score extends ScoreExtents {
   bars: ScoreBar[];
   /** Lowest and highest note of the piece. */
   low: number;
   high: number;
 }
 
+/** The bottom line of the treble staff and the top line of the bass staff, as staff indexes. */
+const TREBLE_BOTTOM = 2;
+const BASS_TOP = -2;
+/** Four staff spaces between the staves; plain notation has two. */
+export const MIN_GAP_STEPS = 8;
+
+/** The vertical room a set of bars needs: its extremes and the space between the staves. */
+export function measureBars(bars: readonly ScoreBar[]): ScoreExtents {
+  let trebleLow = TREBLE_BOTTOM;
+  let trebleHigh = 10;
+  let bassLow = -10;
+  let bassHigh = BASS_TOP;
+  for (const bar of bars) {
+    for (const column of bar.columns.treble) {
+      for (const note of column.notes) {
+        trebleLow = Math.min(trebleLow, note.index);
+        trebleHigh = Math.max(trebleHigh, note.index);
+      }
+    }
+    for (const column of bar.columns.bass) {
+      for (const note of column.notes) {
+        bassLow = Math.min(bassLow, note.index);
+        bassHigh = Math.max(bassHigh, note.index);
+      }
+    }
+  }
+  return { highIndex: trebleHigh, lowIndex: bassLow, gapSteps: gapStepsFor(trebleLow, bassHigh) };
+}
+
+/**
+ * The space between the staves for the lowest note on the treble staff and the highest on the
+ * bass staff (staff indexes). With the notehead's own height they must keep a staff space apart;
+ * the bass staff moves down by whatever that takes beyond the minimum.
+ */
+export function gapStepsFor(trebleLow: number, bassHigh: number): number {
+  return Math.max(MIN_GAP_STEPS, MIN_GAP_STEPS + bassHigh - Math.min(trebleLow, TREBLE_BOTTOM));
+}
+
 interface QuantisedNote {
   note: number;
+  spelling?: NoteSpelling;
   start: number;
   end: number;
   /** The staff the note is drawn on. */
@@ -89,7 +148,17 @@ const CLEF_OF_HAND = { right: 'treble', left: 'bass' } as const;
 interface Span {
   start: number;
   end: number;
-  notes: number[];
+  notes: { note: number; spelling?: NoteSpelling }[];
+}
+
+/** The key signature in effect at a position, in sixteenths. */
+function keyAt(piece: Piece, unitTicks: number, unit: number): number {
+  const keys = piece.keySignatures ?? [];
+  let fifths = 0;
+  for (const key of keys) {
+    if (Math.round(key.tick / unitTicks) <= unit) fifths = key.fifths;
+  }
+  return fifths;
 }
 
 function splitIntoValues(units: number): { units: number; value: NoteValue; dots: 0 | 1 }[] {
@@ -122,6 +191,7 @@ function buildBars(
     const { numerator, denominator } = signatures[signature];
     const units = Math.max(1, Math.round((UNITS_PER_WHOLE * numerator) / denominator));
     const previous = bars[bars.length - 1]?.timeSignature;
+    const keySignature = keyAt(piece, unitTicks, unit);
     bars.push({
       number: bars.length + 1,
       startUnit: unit,
@@ -129,6 +199,8 @@ function buildBars(
       timeSignature: { numerator, denominator },
       showTimeSignature:
         !previous || previous.numerator !== numerator || previous.denominator !== denominator,
+      keySignature,
+      showKeySignature: bars.length === 0 || keySignature !== bars[bars.length - 1].keySignature,
     });
     unit += units;
   }
@@ -152,7 +224,17 @@ function spansOf(notes: readonly QuantisedNote[], endUnit: number): Span[] {
     const longest = Math.max(...group.map((note) => note.end));
     const end = Math.min(onsets[i + 1] ?? Infinity, longest);
     if (onset > cursor) spans.push({ start: cursor, end: onset, notes: [] });
-    spans.push({ start: onset, end, notes: [...new Set(group.map((note) => note.note))] });
+    // One entry per pitch; the first spelling given for a pitch is kept.
+    const pitches = new Map<number, { note: number; spelling?: NoteSpelling }>();
+    for (const note of group) {
+      if (!pitches.has(note.note)) {
+        pitches.set(note.note, {
+          note: note.note,
+          ...(note.spelling ? { spelling: note.spelling } : {}),
+        });
+      }
+    }
+    spans.push({ start: onset, end, notes: [...pitches.values()] });
     cursor = end;
   });
   if (cursor < endUnit) spans.push({ start: cursor, end: endUnit, notes: [] });
@@ -166,6 +248,7 @@ export function buildScore(piece: Piece): Score {
     const start = Math.round(note.startTick / unitTicks);
     return {
       note: note.note,
+      ...(note.spelling ? { spelling: note.spelling } : {}),
       start,
       end: Math.max(start + 1, Math.round(note.endTick / unitTicks)),
       clef: note.hand ? CLEF_OF_HAND[note.hand] : spellNote(note.note).position.clef,
@@ -210,13 +293,16 @@ export function buildScore(piece: Piece): Score {
 
       cuts.forEach((cut, i) => {
         const notes = [...span.notes]
-          .sort((a, b) => a - b)
-          .map((note): ScoreNote => {
-            const { position } = spellNote(note, clef);
+          .sort((a, b) => a.note - b.note)
+          .map(({ note, spelling }): ScoreNote => {
+            // Written as the file says, else by the key of this bar (flats in a flat key).
+            const written = spell(note, cut.bar.keySignature, spelling);
+            const position = positionAt(staffIndex(written.step, written.octave), clef);
             return {
               note,
               index: position.index,
               ledger: position.ledger,
+              alter: written.alter,
               accidental: null,
               shifted: false,
               tieNext: i < cuts.length - 1,
@@ -240,16 +326,20 @@ export function buildScore(piece: Piece): Score {
       });
     }
 
-    // Accidentals: a sharp is drawn when a position goes from natural to sharp within the bar,
-    // a natural when it goes back. A note tied from the previous column repeats nothing.
+    // Accidentals: each staff position starts every bar with the alteration of the key signature;
+    // a sign is drawn when a note differs from it (a sharp, a flat, or a natural), and then holds
+    // for the rest of the bar. A note tied from the previous column repeats nothing.
     for (const bar of bars) {
-      const state = new Map<number, 'sharp' | 'natural'>();
+      const keyAlter = keyAlterations(bar.keySignature);
+      const state = new Map<number, number>();
       for (const column of bar.columns[clef]) {
         for (const note of column.notes) {
-          const wanted = spellNote(note.note).sharp ? 'sharp' : 'natural';
-          if (wanted !== (state.get(note.index) ?? 'natural')) {
-            if (!note.tiePrev) note.accidental = wanted;
-            state.set(note.index, wanted);
+          const current = state.get(note.index) ?? keyAlter[((note.index % 7) + 7) % 7];
+          if (note.alter !== current) {
+            if (!note.tiePrev) {
+              note.accidental = note.alter > 0 ? 'sharp' : note.alter < 0 ? 'flat' : 'natural';
+            }
+            state.set(note.index, note.alter);
           }
         }
       }
@@ -260,6 +350,7 @@ export function buildScore(piece: Piece): Score {
     bars,
     low: Math.min(...piece.notes.map((note) => note.note)),
     high: Math.max(...piece.notes.map((note) => note.note)),
+    ...measureBars(bars),
   };
 }
 

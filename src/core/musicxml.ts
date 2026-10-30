@@ -6,12 +6,16 @@ import {
   tickToSeconds,
   type ParseResult,
   type PedalChange,
+  buildKeySignatures,
+  type KeySignature,
+  type NoteSpelling,
   type Piece,
   type PieceHand,
   type PieceNote,
   type TempoChange,
   type TimeSignature,
 } from './smf.ts';
+import { spellingFor } from './spelling.ts';
 import { child, childText, childrenNamed, parseXml, type XmlElement } from './xml.ts';
 
 /** The tempo is not read from the file: a quarter note lasts half a second (120 bpm). */
@@ -22,6 +26,7 @@ const MAX_TICKS_PER_QUARTER = 3840;
 const FALLBACK_TICKS_PER_QUARTER = 960;
 
 const STEP_SEMITONES: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const STEP_INDEX: Record<string, number> = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
 
 function gcd(a: number, b: number): number {
   return b === 0 ? a : gcd(b, a % b);
@@ -93,6 +98,7 @@ interface DraftNote {
   startTick: number;
   endTick: number;
   hand?: PieceHand;
+  spelling?: NoteSpelling;
 }
 
 interface PartResult {
@@ -100,9 +106,22 @@ interface PartResult {
   /** Pedal changes, in ticks before the pickup shift. */
   pedal: { tick: number; on: boolean }[];
   timeSignatures: TimeSignature[];
+  keySignatures: KeySignature[];
   /** Length of the first measure, in ticks. */
   firstMeasureTicks: number;
   tooMany: boolean;
+}
+
+/**
+ * How the file writes a note: its `<step>` (moved by the diatonic part of a `<transpose>`) with the
+ * alteration that makes the sounding pitch. A double sharp or flat, or anything that does not match
+ * the pitch, has no spelling and is written by the key signature like a MIDI note.
+ */
+function spellingOf(pitch: XmlElement, midi: number, diatonic: number): NoteSpelling | undefined {
+  const written = STEP_INDEX[childText(pitch, 'step') ?? ''];
+  if (written === undefined) return undefined;
+  const step = (((written + diatonic) % 7) + 7) % 7;
+  return spellingFor(midi, step);
 }
 
 function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
@@ -110,12 +129,14 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
     notes: [],
     pedal: [],
     timeSignatures: [],
+    keySignatures: [],
     firstMeasureTicks: 0,
     tooMany: false,
   };
   let divisions = 1;
   let staves = 1;
   let transpose = 0;
+  let diatonic = 0; // steps the written pitch is moved by `<transpose>`
   let cursor = 0; // ticks as a float, so a rounded duration never drifts
   let lastStart = 0;
   // Tied notes that continue into the next note of the same pitch.
@@ -139,6 +160,13 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
           const chromatic = numberOf(childText(shift, 'chromatic')) ?? 0;
           const octaveChange = numberOf(childText(shift, 'octave-change')) ?? 0;
           transpose = Math.round(chromatic + 12 * octaveChange);
+          diatonic = Math.round(numberOf(childText(shift, 'diatonic')) ?? 0);
+        }
+
+        const key = child(item, 'key');
+        const fifths = numberOf(key && childText(key, 'fifths'));
+        if (fifths !== undefined && Number.isInteger(fifths) && fifths >= -7 && fifths <= 7) {
+          result.keySignatures.push({ tick: Math.round(cursor), fifths });
         }
 
         const time = child(item, 'time');
@@ -200,7 +228,14 @@ function readPart(part: XmlElement, ticksPerQuarter: number): PartResult {
           const staff = Math.floor(numberOf(childText(item, 'staff')) ?? 1);
           const hand: PieceHand | undefined =
             staves >= 2 ? (staff <= 1 ? 'right' : 'left') : undefined;
-          draft = { note: midi, startTick, endTick, ...(hand ? { hand } : {}) };
+          const spelling = spellingOf(pitch, midi, diatonic);
+          draft = {
+            note: midi,
+            startTick,
+            endTick,
+            ...(hand ? { hand } : {}),
+            ...(spelling ? { spelling } : {}),
+          };
           result.notes.push(draft);
           if (result.notes.length > MAX_NOTES) {
             result.tooMany = true;
@@ -251,6 +286,12 @@ export function parseMusicXml(text: string): ParseResult {
   const first = signatures.get(0) ?? { tick: 0, numerator: 4, denominator: 4 };
   signatures.set(0, first);
 
+  // Key signatures the same way: the first part that says something at a tick wins; C when none.
+  const keys = new Map<number, KeySignature>();
+  for (const part of parts) {
+    for (const key of part.keySignatures) if (!keys.has(key.tick)) keys.set(key.tick, key);
+  }
+
   // A first measure shorter than its time signature is a pickup: everything moves later by the
   // missing length, so the bar lines of the score fall where the file has them (FR-7).
   const firstMeasure = parts.find((part) => part.firstMeasureTicks > 0)?.firstMeasureTicks ?? 0;
@@ -274,6 +315,7 @@ export function parseMusicXml(text: string): ParseResult {
         end: seconds(endTick),
         velocity: VELOCITY,
         ...(draft.hand ? { hand: draft.hand } : {}),
+        ...(draft.spelling ? { spelling: draft.spelling } : {}),
       };
     })
     .sort((a, b) => a.startTick - b.startTick || a.note - b.note);
@@ -293,8 +335,20 @@ export function parseMusicXml(text: string): ParseResult {
     )
     .sort((a, b) => a.tick - b.tick);
 
+  const keySignatures = buildKeySignatures(
+    [...keys.values()].map((key) => (key.tick === 0 ? key : { ...key, tick: key.tick + shift })),
+  );
+
   return {
     ok: true,
-    piece: { ticksPerQuarter, notes, pedal, tempos, timeSignatures, duration } satisfies Piece,
+    piece: {
+      ticksPerQuarter,
+      notes,
+      pedal,
+      tempos,
+      timeSignatures,
+      keySignatures,
+      duration,
+    } satisfies Piece,
   };
 }

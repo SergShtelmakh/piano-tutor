@@ -12,6 +12,18 @@ const SUSTAIN_CONTROLLER = 64;
 /** The hand a note is written for (a MusicXML staff), when the file says so. */
 export type PieceHand = 'right' | 'left';
 
+/** How a note is written: `step` 0–6 for C D E F G A B, and a flat, natural, or sharp. */
+export interface NoteSpelling {
+  step: number;
+  alter: -1 | 0 | 1;
+}
+
+export interface KeySignature {
+  tick: number;
+  /** Sharps (positive) or flats (negative) in the key signature, −7 … 7; 0 is C major / A minor. */
+  fifths: number;
+}
+
 export interface PieceNote {
   note: number;
   startTick: number;
@@ -22,6 +34,8 @@ export interface PieceNote {
   velocity: number;
   /** Set for notes of a two-staff MusicXML part; unset for MIDI (split at middle C). */
   hand?: PieceHand;
+  /** The spelling written in a MusicXML file; unset for MIDI (spelled by the key signature). */
+  spelling?: NoteSpelling;
 }
 
 export interface PedalChange {
@@ -51,6 +65,8 @@ export interface Piece {
   tempos: readonly TempoChange[];
   /** Sorted; always starts at tick 0 (4/4 when the file says nothing). */
   timeSignatures: readonly TimeSignature[];
+  /** Sorted; starts at tick 0 (C major when the file says nothing). Absent counts as C major. */
+  keySignatures?: readonly KeySignature[];
   /** Seconds until the last note ends. */
   duration: number;
 }
@@ -125,11 +141,19 @@ interface RawTrack {
   pedal: { tick: number; on: boolean }[];
   tempos: { tick: number; microsPerQuarter: number }[];
   timeSignatures: { tick: number; numerator: number; denominator: number }[];
+  keySignatures: KeySignature[];
   lastTick: number;
 }
 
 function readTrack(reader: Reader): RawTrack {
-  const track: RawTrack = { notes: [], pedal: [], tempos: [], timeSignatures: [], lastTick: 0 };
+  const track: RawTrack = {
+    notes: [],
+    pedal: [],
+    tempos: [],
+    timeSignatures: [],
+    keySignatures: [],
+    lastTick: 0,
+  };
   const open = new Map<number, { startTick: number; velocity: number }>(); // channel * 128 + note
   let tick = 0;
   let status = 0;
@@ -157,6 +181,9 @@ function readTrack(reader: Reader): RawTrack {
       if (type === 0x51 && data.length === 3) {
         const microsPerQuarter = (data[0] << 16) | (data[1] << 8) | data[2];
         if (microsPerQuarter > 0) track.tempos.push({ tick, microsPerQuarter });
+      } else if (type === 0x59 && data.length >= 2) {
+        const fifths = data[0] > 127 ? data[0] - 256 : data[0]; // a signed byte
+        if (fifths >= -7 && fifths <= 7) track.keySignatures.push({ tick, fifths });
       } else if (type === 0x58 && data.length >= 2 && data[0] > 0) {
         track.timeSignatures.push({
           tick,
@@ -255,6 +282,17 @@ function buildTimeSignatures(
   return sorted;
 }
 
+/** Key signatures sorted by tick, starting at tick 0 (C major); a later one at a tick wins. */
+export function buildKeySignatures(raw: readonly KeySignature[]): KeySignature[] {
+  const result: KeySignature[] = [{ tick: 0, fifths: 0 }];
+  for (const key of [...raw].sort((a, b) => a.tick - b.tick)) {
+    const last = result[result.length - 1];
+    if (key.tick === last.tick) last.fifths = key.fifths;
+    else if (key.fifths !== last.fifths) result.push({ ...key });
+  }
+  return result;
+}
+
 function parseUnchecked(bytes: Uint8Array): ParseResult {
   const reader = new Reader(bytes);
   if (bytes.length < 4 || reader.tag() !== 'MThd') return { ok: false, error: 'notMidi' };
@@ -317,6 +355,7 @@ function parseUnchecked(bytes: Uint8Array): ParseResult {
       pedal,
       tempos,
       timeSignatures: buildTimeSignatures(tracks.flatMap((track) => track.timeSignatures)),
+      keySignatures: buildKeySignatures(tracks.flatMap((track) => track.keySignatures)),
       duration,
     },
   };

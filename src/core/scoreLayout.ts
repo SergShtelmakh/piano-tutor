@@ -6,6 +6,9 @@ import type { Column, Score, ScoreBar } from './score.ts';
 /** Room for the clefs at the start of every system. */
 export const CLEF_WIDTH = 46;
 export const TIME_SIGNATURE_WIDTH = 24;
+/** Width of one sign of a key signature, and the air before and after the whole signature. */
+export const KEY_SIGN_WIDTH = 9;
+export const KEY_PAD = 4;
 export const BAR_PAD_LEFT = 8;
 export const BAR_PAD_RIGHT = 6;
 const MIN_SLOT = 18;
@@ -25,11 +28,23 @@ export interface Slot {
   x: number;
 }
 
+/** Width of a key signature with this many sharps or flats (nothing for C major). */
+export function keyWidth(fifths: number): number {
+  return fifths === 0 ? 0 : 2 * KEY_PAD + Math.min(7, Math.abs(fifths)) * KEY_SIGN_WIDTH;
+}
+
 export interface LayoutBar {
   bar: ScoreBar;
   /** x of the left bar line, from the start of the system. */
   x: number;
   width: number;
+  /**
+   * x where the key signature of this bar is drawn, or null when none is: after the clef at the
+   * start of a system, and at the start of a bar where the key changes.
+   */
+  keyX: number | null;
+  /** Room taken inside the bar by a key change (0 for the first bar of a system). */
+  keyRoom: number;
   slots: Slot[];
 }
 
@@ -62,6 +77,8 @@ interface BarShape {
   slots: { unit: number; time: number; room: number; width: number }[];
   /** Space that doesn't stretch: padding and the time signature. */
   fixed: number;
+  /** Space of a key change at the start of the bar; the first bar of a system has it after the clef. */
+  keyRoom: number;
   stretchable: number;
 }
 
@@ -96,6 +113,7 @@ function shapeOf(bar: ScoreBar): BarShape {
     bar,
     slots,
     fixed,
+    keyRoom: bar.showKeySignature ? keyWidth(bar.keySignature) : 0,
     stretchable: slots.reduce((sum, slot) => sum + slot.width, 0),
   };
 }
@@ -122,24 +140,29 @@ export function columnX(layoutBar: LayoutBar, column: Column): number {
  */
 export function layoutSystems(score: Score, width: number): ScoreLayout {
   const shapes = score.bars.map(shapeOf);
-  const natural = (shape: BarShape) => shape.fixed + shape.stretchable;
+  // Every system starts with the clefs and the key signature of its first bar, so the first bar
+  // of a system has no room of its own for a key change.
+  const leading = (shape: BarShape) => CLEF_WIDTH + keyWidth(shape.bar.keySignature);
+  const natural = (shape: BarShape, first: boolean) =>
+    shape.fixed + shape.stretchable + (first ? 0 : shape.keyRoom);
 
   const groups: BarShape[][] = [];
   let current: BarShape[] = [];
-  let used = CLEF_WIDTH;
+  let used = 0;
   for (const shape of shapes) {
-    if (current.length > 0 && used + natural(shape) > width) {
+    if (current.length > 0 && used + natural(shape, false) > width) {
       groups.push(current);
       current = [];
-      used = CLEF_WIDTH;
     }
+    if (current.length === 0) used = leading(shape);
+    used += natural(shape, current.length === 0);
     current.push(shape);
-    used += natural(shape);
   }
   if (current.length > 0) groups.push(current);
 
   const systems = groups.map((group, groupIndex): System => {
-    const needed = CLEF_WIDTH + group.reduce((sum, shape) => sum + natural(shape), 0);
+    const needed =
+      leading(group[0]) + group.reduce((sum, shape, i) => sum + natural(shape, i === 0), 0);
     const stretchable = group.reduce((sum, shape) => sum + shape.stretchable, 0);
     const isLast = groupIndex === groups.length - 1;
     const factor =
@@ -147,18 +170,29 @@ export function layoutSystems(score: Score, width: number): ScoreLayout {
 
     const bars: LayoutBar[] = [];
     const anchors: Anchor[] = [];
-    let x = CLEF_WIDTH;
-    for (const shape of group) {
+    let x = leading(group[0]);
+    for (const [i, shape] of group.entries()) {
       const barX = x;
+      const first = i === 0;
+      const fifths = shape.bar.keySignature;
+      // The first bar of a system draws its key after the clef; a later bar only where it changes.
+      const keyX = first
+        ? fifths === 0
+          ? null
+          : CLEF_WIDTH + KEY_PAD
+        : shape.bar.showKeySignature && fifths !== 0
+          ? barX + BAR_PAD_LEFT + KEY_PAD
+          : null;
+      const keyRoom = first ? 0 : shape.keyRoom;
       let slotStart =
-        barX + BAR_PAD_LEFT + (shape.bar.showTimeSignature ? TIME_SIGNATURE_WIDTH : 0);
+        barX + BAR_PAD_LEFT + keyRoom + (shape.bar.showTimeSignature ? TIME_SIGNATURE_WIDTH : 0);
       const slots: Slot[] = shape.slots.map((slot) => {
         const placed = { unit: slot.unit, time: slot.time, x: slotStart + slot.room + HEAD_OFFSET };
         slotStart += slot.width * factor;
         return placed;
       });
       const barWidth = slotStart + BAR_PAD_RIGHT - barX;
-      bars.push({ bar: shape.bar, x: barX, width: barWidth, slots });
+      bars.push({ bar: shape.bar, x: barX, width: barWidth, keyX, keyRoom, slots });
       for (const slot of slots) anchors.push({ time: slot.time, x: slot.x, barEnd: false });
       anchors.push({ time: shape.bar.endTime, x: barX + barWidth, barEnd: true });
       x += barWidth;
