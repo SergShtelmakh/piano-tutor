@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/preview-link.sh\"",
+            "asyncRewake": true,
+            "timeout": 1000,
+            "statusMessage": "Waiting for the preview build..."
+          }
+        ]
+      }
+    ]
+  }
+}
