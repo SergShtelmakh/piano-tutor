@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-30 — Phase 13: MusicXML import
+
+### Added
+
+- The Player opens scores exported from **MuseScore** as MusicXML: compressed `.mxl`, or plain `.musicxml` / `.xml` (up to 2 MB). The format is recognised from the file's content, so a renamed file still opens. Nothing leaves your device.
+- All parts of the score are played and shown together; percussion is skipped. The piece plays once at 120 bpm as written, and the tempo slider changes the speed. Pickup bars keep their bar lines, and the sustain pedal marks of the score are played.
+- A **Learn** button next to the name of any file you opened (MusicXML or your own `.mid`) builds a course from it, like for a library piece. In a score with two staves, the upper staff is the right hand and the lower staff is the left hand, so a melody that goes below middle C stays in the right hand.
+- Stars, XP, and your streak work in such a course. The file itself is not kept, so the course is not listed on Home; opening the same file again shows its stars.
+- The **Open MIDI file** button is now **Open file**, and the messages say MIDI or MusicXML. All changed messages are translated into Ukrainian, German, and French.
+
+### Notes
+
+- Tempo marks, repeats, grace notes, key signatures, and several voices on one staff are not read from the file yet.
+- Tested with scores built in code; please report scores from MuseScore that look or sound wrong.
+
 ## 2026-10-28 — Phase 11: melody learning
 
 ### Added
