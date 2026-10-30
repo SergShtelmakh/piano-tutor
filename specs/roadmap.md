@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–13 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size) and 13 (MusicXML import) are pending manual validation. Phase 14 (key signatures and spelling) is in progress; Phases 15 (beams) and 16 (several voices) follow.
+> Phases 1–14 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), and 14 (key signatures) are pending manual validation. Phases 15 (beams) and 16 (several voices) are next.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -167,7 +167,7 @@ Spec: [`specs/phase-13-musicxml-import/`](phase-13-musicxml-import/). Branch `fe
 - Not in this phase: tempo marks (fixed 120 bpm), repeats, grace notes, key signatures and real notation, MusicXML in the library.
 - **Outcome:** three pure readers in `src/core/`: `xml.ts` (a minimal XML reader; `null` on malformed input, depth limit, DOCTYPE skipped and never expanded), `zip.ts` (the central directory of a zip and the score lookup through `META-INF/container.xml`) and `musicxml.ts` (`parseMusicXml` → the same `Piece` as a MIDI file: `divisions` merged into one tick unit with a float cursor, chords, `backup` / `forward`, ties, grace and cue notes, percussion parts and `<unpitched>` skipped, `<transpose>` applied, a pickup bar shifted so bar lines match the file, a fixed 120 bpm, the pedal from `<pedal>` directions). `PieceNote` gained an optional `hand` (staff 1 → right, 2+ → left in a part with several staves); `buildScore` draws such a note on that hand's staff (`spellNote(note, clef)` gives the ledger lines for the chosen staff), so the course builder splits hands by the file, not by middle C. `src/playback/loadScoreFile.ts` replaced `loadMidiFile.ts`: it detects `MThd`, a zip, or XML text by content, inflates with `DecompressionStream('deflate-raw')` (20 MB limit), and returns an id `file-<FNV-1a hash of the bytes>` (`core/contentHash.ts`). `CourseProvider` now takes a **source** (library piece or file); a **Learn** button next to the name of any file opened from disk builds its course from the open score. Lesson ids are `melody:file-<hash>:…`, so stars survive a reload of the same file; `piecesInProgress` ignores them, so they are not on Home. No new dependencies; the saved progress format is unchanged. **Manual validation with real MuseScore exports was still open when this replan was written** (see `validation.md`; only the automated gates were run, on files built in code).
 
-## Phase 14 — Real notation: key signatures and spelling 🔨
+## Phase 14 — Real notation: key signatures and spelling ✅
 
 Goal: scores look like the printed music: a key signature on every system, notes spelled as written (D♭, not C♯), signs only where the key doesn't cover them, and room between the staves for the notes written there.
 
@@ -177,6 +177,7 @@ Spec: [`specs/phase-14-real-notation/`](phase-14-real-notation/). Branch `featur
 - Key signature at the start of every system and at key changes; accidentals only where the key and the bar don't already give them; flats drawn.
 - The space between the treble and bass staves is at least 4 staff spaces and grows for the notes between them.
 - Both drawings: `ScoreView` (Player, course lessons) and `StaffView` (built-in lessons). Note names outside the staff keep their sharps.
+- **Outcome:** `Piece` gained `keySignatures` (`{ tick, fifths }`, optional, C when absent) and `PieceNote.spelling` (`{ step, alter }`); MIDI reads `FF 59` (signed `sf`), MusicXML reads `<key><fifths>` (first per tick, shifted by the pickup padding) and keeps each note's written step, moved by `<diatonic>` in a transposed part; a double sharp or flat, or a step that doesn't match the pitch, falls back to the key. A new pure module `src/core/spelling.ts` spells notes (the file's spelling, else flats for fifths < 0 and sharps otherwise), gives the key's alteration per step, and the standard places of the signs (bass = treble − 14 steps). `buildScore` stores the key per bar (`keySignature`, `showKeySignature`), places notes by their spelling (`ScoreNote.alter`), and draws a sign only where the key and the bar don't give it (`flat` added). `measureBars` / `gapStepsFor` compute the space between the staves (at least 8 staff steps = 4 spaces, more for notes written between them, one value per piece); `ScoreView` and `StaffView` draw the bass staff on its own axis below that gap. `scoreLayout` reserves the key signature after the clef on every system and at a key change inside a system (`keyX`, `keyRoom`). Course drills are written in the key at the start of the piece. The flat outline is Bravura U+E260 (extracted like the sharp). No new dependencies; course ids and saved progress unchanged. Checked by rendering `Pitces Of Memory.mxl` (five flats), a 330 px system, and the key change in the Fantaisie-Impromptu with headless Chrome; **manual validation in the app was still open when this replan was written**.
 
 ## Phase 15 — Real notation: beams 📋
 
@@ -192,7 +193,8 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 
 - Play along with a `.mid` file: wait for the learner's notes step by step, judge them, and score the run (the player from Phase 9 only plays). Also: loop a section, mute a hand or track, drag and drop, a built-in example, a metronome / count-in.
 - Chord / interval / key analyzer with a chord dictionary.
-- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; key signatures and flats, beams, tuplets, and several voices remain) and falling-notes ("waterfall") view.
+- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; Phase 14 adds key signatures and flats; beams and several voices are Phases 15 and 16; tuplets remain) and falling-notes ("waterfall") view.
+- From Phase 14: a harmonic speller for MIDI (today a black key follows the sign of the key, so an F♯ in F major is written G♭); cancelling naturals at a key change and courtesy accidentals; double sharps and flats as glyphs; note names outside the staff following the spelling (D♭4 on the piano keys and in labels); key signatures in the built-in lessons (all in C today).
 - Session recorder with `.mid` export.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.
