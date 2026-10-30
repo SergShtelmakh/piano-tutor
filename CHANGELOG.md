@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-30 — Phase 14: key signatures
+
+### Added
+
+- Scores show the **key signature** after the clef on every line, and again where the key changes.
+- Notes are written as in the music: **flats** in flat keys (D♭, not C♯), and the spelling from a MuseScore file is kept as it is (E♯, C♭ …). Signs before notes appear only where the key signature doesn't already give them.
+- The library pieces and your own MIDI files use the key stored in the file, so they look closer to the printed music.
+- More **space between the two staves**, and more still when notes are written between them, so a left-hand chord above middle C no longer seems to sit on the treble staff.
+- Course lessons show the key and the spelling of their piece. The built-in lessons get the same spacing between the staves.
+
+### Notes
+
+- Note names on the on-screen piano and in messages keep their sharps.
+- Beams and several voices on one staff come in the next phases.
+
 ## 2026-10-30 — Phase 12: keyboard size
 
 ### Added
