@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { buildScore } from './score.ts';
 import {
   CLEF_WIDTH,
+  KEY_PAD,
   columnX,
+  keyWidth,
   layoutSystems,
   systemIndexAtTime,
   timeAtX,
@@ -196,5 +198,78 @@ describe('visible systems', () => {
   it('shows only the last system at the end', () => {
     const last = layout.systems.length - 1;
     expect(visibleSystems(layout, 1e6)).toEqual([last]);
+  });
+});
+
+describe('layoutSystems: key signatures', () => {
+  const withKeys = (count: number, keys: { tick: number; fifths: number }[]): Piece => ({
+    ...quarters(count),
+    keySignatures: keys,
+  });
+
+  it('gives a key signature no width in C major, and a width per sign otherwise', () => {
+    expect(keyWidth(0)).toBe(0);
+    expect(keyWidth(5)).toBeGreaterThan(keyWidth(2));
+    expect(keyWidth(-5)).toBe(keyWidth(5));
+    expect(keyWidth(9)).toBe(keyWidth(7)); // never more than seven signs
+  });
+
+  it('starts every system with the clef and the key, and the first bar after them', () => {
+    const score = buildScore(withKeys(8, [{ tick: 0, fifths: -3 }]));
+    const layout = layoutSystems(score, 400);
+    expect(layout.systems.length).toBeGreaterThan(1);
+    for (const system of layout.systems) {
+      expect(system.bars[0].x).toBe(CLEF_WIDTH + keyWidth(-3));
+      expect(system.bars[0].keyX).toBe(CLEF_WIDTH + KEY_PAD);
+      // The first notes start after the signature.
+      expect(system.bars[0].slots[0].x).toBeGreaterThan(system.bars[0].x);
+    }
+  });
+
+  it('is the same as before in C major: no key space, no key x', () => {
+    const layout = layoutSystems(buildScore(quarters(4)), 600);
+    expect(layout.systems[0].bars[0].x).toBe(CLEF_WIDTH);
+    expect(layout.systems.flatMap((s) => s.bars).every((b) => b.keyX === null)).toBe(true);
+  });
+
+  it('draws a key change inside a system at the start of its bar, and makes room for it', () => {
+    const plain = layoutSystems(buildScore(quarters(2)), 1200).systems[0];
+    const changed = layoutSystems(
+      buildScore(
+        withKeys(2, [
+          { tick: 0, fifths: 0 },
+          { tick: 16, fifths: 2 },
+        ]),
+      ),
+      1200,
+    ).systems[0];
+    expect(changed.bars[0].keyX).toBeNull();
+    expect(changed.bars[1].keyX).not.toBeNull();
+    expect(changed.bars[1].keyRoom).toBe(keyWidth(2));
+    expect(changed.bars[1].slots[0].x).toBeGreaterThan(changed.bars[1].keyX! + 2 * 9);
+    expect(changed.bars[1].slots[0].x - changed.bars[1].x).toBeGreaterThan(
+      plain.bars[1].slots[0].x - plain.bars[1].x,
+    );
+  });
+
+  it('does not count a key change at a system start twice', () => {
+    // 8 bars in C, then a change to 3 flats at bar 5: bar 5 starts a system at a narrow width.
+    const score = buildScore(
+      withKeys(8, [
+        { tick: 0, fifths: 0 },
+        { tick: 64, fifths: -3 },
+      ]),
+    );
+    const layout = layoutSystems(score, 330);
+    const starts = layout.systems.find((system) => system.bars[0].bar.number === 5);
+    if (starts) {
+      expect(starts.bars[0].keyRoom).toBe(0);
+      expect(starts.bars[0].x).toBe(CLEF_WIDTH + keyWidth(-3));
+    }
+    // Every bar after the change shows the new key at its system start or at the change itself.
+    for (const system of layout.systems) {
+      const first = system.bars[0];
+      expect(first.keyX === null).toBe(first.bar.keySignature === 0);
+    }
   });
 });

@@ -59,6 +59,11 @@ export function staffPosition(note: number): StaffPosition | null {
   return { clef, index, ledger: ledgerLines(index, clef === 'treble' ? TREBLE_LINES : BASS_LINES) };
 }
 
+/** The position of a staff index on a chosen staff, with the ledger lines it needs there. */
+export function positionAt(index: number, clef: Clef): StaffPosition {
+  return { clef, index, ledger: ledgerLines(index, clef === 'treble' ? TREBLE_LINES : BASS_LINES) };
+}
+
 export interface SpelledNote {
   position: StaffPosition;
   /** True for a black key: it is drawn as the white key below it, with a sharp. */

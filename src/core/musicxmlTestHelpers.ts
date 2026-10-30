@@ -44,17 +44,22 @@ export function attributes(
     beatType?: number;
     staves?: number;
     transpose?: number;
+    diatonic?: number;
+    fifths?: number;
   } = {},
 ) {
   return [
     '<attributes>',
     options.divisions !== undefined ? `<divisions>${options.divisions}</divisions>` : '',
+    options.fifths !== undefined ? `<key><fifths>${options.fifths}</fifths></key>` : '',
     options.beats !== undefined
       ? `<time><beats>${options.beats}</beats><beat-type>${options.beatType ?? 4}</beat-type></time>`
       : '',
     options.staves !== undefined ? `<staves>${options.staves}</staves>` : '',
     options.transpose !== undefined
-      ? `<transpose><chromatic>${options.transpose}</chromatic></transpose>`
+      ? `<transpose>${
+          options.diatonic !== undefined ? `<diatonic>${options.diatonic}</diatonic>` : ''
+        }<chromatic>${options.transpose}</chromatic></transpose>`
       : '',
     '</attributes>',
   ].join('');

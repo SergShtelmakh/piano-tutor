@@ -34,6 +34,9 @@ export const ev = {
   /** `denominatorPower`: 2 means a quarter, 3 an eighth. */
   timeSignature: (delta: number, numerator: number, denominatorPower: number) =>
     event(delta, 0xff, 0x58, 4, numerator, denominatorPower, 24, 8),
+  /** `fifths` is −7 … 7 (flats negative); `minor` is 0 for major, 1 for minor. */
+  keySignature: (delta: number, fifths: number, minor = 0) =>
+    event(delta, 0xff, 0x59, 2, fifths & 0xff, minor),
   sysex: (delta: number, ...data: number[]) => event(delta, 0xf0, ...vlq(data.length), ...data),
   text: (delta: number, text: string) =>
     event(delta, 0xff, 0x01, text.length, ...[...text].map((c) => c.charCodeAt(0))),

@@ -286,3 +286,51 @@ describe('parseMidiFile: errors', () => {
     }
   });
 });
+
+describe('parseMidiFile: key signature', () => {
+  const body = (...events: number[][]) =>
+    midiFile([track([...events, ev.noteOn(0, 0, 60), ev.noteOff(480, 0, 60)])]);
+
+  function keys(bytes: Uint8Array) {
+    const result = parseMidiFile(bytes);
+    if (!result.ok) throw new Error(`parse failed: ${result.error}`);
+    return result.piece.keySignatures;
+  }
+
+  it('is C major when the file has no key signature', () => {
+    expect(keys(body())).toEqual([{ tick: 0, fifths: 0 }]);
+  });
+
+  it('reads sharps and flats (a signed byte)', () => {
+    expect(keys(body(ev.keySignature(0, 2)))).toEqual([{ tick: 0, fifths: 2 }]);
+    expect(keys(body(ev.keySignature(0, -5)))).toEqual([{ tick: 0, fifths: -5 }]);
+    expect(keys(body(ev.keySignature(0, -7, 1)))).toEqual([{ tick: 0, fifths: -7 }]);
+  });
+
+  it('keeps a change, and starts from C when the first key comes later', () => {
+    expect(keys(body(ev.keySignature(480, -3), ev.keySignature(480, 1)))).toEqual([
+      { tick: 0, fifths: 0 },
+      { tick: 480, fifths: -3 },
+      { tick: 960, fifths: 1 },
+    ]);
+  });
+
+  it('lets a later key at the same tick replace the earlier one, and drops repeats', () => {
+    expect(keys(body(ev.keySignature(0, 1), ev.keySignature(0, -2)))).toEqual([
+      { tick: 0, fifths: -2 },
+    ]);
+    expect(keys(body(ev.keySignature(0, -2), ev.keySignature(480, -2)))).toEqual([
+      { tick: 0, fifths: -2 },
+    ]);
+  });
+
+  it('ignores a key outside −7 … 7', () => {
+    expect(keys(body(ev.keySignature(0, 9)))).toEqual([{ tick: 0, fifths: 0 }]);
+    expect(keys(body(ev.keySignature(0, -9)))).toEqual([{ tick: 0, fifths: 0 }]);
+  });
+
+  it('leaves MIDI notes without a spelling', () => {
+    const result = parseMidiFile(body(ev.keySignature(0, -5)));
+    expect(result.ok && result.piece.notes[0].spelling).toBeUndefined();
+  });
+});

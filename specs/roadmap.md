@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–13 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size) and 13 (MusicXML import) are pending manual validation.
+> Phases 1–13 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size) and 13 (MusicXML import) are pending manual validation. Phase 14 (key signatures and spelling) is in progress; Phases 15 (beams) and 16 (several voices) follow.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -166,6 +166,25 @@ Spec: [`specs/phase-13-musicxml-import/`](phase-13-musicxml-import/). Branch `fe
 - The Player opens MIDI and MusicXML files (detected by content); a **Learn** button builds a course from any file opened from disk. Stars are saved under an id from the file's content; the file is not kept, so it is not shown on Home.
 - Not in this phase: tempo marks (fixed 120 bpm), repeats, grace notes, key signatures and real notation, MusicXML in the library.
 - **Outcome:** three pure readers in `src/core/`: `xml.ts` (a minimal XML reader; `null` on malformed input, depth limit, DOCTYPE skipped and never expanded), `zip.ts` (the central directory of a zip and the score lookup through `META-INF/container.xml`) and `musicxml.ts` (`parseMusicXml` → the same `Piece` as a MIDI file: `divisions` merged into one tick unit with a float cursor, chords, `backup` / `forward`, ties, grace and cue notes, percussion parts and `<unpitched>` skipped, `<transpose>` applied, a pickup bar shifted so bar lines match the file, a fixed 120 bpm, the pedal from `<pedal>` directions). `PieceNote` gained an optional `hand` (staff 1 → right, 2+ → left in a part with several staves); `buildScore` draws such a note on that hand's staff (`spellNote(note, clef)` gives the ledger lines for the chosen staff), so the course builder splits hands by the file, not by middle C. `src/playback/loadScoreFile.ts` replaced `loadMidiFile.ts`: it detects `MThd`, a zip, or XML text by content, inflates with `DecompressionStream('deflate-raw')` (20 MB limit), and returns an id `file-<FNV-1a hash of the bytes>` (`core/contentHash.ts`). `CourseProvider` now takes a **source** (library piece or file); a **Learn** button next to the name of any file opened from disk builds its course from the open score. Lesson ids are `melody:file-<hash>:…`, so stars survive a reload of the same file; `piecesInProgress` ignores them, so they are not on Home. No new dependencies; the saved progress format is unchanged. **Manual validation with real MuseScore exports was still open when this replan was written** (see `validation.md`; only the automated gates were run, on files built in code).
+
+## Phase 14 — Real notation: key signatures and spelling 🔨
+
+Goal: scores look like the printed music: a key signature on every system, notes spelled as written (D♭, not C♯), signs only where the key doesn't cover them, and room between the staves for the notes written there.
+
+Spec: [`specs/phase-14-real-notation/`](phase-14-real-notation/). Branch `feature/real-notation`. Requested after validating Phase 13 with a real MuseScore export (five flats drawn as sharps and naturals, staves too close).
+
+- Key signatures from MusicXML (`<key><fifths>`) and MIDI (`FF 59`); spelling from MusicXML `<step>` / `<alter>`, MIDI black keys spelled by the key (flats in flat keys).
+- Key signature at the start of every system and at key changes; accidentals only where the key and the bar don't already give them; flats drawn.
+- The space between the treble and bass staves is at least 4 staff spaces and grows for the notes between them.
+- Both drawings: `ScoreView` (Player, course lessons) and `StaffView` (built-in lessons). Note names outside the staff keep their sharps.
+
+## Phase 15 — Real notation: beams 📋
+
+Goal: eighth and sixteenth notes are joined by beams within a beat (by quarter in simple metres, by dotted quarter in compound ones) instead of separate flags. Split out of Phase 14 during its spec (user decision).
+
+## Phase 16 — Real notation: several voices per staff 📋
+
+Goal: two voices on one staff are drawn with their own rhythms and stems (up for the upper voice, down for the lower), as in MuseScore, instead of being merged into one voice. Split out of Phase 14 during its spec (user decision); likely needs voices in the score model and in MusicXML reading (`<voice>`).
 
 ## Backlog 💡
 
