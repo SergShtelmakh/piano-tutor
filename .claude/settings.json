@@ -11,6 +11,13 @@
             "asyncRewake": true,
             "timeout": 1000,
             "statusMessage": "Waiting for the preview build..."
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/pr-ready.sh\"",
+            "asyncRewake": true,
+            "timeout": 2000,
+            "statusMessage": "Waiting for the pull request to be ready to merge..."
           }
         ]
       }
