@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState, type MouseEvent, type RefObject } from 'react';
+import { beamGroups, beamLine, heightAt, type BeamGroup, type BeamLine } from '../core/beams.ts';
 import {
   MIDDLE_LINE,
   stemDirection,
@@ -88,6 +89,95 @@ const yOf = (geometry: Geometry, index: number, clef: Clef) =>
 const SIGN_WIDTH = { sharp: 10, flat: 9, natural: 6.7 } as const;
 const SIGN_PATH = { sharp: SHARP_PATH, flat: FLAT_PATH, natural: NATURAL_PATH } as const;
 
+const BEAM_THICKNESS = 5;
+const BEAM_GAP = 2.5; // between the first and the second beam
+const HOOK_LENGTH = 9;
+
+/** The stem of a column that is joined by a beam: its direction and where the beam meets it. */
+interface BeamedColumn {
+  direction: 'up' | 'down';
+  /** Height of the beam above this stem, as a staff index. */
+  tip: number;
+}
+
+interface BeamDrawing {
+  clef: Clef;
+  direction: 'up' | 'down';
+  line: BeamLine;
+  /** x of each stem of the group, left to right. */
+  stemXs: number[];
+  group: BeamGroup;
+}
+
+interface SystemBeams {
+  drawings: BeamDrawing[];
+  byColumn: Map<Column, BeamedColumn>;
+}
+
+/** The beams of every bar of a system, with where each beamed stem ends. */
+function beamsOfSystem(system: System): SystemBeams {
+  const drawings: BeamDrawing[] = [];
+  const byColumn = new Map<Column, BeamedColumn>();
+  for (const layoutBar of system.bars) {
+    for (const clef of ['treble', 'bass'] as const) {
+      for (const group of beamGroups(layoutBar.bar, clef)) {
+        const columns = group.columns.map((i) => layoutBar.bar.columns[clef][i]);
+        const up = group.direction === 'up';
+        const stemXs = columns.map((column) => {
+          const x = columnX(layoutBar, column);
+          return up ? x + RX - 0.7 : x - RX + 0.7;
+        });
+        const stems = columns.map((column, i) => {
+          const indexes = column.notes.map((note) => note.index);
+          return { x: stemXs[i], near: up ? Math.max(...indexes) : Math.min(...indexes) };
+        });
+        const line = beamLine(stems, group.direction);
+        columns.forEach((column, i) =>
+          byColumn.set(column, { direction: group.direction, tip: heightAt(line, stemXs[i]) }),
+        );
+        drawings.push({ clef, direction: group.direction, line, stemXs, group });
+      }
+    }
+  }
+  return { drawings, byColumn };
+}
+
+/** The beams, second beams, and hooks of a system, drawn over the stems. */
+function BeamsView({ drawings, geometry }: { drawings: BeamDrawing[]; geometry: Geometry }) {
+  return (
+    <g className="text-slate-900" fill="currentColor">
+      {drawings.flatMap((drawing, k) => {
+        const toward = drawing.direction === 'up' ? 1 : -1; // from the stem tip towards the notes
+        const yAt = (x: number) => yOf(geometry, heightAt(drawing.line, x), drawing.clef);
+        const shape = (from: number, to: number, offset: number) => {
+          const y1 = yAt(from) + toward * offset;
+          const y2 = yAt(to) + toward * offset;
+          const t = toward * BEAM_THICKNESS;
+          return `${from},${y1} ${to},${y2} ${to},${y2 + t} ${from},${y1 + t}`;
+        };
+        const xs = drawing.stemXs;
+        const second = BEAM_THICKNESS + BEAM_GAP;
+        return [
+          <polygon key={`${k}-main`} points={shape(xs[0] - 0.7, xs[xs.length - 1] + 0.7, 0)} />,
+          ...drawing.group.secondary.map(({ from, to }) => (
+            <polygon key={`${k}-s${from}`} points={shape(xs[from] - 0.7, xs[to] + 0.7, second)} />
+          )),
+          ...drawing.group.hooks.map(({ at, side }) => (
+            <polygon
+              key={`${k}-h${at}`}
+              points={
+                side === 'left'
+                  ? shape(xs[at] - HOOK_LENGTH, xs[at] + 0.7, second)
+                  : shape(xs[at] - 0.7, xs[at] + HOOK_LENGTH, second)
+              }
+            />
+          )),
+        ];
+      })}
+    </g>
+  );
+}
+
 interface PlacedColumn {
   column: Column;
   clef: Clef;
@@ -140,6 +230,7 @@ function NoteColumn({
   geometry,
   sounding,
   position,
+  beam,
 }: {
   column: Column;
   clef: Clef;
@@ -147,9 +238,11 @@ function NoteColumn({
   geometry: Geometry;
   sounding: ReadonlySet<number>;
   position: number;
+  /** Set when a beam joins this column to its neighbours: the stem ends on the beam. */
+  beam?: BeamedColumn;
 }) {
   const notes = column.notes;
-  const direction = stemDirection(notes, clef);
+  const direction = beam?.direction ?? stemDirection(notes, clef);
   const noteX = (note: ScoreNote) => x + (note.shifted ? SHIFT : 0);
   const ys = notes.map((note) => yOf(geometry, note.index, clef));
   const yHigh = Math.min(...ys);
@@ -157,10 +250,16 @@ function NoteColumn({
   const open = column.value === 'whole' || column.value === 'half';
   const hasStem = column.value !== 'whole';
   const stemX = direction === 'up' ? x + RX - 0.7 : x - RX + 0.7;
-  const stemTip = direction === 'up' ? yHigh - STEM_LENGTH : yLow + STEM_LENGTH;
-  // A stem stops at the edge of its own staff, so it does not run into the other one.
-  const stemEnd =
-    clef === 'bass' && direction === 'up'
+  const stemTip = beam
+    ? yOf(geometry, beam.tip, clef)
+    : direction === 'up'
+      ? yHigh - STEM_LENGTH
+      : yLow + STEM_LENGTH;
+  // A stem stops at the edge of its own staff, so it does not run into the other one; a beamed
+  // stem runs to its beam.
+  const stemEnd = beam
+    ? stemTip
+    : clef === 'bass' && direction === 'up'
       ? Math.max(stemTip, yOf(geometry, -2, 'bass'))
       : clef === 'treble' && direction === 'down'
         ? Math.min(stemTip, yOf(geometry, 2, 'treble'))
@@ -192,7 +291,7 @@ function NoteColumn({
           strokeWidth={1.4}
         />
       )}
-      {(column.value === 'eighth' || column.value === 'sixteenth') && (
+      {!beam && (column.value === 'eighth' || column.value === 'sixteenth') && (
         <path
           d={FLAGS[column.value][direction]}
           transform={`translate(${stemX - 0.7} ${stemEnd}) scale(${GAP})`}
@@ -245,12 +344,14 @@ function BarView({
   isLast,
   sounding,
   position,
+  beams,
 }: {
   layoutBar: LayoutBar;
   geometry: Geometry;
   isLast: boolean;
   sounding: ReadonlySet<number>;
   position: number;
+  beams: ReadonlyMap<Column, BeamedColumn>;
 }) {
   const { bar } = layoutBar;
   const right = layoutBar.x + layoutBar.width;
@@ -296,6 +397,7 @@ function BarView({
               geometry={geometry}
               sounding={sounding}
               position={position}
+              beam={beams.get(column)}
             />
           );
         }),
@@ -352,12 +454,21 @@ function TimeSignature({ bar, x, geometry }: { bar: ScoreBar; x: number; geometr
 }
 
 /** Ties between notes of the same pitch in neighbouring columns of one staff. */
-function Ties({ columns, geometry }: { columns: PlacedColumn[]; geometry: Geometry }) {
+function Ties({
+  columns,
+  geometry,
+  beams,
+}: {
+  columns: PlacedColumn[];
+  geometry: Geometry;
+  beams: ReadonlyMap<Column, BeamedColumn>;
+}) {
   const marks: { key: string; d: string }[] = [];
   (['treble', 'bass'] as const).forEach((clef) => {
     const staff = columns.filter((placed) => placed.clef === clef && !placed.column.rest);
     staff.forEach((placed, i) => {
-      const direction = stemDirection(placed.column.notes, clef);
+      const direction =
+        beams.get(placed.column)?.direction ?? stemDirection(placed.column.notes, clef);
       const side = direction === 'up' ? 1 : -1; // the tie is on the side opposite the stem
       for (const note of placed.column.notes) {
         const y = yOf(geometry, note.index, clef) + side * (RY + 1);
@@ -475,6 +586,7 @@ const SystemView = memo(function SystemView({
   onSeek,
 }: SystemViewProps) {
   const columns = useMemo(() => placedColumns(system), [system]);
+  const beams = useMemo(() => beamsOfSystem(system), [system]);
   // A bar that is wider than the box is shrunk, down to a floor; below it the box scrolls.
   const viewWidth = Math.max(layoutWidth, system.width);
   const displayWidth =
@@ -539,9 +651,11 @@ const SystemView = memo(function SystemView({
           isLast={isLast && i === system.bars.length - 1}
           sounding={sounding}
           position={position}
+          beams={beams.byColumn}
         />
       ))}
-      <Ties columns={columns} geometry={geometry} />
+      <BeamsView drawings={beams.drawings} geometry={geometry} />
+      <Ties columns={columns} geometry={geometry} beams={beams.byColumn} />
       <CursorLine
         system={system}
         geometry={geometry}
