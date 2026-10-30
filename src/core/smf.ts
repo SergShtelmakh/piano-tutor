@@ -36,6 +36,11 @@ export interface PieceNote {
   hand?: PieceHand;
   /** The spelling written in a MusicXML file; unset for MIDI (spelled by the key signature). */
   spelling?: NoteSpelling;
+  /**
+   * 2 for the lower of two voices on a staff of a MusicXML part; unset for the only or the upper
+   * voice, and for every MIDI note (a MIDI file has no voices).
+   */
+  voice?: 1 | 2;
 }
 
 export interface PedalChange {

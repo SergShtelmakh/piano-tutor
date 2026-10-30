@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–15 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), and 15 (beams) are pending manual validation. Phase 16 (several voices) is next.
+> Phases 1–15 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), and 15 (beams) are pending manual validation. Phase 16 (several voices) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -190,9 +190,15 @@ Spec: [`specs/phase-15-beams/`](phase-15-beams/). Branch `feature/beams`.
 - Only the drawing changes (`ScoreView`); the score model, layout, playback, and courses stay as they are.
 - **Outcome:** a pure module `src/core/beams.ts`: `beatUnits` (the beat of a metre in sixteenths), `beamGroups(bar, clef)` (runs of neighbouring eighth / sixteenth columns that start in the same beat, at least two; the group's stem direction by the existing `stemDirection` over all its notes; second beams over runs of sixteenths and a hook, right for the first column and left otherwise, on a lone one), and `beamLine` / `heightAt` (the beam through the nearest notes of the first and last stem, a minimum stem of 7 steps away, its slope limited to 2 steps, then moved out until every stem is long enough). `ScoreView` computes the beams of each system once (`beamsOfSystem`), ends beamed stems on the beam (not cut at the staff edge, no flag), draws the beams as polygons half a staff space thick, and gives ties the group's direction. 40 new unit tests; no model, layout, or dependency changes. Checked by rendering `Pitces Of Memory.mxl`, the Fantaisie-Impromptu, and a 330 px system with headless Chrome; **manual validation in the app was still open when this replan was written**.
 
-## Phase 16 — Real notation: several voices per staff 📋
+## Phase 16 — Real notation: several voices per staff 🔨
 
 Goal: two voices on one staff are drawn with their own rhythms and stems (up for the upper voice, down for the lower), as in MuseScore, instead of being merged into one voice. Split out of Phase 14 during its spec (user decision); likely needs voices in the score model and in MusicXML reading (`<voice>`).
+
+Spec: [`specs/phase-16-voices/`](phase-16-voices/). Branch `feature/voices`.
+
+- Voices only from MusicXML `<voice>` (the library MIDI tracks are per staff, so MIDI stays one voice per staff).
+- Up to two voices per staff: upper stems up, lower stems down; voices 3–4 merge into the nearer one. Lower-voice rests only in bars where it plays; colliding noteheads move right.
+- Beams and ties per voice; course steps, lesson ids, and saved progress unchanged.
 
 ## Backlog 💡
 

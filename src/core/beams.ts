@@ -53,10 +53,13 @@ function groupDetails(columns: readonly Column[], indexes: number[], clef: Clef)
 
   return {
     columns: indexes,
-    direction: stemDirection(
-      members.flatMap((column) => column.notes),
-      clef,
-    ),
+    // A voice of a two-voice bar has its stem direction fixed; otherwise it follows the notes.
+    direction:
+      members[0].stem ??
+      stemDirection(
+        members.flatMap((column) => column.notes),
+        clef,
+      ),
     secondary,
     hooks,
   };
@@ -73,20 +76,25 @@ export function beamGroups(bar: ScoreBar, clef: Clef): BeamGroup[] {
   const beatOf = (column: Column) => Math.floor((column.unit - bar.startUnit) / beat);
 
   const groups: BeamGroup[] = [];
-  let current: number[] = [];
-  const flush = () => {
-    if (current.length >= 2) groups.push(groupDetails(columns, current, clef));
-    current = [];
-  };
-  columns.forEach((column, i) => {
-    if (!beamable(column)) {
-      flush();
-      return;
-    }
-    if (current.length > 0 && beatOf(columns[current[0]]) !== beatOf(column)) flush();
-    current.push(i);
-  });
-  flush();
+  // Each voice of the staff is beamed on its own: a group never joins notes of two voices.
+  for (const voice of [1, 2] as const) {
+    let current: number[] = [];
+    const flush = () => {
+      if (current.length >= 2) groups.push(groupDetails(columns, current, clef));
+      current = [];
+    };
+    columns.forEach((column, i) => {
+      if (column.voice !== voice) return;
+      if (!beamable(column)) {
+        flush();
+        return;
+      }
+      if (current.length > 0 && beatOf(columns[current[0]]) !== beatOf(column)) flush();
+      current.push(i);
+    });
+    flush();
+  }
+  groups.sort((a, b) => a.columns[0] - b.columns[0]);
   return groups;
 }
 

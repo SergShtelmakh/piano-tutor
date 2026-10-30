@@ -50,6 +50,17 @@ export interface Column {
   rest: boolean;
   /** Lowest note first. Empty for a rest. */
   notes: ScoreNote[];
+  /** Which voice of the staff the column belongs to; a staff has one voice unless a file has two. */
+  voice: 1 | 2;
+  /**
+   * The stem direction of a column in a bar where both voices of the staff play: up for the upper
+   * voice, down for the lower one. Unset when the direction follows the notes' position.
+   */
+  stem?: 'up' | 'down';
+  /** A rest of a two-voice bar is moved by this many staff steps (up for the upper voice). */
+  restShift?: number;
+  /** The noteheads of the lower voice move one notehead right when they touch the upper voice's. */
+  offset?: boolean;
 }
 
 export interface TimeSignatureMark {
@@ -100,6 +111,9 @@ const BASS_TOP = -2;
 /** Four staff spaces between the staves; plain notation has two. */
 export const MIN_GAP_STEPS = 8;
 
+/** A stem and its beam, in staff steps: the room above (below) the notes of a voice with forced stems. */
+const FORCED_STEM_STEPS = 9;
+
 /** The vertical room a set of bars needs: its extremes and the space between the staves. */
 export function measureBars(bars: readonly ScoreBar[]): ScoreExtents {
   let trebleLow = TREBLE_BOTTOM;
@@ -110,12 +124,16 @@ export function measureBars(bars: readonly ScoreBar[]): ScoreExtents {
     for (const column of bar.columns.treble) {
       for (const note of column.notes) {
         trebleLow = Math.min(trebleLow, note.index);
-        trebleHigh = Math.max(trebleHigh, note.index);
+        // A voice with its stems forced up has them above the staff, beam included.
+        trebleHigh = Math.max(
+          trebleHigh,
+          note.index + (column.stem === 'up' ? FORCED_STEM_STEPS : 0),
+        );
       }
     }
     for (const column of bar.columns.bass) {
       for (const note of column.notes) {
-        bassLow = Math.min(bassLow, note.index);
+        bassLow = Math.min(bassLow, note.index - (column.stem === 'down' ? FORCED_STEM_STEPS : 0));
         bassHigh = Math.max(bassHigh, note.index);
       }
     }
@@ -135,6 +153,8 @@ export function gapStepsFor(trebleLow: number, bassHigh: number): number {
 interface QuantisedNote {
   note: number;
   spelling?: NoteSpelling;
+  /** 2 for the lower voice of a staff; every other note is in the upper (or only) voice. */
+  voice?: 1 | 2;
   start: number;
   end: number;
   /** The staff the note is drawn on. */
@@ -241,6 +261,41 @@ function spansOf(notes: readonly QuantisedNote[], endUnit: number): Span[] {
   return spans;
 }
 
+const plays = (columns: readonly Column[]) => columns.some((column) => !column.rest);
+
+/**
+ * The columns of one staff of one bar from its two voices. With no lower voice (every MIDI file,
+ * and most bars) the upper voice is the staff, as before. A bar where only the lower voice plays
+ * is drawn as one voice. Where both play, the upper voice gets stems up and the lower stems down,
+ * their rests move apart, and noteheads that touch move the lower voice aside.
+ */
+function joinVoices(upper: Column[], lower: Column[]): Column[] {
+  if (!plays(lower)) return upper;
+  if (!plays(upper)) return lower.map((column) => ({ ...column, voice: 1 }));
+
+  const marked: Column[] = [
+    ...upper.map((column) =>
+      column.rest ? { ...column, restShift: 2 } : { ...column, stem: 'up' as const },
+    ),
+    ...lower.map((column) =>
+      column.rest ? { ...column, restShift: -2 } : { ...column, stem: 'down' as const },
+    ),
+  ];
+
+  // The lower voice's noteheads move right where they would touch the upper voice's at the same time.
+  for (const column of marked) {
+    if (column.voice !== 2 || column.rest) continue;
+    const partner = marked.find(
+      (other) => other.voice === 1 && !other.rest && other.unit === column.unit,
+    );
+    if (!partner) continue;
+    const upperLowest = Math.min(...partner.notes.map((note) => note.index));
+    const lowerHighest = Math.max(...column.notes.map((note) => note.index));
+    if (upperLowest - lowerHighest <= 1) column.offset = true;
+  }
+  return marked.sort((a, b) => a.unit - b.unit || a.voice - b.voice);
+}
+
 /** Builds the score of a piece. Starts and ends are rounded to the nearest sixteenth note. */
 export function buildScore(piece: Piece): Score {
   const unitTicks = piece.ticksPerQuarter / UNITS_PER_QUARTER;
@@ -249,6 +304,7 @@ export function buildScore(piece: Piece): Score {
     return {
       note: note.note,
       ...(note.spelling ? { spelling: note.spelling } : {}),
+      ...(note.voice === 2 ? { voice: 2 as const } : {}),
       start,
       end: Math.max(start + 1, Math.round(note.endTick / unitTicks)),
       clef: note.hand ? CLEF_OF_HAND[note.hand] : spellNote(note.note).position.clef,
@@ -266,25 +322,32 @@ export function buildScore(piece: Piece): Score {
   }));
   const endUnit = bars[bars.length - 1].startUnit + bars[bars.length - 1].units;
 
-  for (const clef of ['treble', 'bass'] as const) {
-    const staffNotes = quantised.filter((note) => note.clef === clef);
+  /** The columns of one voice of a staff, bar by bar. Rests fill the gaps of the voice. */
+  function voiceColumns(notes: readonly QuantisedNote[], clef: Clef, voice: 1 | 2): Column[][] {
+    const perBar: Column[][] = bars.map(() => []);
     let barIndex = 0;
 
-    for (const span of spansOf(staffNotes, endUnit)) {
+    for (const span of spansOf(notes, endUnit)) {
       // Cut the span at bar lines, then into drawable lengths; the pieces of a note are tied.
-      const cuts: { bar: ScoreBar; unit: number; units: number; value: NoteValue; dots: 0 | 1 }[] =
-        [];
+      const cuts: {
+        barIndex: number;
+        bar: ScoreBar;
+        unit: number;
+        units: number;
+        value: NoteValue;
+        dots: 0 | 1;
+      }[] = [];
       for (let pos = span.start; pos < span.end;) {
         while (bars[barIndex].startUnit + bars[barIndex].units <= pos) barIndex++;
         const bar = bars[barIndex];
         const stop = Math.min(span.end, bar.startUnit + bar.units);
         if (span.notes.length === 0 && pos === bar.startUnit && stop - pos === bar.units) {
           // A rest for a whole bar is a whole rest, whatever the metre.
-          cuts.push({ bar, unit: pos, units: bar.units, value: 'whole', dots: 0 });
+          cuts.push({ barIndex, bar, unit: pos, units: bar.units, value: 'whole', dots: 0 });
         } else {
           let at = pos;
           for (const part of splitIntoValues(stop - pos)) {
-            cuts.push({ bar, unit: at, ...part });
+            cuts.push({ barIndex, bar, unit: at, ...part });
             at += part.units;
           }
         }
@@ -292,7 +355,7 @@ export function buildScore(piece: Piece): Score {
       }
 
       cuts.forEach((cut, i) => {
-        const notes = [...span.notes]
+        const columnNotes = [...span.notes]
           .sort((a, b) => a.note - b.note)
           .map(({ note, spelling }): ScoreNote => {
             // Written as the file says, else by the key of this bar (flats in a flat key).
@@ -309,11 +372,11 @@ export function buildScore(piece: Piece): Score {
               tiePrev: i > 0,
             };
           });
-        notes.forEach((note, j) => {
-          const below = notes[j - 1];
+        columnNotes.forEach((note, j) => {
+          const below = columnNotes[j - 1];
           note.shifted = below !== undefined && note.index - below.index <= 1 && !below.shifted;
         });
-        cut.bar.columns[clef].push({
+        perBar[cut.barIndex].push({
           unit: cut.unit,
           units: cut.units,
           time: timeOf(cut.unit),
@@ -321,10 +384,27 @@ export function buildScore(piece: Piece): Score {
           value: cut.value,
           dots: cut.dots,
           rest: span.notes.length === 0,
-          notes,
+          notes: columnNotes,
+          voice,
         });
       });
     }
+    return perBar;
+  }
+
+  for (const clef of ['treble', 'bass'] as const) {
+    const staffNotes = quantised.filter((note) => note.clef === clef);
+    const upper = voiceColumns(
+      staffNotes.filter((note) => note.voice !== 2),
+      clef,
+      1,
+    );
+    const lowerNotes = staffNotes.filter((note) => note.voice === 2);
+    const lower = lowerNotes.length > 0 ? voiceColumns(lowerNotes, clef, 2) : null;
+
+    bars.forEach((bar, b) => {
+      bar.columns[clef] = joinVoices(upper[b], lower?.[b] ?? []);
+    });
 
     // Accidentals: each staff position starts every bar with the alteration of the key signature;
     // a sign is drawn when a note differs from it (a sharp, a flat, or a natural), and then holds
