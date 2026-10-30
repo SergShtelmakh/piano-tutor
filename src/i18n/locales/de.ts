@@ -18,6 +18,43 @@ export const de: PartialTranslations = {
     'Dieser Browser unterstützt kein MIDI. Nutze Chrome oder Edge, um ein MIDI-Keyboard zu verbinden, oder spiele mit dem Bildschirm-Klavier oder deiner Computertastatur.',
   midiInsecure:
     'MIDI benötigt eine sichere Seite (HTTPS oder localhost). Mit dem Bildschirm-Klavier und der Computertastatur kannst du trotzdem spielen.',
+  keyboardButtonNotSet: 'Tastatur: nicht eingestellt',
+  keyboardButtonSet: {
+    one: 'Tastatur: {count} Taste ({low}–{high})',
+    other: 'Tastatur: {count} Tasten ({low}–{high})',
+  },
+  keyboardPanelTitle: 'Meine Tastatur',
+  keyboardCountGroup: 'Anzahl der Tasten',
+  keyboardOctaveDown: 'Oktave tiefer',
+  keyboardOctaveUp: 'Oktave höher',
+  keyboardClear: 'Zurücksetzen',
+  keyboardClose: 'Schließen',
+  keyboardCalibrate: 'Durch Tastendruck bestimmen',
+  keyboardCalibrateNeedsMidi: 'Verbinde ein MIDI-Keyboard, um zu kalibrieren.',
+  keyboardCalibrateLowest: 'Drücke die tiefste Taste deiner Tastatur',
+  keyboardCalibrateHighest: 'Drücke die höchste Taste deiner Tastatur',
+  keyboardCalibrateResult: {
+    one: '{low}–{high} · {count} Taste',
+    other: '{low}–{high} · {count} Tasten',
+  },
+  keyboardSave: 'Speichern',
+  keyboardTryAgain: 'Nochmal versuchen',
+  keyboardCancel: 'Abbrechen',
+  lessonOutsideLow: {
+    one: '{count} Note dieser Lektion ist auf deiner Tastatur nicht vorhanden (tiefste: {lowest})',
+    other:
+      '{count} Noten dieser Lektion sind auf deiner Tastatur nicht vorhanden (tiefste: {lowest})',
+  },
+  lessonOutsideHigh: {
+    one: '{count} Note dieser Lektion ist auf deiner Tastatur nicht vorhanden (höchste: {highest})',
+    other:
+      '{count} Noten dieser Lektion sind auf deiner Tastatur nicht vorhanden (höchste: {highest})',
+  },
+  lessonOutsideBoth: {
+    one: '{count} Note dieser Lektion ist auf deiner Tastatur nicht vorhanden (tiefste: {lowest}, höchste: {highest})',
+    other:
+      '{count} Noten dieser Lektion sind auf deiner Tastatur nicht vorhanden (tiefste: {lowest}, höchste: {highest})',
+  },
   volumeLabel: 'Lautstärke',
   mute: 'Stummschalten',
   unmute: 'Ton einschalten',

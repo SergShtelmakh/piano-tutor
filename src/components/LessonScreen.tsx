@@ -1,10 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 import { HAND_KEYS } from '../core/course.ts';
 import { accuracy, pageOf } from '../core/lesson.ts';
+import { notesOutside } from '../core/keyboardRange.ts';
 import { hasChords, type LessonEntry } from '../core/lessons.ts';
 import type { RunReward } from '../core/progress.ts';
-import { usePluralT, useT } from '../i18n/context.ts';
+import { useLocale, usePluralT, useT } from '../i18n/context.ts';
+import { noteLabelFor } from '../i18n/noteNames.ts';
 import type { MessageKey } from '../i18n/locales/en.ts';
+import { useKeyboardRange } from '../keyboard/context.ts';
 import { useLesson } from '../lesson/useLesson.ts';
 import { useProgress } from '../progress/context.ts';
 
@@ -28,7 +31,9 @@ export default function LessonScreen({
 }) {
   const t = useT();
   const tp = usePluralT();
+  const { locale } = useLocale();
   const { recordRun } = useProgress();
+  const { range: keyboard } = useKeyboardRange();
   const [reward, setReward] = useState<RunReward | null>(null);
   // Defined once per entry, so `restart` keeps its identity; each call builds a new random order.
   const createLesson = useCallback(() => entry.create(Math.random), [entry]);
@@ -48,6 +53,8 @@ export default function LessonScreen({
     () => lesson.steps.slice(start, start + length),
     [lesson.steps, start, length],
   );
+  // Notes of this lesson that the learner's real keyboard doesn't have (the lesson stays playable).
+  const outside = useMemo(() => notesOutside(lesson.steps, keyboard), [lesson.steps, keyboard]);
   const title = t(lesson.titleKey, lesson.titleParams);
   const heading = lesson.hand
     ? t('courseHeading', { hand: t(HAND_KEYS[lesson.hand]), title })
@@ -84,6 +91,23 @@ export default function LessonScreen({
           <p className="text-slate-700">
             {t(hasChords(lesson) ? 'lessonInstructionChords' : 'lessonInstructionNotes')}
           </p>
+          {outside.count > 0 && (
+            <p role="note" className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-900">
+              {tp(
+                outside.lowest !== undefined && outside.highest !== undefined
+                  ? 'lessonOutsideBoth'
+                  : outside.lowest !== undefined
+                    ? 'lessonOutsideLow'
+                    : 'lessonOutsideHigh',
+                outside.count,
+                {
+                  lowest: outside.lowest === undefined ? '' : noteLabelFor(locale, outside.lowest),
+                  highest:
+                    outside.highest === undefined ? '' : noteLabelFor(locale, outside.highest),
+                },
+              )}
+            </p>
+          )}
           {lesson.notation ? (
             <NotationView
               notation={lesson.notation}

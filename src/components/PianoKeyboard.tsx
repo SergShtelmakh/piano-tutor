@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { codeForNote, QWERTY_LABELS } from '../core/computerKeymap.ts';
 import { keyLayout, scrollTarget, shownRange } from '../core/keyboardLayout.ts';
+import { isOutside } from '../core/keyboardRange.ts';
 import { pitchClass } from '../core/notes.ts';
 import { useLocale, useT } from '../i18n/context.ts';
 import { noteLabelFor, noteNameFor } from '../i18n/noteNames.ts';
 import { useBaseOctave, useHeldNotes, useNoteBus } from '../input/context.ts';
 import { loadKeyLabels } from '../input/keyboardLabels.ts';
+import { useKeyboardRange } from '../keyboard/context.ts';
 import { useElementWidth } from './useElementWidth.ts';
 
 const SCREEN_VELOCITY = 90;
@@ -21,12 +23,20 @@ export interface KeyFeedback {
   kind: 'right' | 'wrong';
 }
 
-function keyColor(note: number, black: boolean, lit: ReadonlySet<number>, feedback?: KeyFeedback) {
+function keyColor(
+  note: number,
+  black: boolean,
+  lit: ReadonlySet<number>,
+  outside: boolean,
+  feedback?: KeyFeedback,
+) {
   if (feedback?.note === note) {
     if (feedback.kind === 'right') return black ? 'bg-green-600' : 'bg-green-400';
     return black ? 'bg-red-600' : 'bg-red-400';
   }
   if (lit.has(note)) return black ? 'bg-sky-500' : 'bg-sky-300';
+  // Keys the learner's real keyboard doesn't have are dimmed, but still play and light up.
+  if (outside) return black ? 'bg-slate-500' : 'bg-slate-200';
   return black ? 'bg-slate-800' : 'bg-white';
 }
 
@@ -51,6 +61,7 @@ export default function PianoKeyboard({
   const { locale } = useLocale();
   const bus = useNoteBus();
   const { baseOctave } = useBaseOctave();
+  const { range: keyboard } = useKeyboardRange();
   const lit = useHeldNotes();
   const [keyLabels, setKeyLabels] = useState<Record<string, string>>({ ...QWERTY_LABELS });
   // pointerId -> note, so several fingers can hold several keys
@@ -213,6 +224,7 @@ export default function PianoKeyboard({
                       key.note,
                       false,
                       lit,
+                      isOutside(key.note, keyboard),
                       feedbackOrUndefined,
                     )}`}
                   >
@@ -237,6 +249,7 @@ export default function PianoKeyboard({
                       key.note,
                       true,
                       lit,
+                      isOutside(key.note, keyboard),
                       feedbackOrUndefined,
                     )}`}
                   >

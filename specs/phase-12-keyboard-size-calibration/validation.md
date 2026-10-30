@@ -4,10 +4,10 @@ The feature is done (and the branch can be merged) only when every box is checke
 
 ## Automated
 
-- [ ] `bun run lint` passes
-- [ ] `bun run format:check` passes
-- [ ] `bun run build` passes
-- [ ] `bun run test` passes — `src/core/keyboardRange.test.ts` covers the defaults, octave moves, calibration, the out-of-range count, and parsing
+- [x] `bun run lint` passes
+- [x] `bun run format:check` passes
+- [x] `bun run build` passes
+- [x] `bun run test` passes — `src/core/keyboardRange.test.ts` covers the defaults, octave moves, calibration, the out-of-range count, and parsing
 
 ## Manual checks
 

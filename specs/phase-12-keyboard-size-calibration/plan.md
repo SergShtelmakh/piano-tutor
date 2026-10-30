@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 12 — Keyboard size & calibration
 > Branch: `feature/keyboard-size-calibration`
-> Status: Draft
+> Status: Implemented (manual validation open)
 
 ## Goal
 
@@ -30,23 +30,23 @@ The learner tells the app how big their real keyboard is (by key count or by pre
 ## Task groups
 
 1. **Pure range core**
-   - [ ] `src/core/keyboardRange.ts`: types, key-count defaults, `keyCount`, `canShift` / `shiftRange`, `rangeFromNotes`, `isOutside`.
-   - [ ] Calibration state machine (`calibrationPress`).
-   - [ ] `notesOutside` (distinct pitches, lowest below / highest above).
-   - [ ] `parseKeyboardRange` / `serialiseKeyboardRange`.
-   - [ ] `keyboardRange.test.ts`: every default in the FR-3 table, shift limits (25 keys at the top / bottom, 76 and 88 can't move), calibration in both press orders and with a repeated note, out-of-range count with chords and repeated pitches, parse of valid / invalid / foreign data.
+   - [x] `src/core/keyboardRange.ts`: types, key-count defaults, `keyCount`, `canShift` / `shiftRange`, `rangeFromNotes`, `isOutside`.
+   - [x] Calibration state machine (`calibrationPress`).
+   - [x] `notesOutside` (distinct pitches, lowest below / highest above).
+   - [x] `parseKeyboardRange` / `serialiseKeyboardRange`.
+   - [x] `keyboardRange.test.ts`: every default in the FR-3 table, shift limits (25 keys at the top / bottom, 76 and 88 can't move), calibration in both press orders and with a repeated note, out-of-range count with chords and repeated pitches, parse of valid / invalid / foreign data.
 2. **Persistence and provider**
-   - [ ] `src/keyboard/storage.ts`, `context.ts`, `KeyboardRangeProvider.tsx`.
-   - [ ] Add the provider to `App.tsx`.
+   - [x] `src/keyboard/storage.ts`, `context.ts`, `KeyboardRangeProvider.tsx`.
+   - [x] Add the provider to `App.tsx`.
 3. **Setting and calibration UI**
-   - [ ] `src/keyboard/useCalibration.ts` (bus subscription, MIDI-only, stop on disconnect, unsubscribe on unmount).
-   - [ ] `src/components/KeyboardSizeControl.tsx`: button, panel, key counts, octave buttons with disabled states, Clear, Close, Calibrate (unavailable with a reason when not connected), result with Save / Try again / Cancel.
-   - [ ] `MidiStatus`: `lessonOpen` prop, render the control; `App.tsx` passes `lessonOpen={entry !== undefined}`.
-   - [ ] New strings in `en`, `uk`, `de`, `fr`.
+   - [x] `src/keyboard/useCalibration.ts` (bus subscription, MIDI-only, stop on disconnect, unsubscribe on unmount).
+   - [x] `src/components/KeyboardSizeControl.tsx`: button, panel, key counts, octave buttons with disabled states, Clear, Close, Calibrate (unavailable with a reason when not connected), result with Save / Try again / Cancel.
+   - [x] `MidiStatus`: `lessonOpen` prop, render the control; `App.tsx` passes `lessonOpen={entry !== undefined}`.
+   - [x] New strings in `en`, `uk`, `de`, `fr`.
 4. **Using the range**
-   - [ ] `PianoKeyboard`: dim keys outside the range (all modes); lit and feedback colours win.
-   - [ ] `LessonScreen`: out-of-range notice (FR-9) with its strings in all four locales.
-   - [ ] Check the panel and the notice at 360 px.
+   - [x] `PianoKeyboard`: dim keys outside the range (all modes); lit and feedback colours win.
+   - [x] `LessonScreen`: out-of-range notice (FR-9) with its strings in all four locales.
+   - [x] Check the panel and the notice at 360 px.
 
 ## Files touched
 

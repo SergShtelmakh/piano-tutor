@@ -16,6 +16,7 @@ import { CourseProvider } from './course/CourseProvider.tsx';
 import { useCourse } from './course/context.ts';
 import { useT } from './i18n/context.ts';
 import { NoteInputProvider } from './input/NoteInputProvider.tsx';
+import { KeyboardRangeProvider } from './keyboard/KeyboardRangeProvider.tsx';
 import { LibraryMarksProvider } from './library/LibraryMarksProvider.tsx';
 import { PlayerProvider } from './playback/PlayerProvider.tsx';
 import { ProgressProvider } from './progress/ProgressProvider.tsx';
@@ -51,7 +52,7 @@ function Shell() {
         {!entry && !courseOpen && mode === 'free' && (
           <p className="rounded-lg bg-white px-4 py-3 text-slate-600 shadow-sm">{t('playHint')}</p>
         )}
-        <MidiStatus />
+        <MidiStatus lessonOpen={entry !== undefined} />
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
           <VolumeControl />
           {!entry && !courseOpen && mode === 'free' && <OctaveControl />}
@@ -84,13 +85,15 @@ export default function App() {
   return (
     <ProgressProvider>
       <NoteInputProvider>
-        <LibraryMarksProvider>
-          <PlayerProvider>
-            <CourseProvider>
-              <Shell />
-            </CourseProvider>
-          </PlayerProvider>
-        </LibraryMarksProvider>
+        <KeyboardRangeProvider>
+          <LibraryMarksProvider>
+            <PlayerProvider>
+              <CourseProvider>
+                <Shell />
+              </CourseProvider>
+            </PlayerProvider>
+          </LibraryMarksProvider>
+        </KeyboardRangeProvider>
       </NoteInputProvider>
     </ProgressProvider>
   );

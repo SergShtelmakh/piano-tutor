@@ -17,6 +17,41 @@ export const en = {
     'This browser does not support MIDI. Use Chrome or Edge to connect a MIDI keyboard, or play with the on-screen piano or your computer keyboard.',
   midiInsecure:
     'MIDI needs a secure page (HTTPS or localhost). You can still play with the on-screen piano or your computer keyboard.',
+  keyboardButtonNotSet: 'Keyboard: not set',
+  keyboardButtonSet: {
+    one: 'Keyboard: {count} key ({low}–{high})',
+    other: 'Keyboard: {count} keys ({low}–{high})',
+  },
+  keyboardPanelTitle: 'My keyboard',
+  keyboardCountGroup: 'Number of keys',
+  keyboardOctaveDown: 'Octave down',
+  keyboardOctaveUp: 'Octave up',
+  keyboardClear: 'Clear',
+  keyboardClose: 'Close',
+  keyboardCalibrate: 'Calibrate by pressing keys',
+  keyboardCalibrateNeedsMidi: 'Connect a MIDI keyboard to calibrate.',
+  keyboardCalibrateLowest: 'Press the lowest key on your keyboard',
+  keyboardCalibrateHighest: 'Press the highest key on your keyboard',
+  keyboardCalibrateResult: {
+    one: '{low}–{high} · {count} key',
+    other: '{low}–{high} · {count} keys',
+  },
+  keyboardSave: 'Save',
+  keyboardTryAgain: 'Try again',
+  keyboardCancel: 'Cancel',
+  lessonOutsideLow: {
+    one: '{count} note in this lesson is not on your keyboard (lowest: {lowest})',
+    other: '{count} notes in this lesson are not on your keyboard (lowest: {lowest})',
+  },
+  lessonOutsideHigh: {
+    one: '{count} note in this lesson is not on your keyboard (highest: {highest})',
+    other: '{count} notes in this lesson are not on your keyboard (highest: {highest})',
+  },
+  lessonOutsideBoth: {
+    one: '{count} note in this lesson is not on your keyboard (lowest: {lowest}, highest: {highest})',
+    other:
+      '{count} notes in this lesson are not on your keyboard (lowest: {lowest}, highest: {highest})',
+  },
   volumeLabel: 'Volume',
   mute: 'Mute',
   unmute: 'Unmute',
