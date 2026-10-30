@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useT } from '../i18n/context.ts';
 import { useNoteBus, useSynth } from '../input/context.ts';
 import { connectMidi, getMidiSupport, type MidiStatus as Status } from '../input/midiAccess.ts';
+import KeyboardSizeControl from './KeyboardSizeControl.tsx';
 
-export default function MidiStatus() {
+/** `lessonOpen` hides the keyboard size: keys pressed to set it would be judged by the lesson. */
+export default function MidiStatus({ lessonOpen }: { lessonOpen: boolean }) {
   const t = useT();
   const bus = useNoteBus();
   const synth = useSynth();
@@ -45,6 +47,7 @@ export default function MidiStatus() {
         {status?.state === 'no-devices' && t('midiNoDevices')}
         {status?.state === 'denied' && t('midiDenied')}
       </p>
+      {!lessonOpen && <KeyboardSizeControl connected={status?.state === 'connected'} />}
     </div>
   );
 }

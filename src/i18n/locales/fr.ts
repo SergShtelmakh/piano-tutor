@@ -18,6 +18,41 @@ export const fr: PartialTranslations = {
     'Ce navigateur ne prend pas en charge le MIDI. Utilisez Chrome ou Edge pour connecter un clavier MIDI, ou jouez avec le piano à l’écran ou le clavier de votre ordinateur.',
   midiInsecure:
     'Le MIDI nécessite une page sécurisée (HTTPS ou localhost). Vous pouvez quand même jouer avec le piano à l’écran ou le clavier de votre ordinateur.',
+  keyboardButtonNotSet: 'Clavier : non défini',
+  keyboardButtonSet: {
+    one: 'Clavier : {count} touche ({low}–{high})',
+    other: 'Clavier : {count} touches ({low}–{high})',
+  },
+  keyboardPanelTitle: 'Mon clavier',
+  keyboardCountGroup: 'Nombre de touches',
+  keyboardOctaveDown: 'Octave plus bas',
+  keyboardOctaveUp: 'Octave plus haut',
+  keyboardClear: 'Effacer',
+  keyboardClose: 'Fermer',
+  keyboardCalibrate: 'Calibrer en appuyant sur des touches',
+  keyboardCalibrateNeedsMidi: 'Connectez un clavier MIDI pour calibrer.',
+  keyboardCalibrateLowest: 'Appuyez sur la touche la plus grave de votre clavier',
+  keyboardCalibrateHighest: 'Appuyez sur la touche la plus aiguë de votre clavier',
+  keyboardCalibrateResult: {
+    one: '{low}–{high} · {count} touche',
+    other: '{low}–{high} · {count} touches',
+  },
+  keyboardSave: 'Enregistrer',
+  keyboardTryAgain: 'Réessayer',
+  keyboardCancel: 'Annuler',
+  lessonOutsideLow: {
+    one: '{count} note de cette leçon n’est pas sur votre clavier (la plus grave : {lowest})',
+    other: '{count} notes de cette leçon ne sont pas sur votre clavier (la plus grave : {lowest})',
+  },
+  lessonOutsideHigh: {
+    one: '{count} note de cette leçon n’est pas sur votre clavier (la plus aiguë : {highest})',
+    other: '{count} notes de cette leçon ne sont pas sur votre clavier (la plus aiguë : {highest})',
+  },
+  lessonOutsideBoth: {
+    one: '{count} note de cette leçon n’est pas sur votre clavier (la plus grave : {lowest}, la plus aiguë : {highest})',
+    other:
+      '{count} notes de cette leçon ne sont pas sur votre clavier (la plus grave : {lowest}, la plus aiguë : {highest})',
+  },
   volumeLabel: 'Volume',
   mute: 'Couper le son',
   unmute: 'Rétablir le son',
