@@ -23,18 +23,22 @@ export default function CourseScreen({
 }) {
   const t = useT();
   const tp = usePluralT();
-  const { piece, status, course, error, closeCourse, retry } = useCourse();
+  const { source, status, course, error, closeCourse, retry } = useCourse();
   const { openLibraryPiece } = usePlayerValue();
   const { progress } = useProgress();
-  if (!piece) return null;
+  if (!source) return null;
 
-  const composer = LIBRARY_COMPOSERS.find((item) => item.id === piece.composer);
+  // A file from the learner's disk has no composer, portrait, or difficulty.
+  const piece = source.kind === 'library' ? source.piece : null;
+  const title = source.kind === 'library' ? source.piece.title : source.title;
+  const composer = piece && LIBRARY_COMPOSERS.find((item) => item.id === piece.composer);
   const lessons = course ? courseLessons(course) : [];
   const nextId = nextLessonId(lessons, progress.lessons);
   const finished = course ? finishedLessons(course, progress.lessons) : 0;
 
   const openInPlayer = () => {
-    void openLibraryPiece(piece);
+    // A file is still open in the Player; only a library piece has to be opened again.
+    if (piece) void openLibraryPiece(piece);
     onOpenInPlayer();
   };
 
@@ -50,10 +54,10 @@ export default function CourseScreen({
       </div>
 
       <section className="flex w-full flex-col items-center gap-1 rounded-lg bg-white px-4 py-3 shadow-sm">
-        <h2 className="text-xl font-bold">{piece.title}</h2>
+        <h2 className="text-xl font-bold">{title}</h2>
         <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-slate-700">
           {composer && <span>{t(composer.nameKey)}</span>}
-          <DifficultyDots level={piece.difficulty} />
+          {piece && <DifficultyDots level={piece.difficulty} />}
         </p>
         {status === 'ready' && course && (
           <>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { layoutSystems, visibleSystems } from '../core/scoreLayout.ts';
+import { useCourse } from '../course/context.ts';
 import { useLocale, usePluralT, useT } from '../i18n/context.ts';
 import { formatPercent } from '../i18n/core.ts';
 import { usePlayerState, usePlayerValue } from '../playback/context.ts';
@@ -26,6 +27,7 @@ export default function PlayerScreen() {
   const tp = usePluralT();
   const { locale } = useLocale();
   const { player, loaded, error, openFile } = usePlayerValue();
+  const { openFileCourse } = useCourse();
   const state = usePlayerState();
   const fileInput = useRef<HTMLInputElement>(null);
   const libraryId = useId();
@@ -66,7 +68,7 @@ export default function PlayerScreen() {
         <input
           ref={fileInput}
           type="file"
-          accept=".mid,.midi,audio/midi,audio/x-midi"
+          accept=".mid,.midi,.mxl,.musicxml,.xml,audio/midi,audio/x-midi,application/vnd.recordare.musicxml,application/vnd.recordare.musicxml+xml,application/xml"
           className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -79,6 +81,17 @@ export default function PlayerScreen() {
         />
         {loaded && !loaded.library && (
           <span className="font-semibold text-slate-800">{loaded.name}</span>
+        )}
+        {loaded?.fileId && (
+          <button
+            type="button"
+            className="min-h-11 rounded-md bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-700"
+            onClick={() =>
+              openFileCourse({ id: loaded.fileId!, title: loaded.name, score: loaded.score })
+            }
+          >
+            {t('libraryLearn')}
+          </button>
         )}
       </div>
 

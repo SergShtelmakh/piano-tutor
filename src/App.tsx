@@ -31,7 +31,7 @@ function Shell() {
   const courseEntry = lessonId ? course.lessonById(lessonId) : undefined;
   const entry = catalogEntry ?? courseEntry;
   // The course screen replaces Home / Free play / Player while a piece's course is open.
-  const courseOpen = course.piece !== null;
+  const courseOpen = course.source !== null;
 
   const changeMode = (next: Mode) => {
     setLessonId(null);

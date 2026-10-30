@@ -9,6 +9,9 @@ const PERCUSSION_CHANNEL = 9; // channel 10, counted from 1
 const DEFAULT_MICROS_PER_QUARTER = 500_000; // 120 bpm
 const SUSTAIN_CONTROLLER = 64;
 
+/** The hand a note is written for (a MusicXML staff), when the file says so. */
+export type PieceHand = 'right' | 'left';
+
 export interface PieceNote {
   note: number;
   startTick: number;
@@ -17,6 +20,8 @@ export interface PieceNote {
   start: number;
   end: number;
   velocity: number;
+  /** Set for notes of a two-staff MusicXML part; unset for MIDI (split at middle C). */
+  hand?: PieceHand;
 }
 
 export interface PedalChange {

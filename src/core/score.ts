@@ -78,7 +78,12 @@ interface QuantisedNote {
   note: number;
   start: number;
   end: number;
+  /** The staff the note is drawn on. */
+  clef: Clef;
 }
+
+/** A note with a hand goes on that hand's staff; otherwise the middle-C split decides. */
+const CLEF_OF_HAND = { right: 'treble', left: 'bass' } as const;
 
 /** A stretch of one staff that is either a chord or a rest, before it is cut at bar lines. */
 interface Span {
@@ -163,6 +168,7 @@ export function buildScore(piece: Piece): Score {
       note: note.note,
       start,
       end: Math.max(start + 1, Math.round(note.endTick / unitTicks)),
+      clef: note.hand ? CLEF_OF_HAND[note.hand] : spellNote(note.note).position.clef,
     };
   });
   const totalUnits = Math.max(...quantised.map((note) => note.end));
@@ -178,7 +184,7 @@ export function buildScore(piece: Piece): Score {
   const endUnit = bars[bars.length - 1].startUnit + bars[bars.length - 1].units;
 
   for (const clef of ['treble', 'bass'] as const) {
-    const staffNotes = quantised.filter((note) => spellNote(note.note).position.clef === clef);
+    const staffNotes = quantised.filter((note) => note.clef === clef);
     let barIndex = 0;
 
     for (const span of spansOf(staffNotes, endUnit)) {
@@ -206,7 +212,7 @@ export function buildScore(piece: Piece): Score {
         const notes = [...span.notes]
           .sort((a, b) => a - b)
           .map((note): ScoreNote => {
-            const { position } = spellNote(note);
+            const { position } = spellNote(note, clef);
             return {
               note,
               index: position.index,

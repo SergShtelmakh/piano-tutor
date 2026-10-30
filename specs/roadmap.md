@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–11 are done; the MVP scope from `mission.md` is covered. Phase 12 (keyboard size) is next.
+> Phases 1–11 are done; the MVP scope from `mission.md` is covered. Phase 12 (keyboard size) is specified on its own branch; Phase 13 (MusicXML import) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -153,6 +153,16 @@ From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 
 
 - A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
 - Re-check the open questions in the backlog note when the spec is written.
+
+## Phase 13 — MusicXML import 🔨
+
+Goal: open a score exported from MuseScore (`.mxl` or `.musicxml`) in the Player and learn it as a course, with every note in the hand it was written for.
+
+Spec: [`specs/phase-13-musicxml-import/`](phase-13-musicxml-import/). Branch `feature/musicxml-import`. A new phase requested by the user.
+
+- In-house XML and zip readers (pure; decompression through `DecompressionStream`); MusicXML becomes the existing `Piece`, with the hand of each note taken from its staff.
+- The Player opens MIDI and MusicXML files (detected by content); a **Learn** button builds a course from any file opened from disk. Stars are saved under an id from the file's content; the file is not kept, so it is not shown on Home.
+- Not in this phase: tempo marks (fixed 120 bpm), repeats, grace notes, key signatures and real notation, MusicXML in the library.
 
 ## Backlog 💡
 
