@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–14 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), and 14 (key signatures) are pending manual validation. Phase 15 (beams) is in progress; Phase 16 (several voices) is next.
+> Phases 1–15 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), and 15 (beams) are pending manual validation. Phase 16 (several voices) is next.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -179,7 +179,7 @@ Spec: [`specs/phase-14-real-notation/`](phase-14-real-notation/). Branch `featur
 - Both drawings: `ScoreView` (Player, course lessons) and `StaffView` (built-in lessons). Note names outside the staff keep their sharps.
 - **Outcome:** `Piece` gained `keySignatures` (`{ tick, fifths }`, optional, C when absent) and `PieceNote.spelling` (`{ step, alter }`); MIDI reads `FF 59` (signed `sf`), MusicXML reads `<key><fifths>` (first per tick, shifted by the pickup padding) and keeps each note's written step, moved by `<diatonic>` in a transposed part; a double sharp or flat, or a step that doesn't match the pitch, falls back to the key. A new pure module `src/core/spelling.ts` spells notes (the file's spelling, else flats for fifths < 0 and sharps otherwise), gives the key's alteration per step, and the standard places of the signs (bass = treble − 14 steps). `buildScore` stores the key per bar (`keySignature`, `showKeySignature`), places notes by their spelling (`ScoreNote.alter`), and draws a sign only where the key and the bar don't give it (`flat` added). `measureBars` / `gapStepsFor` compute the space between the staves (at least 8 staff steps = 4 spaces, more for notes written between them, one value per piece); `ScoreView` and `StaffView` draw the bass staff on its own axis below that gap. `scoreLayout` reserves the key signature after the clef on every system and at a key change inside a system (`keyX`, `keyRoom`). Course drills are written in the key at the start of the piece. The flat outline is Bravura U+E260 (extracted like the sharp). No new dependencies; course ids and saved progress unchanged. Checked by rendering `Pitces Of Memory.mxl` (five flats), a 330 px system, and the key change in the Fantaisie-Impromptu with headless Chrome; **manual validation in the app was still open when this replan was written**.
 
-## Phase 15 — Real notation: beams 🔨
+## Phase 15 — Real notation: beams ✅
 
 Goal: eighth and sixteenth notes are joined by beams within a beat (by quarter in simple metres, by dotted quarter in compound ones) instead of separate flags. Split out of Phase 14 during its spec (user decision).
 
@@ -188,6 +188,7 @@ Spec: [`specs/phase-15-beams/`](phase-15-beams/). Branch `feature/beams`.
 - Groups by beat (FR-2), computed for every file (MusicXML `<beam>` is ignored); a rest, a longer note, or a bar line ends a group.
 - One stem direction per group; a gently sloped primary beam (at most one staff space); second beams and hooks for sixteenths.
 - Only the drawing changes (`ScoreView`); the score model, layout, playback, and courses stay as they are.
+- **Outcome:** a pure module `src/core/beams.ts`: `beatUnits` (the beat of a metre in sixteenths), `beamGroups(bar, clef)` (runs of neighbouring eighth / sixteenth columns that start in the same beat, at least two; the group's stem direction by the existing `stemDirection` over all its notes; second beams over runs of sixteenths and a hook, right for the first column and left otherwise, on a lone one), and `beamLine` / `heightAt` (the beam through the nearest notes of the first and last stem, a minimum stem of 7 steps away, its slope limited to 2 steps, then moved out until every stem is long enough). `ScoreView` computes the beams of each system once (`beamsOfSystem`), ends beamed stems on the beam (not cut at the staff edge, no flag), draws the beams as polygons half a staff space thick, and gives ties the group's direction. 40 new unit tests; no model, layout, or dependency changes. Checked by rendering `Pitces Of Memory.mxl`, the Fantaisie-Impromptu, and a 330 px system with headless Chrome; **manual validation in the app was still open when this replan was written**.
 
 ## Phase 16 — Real notation: several voices per staff 📋
 
@@ -199,7 +200,8 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 
 - Play along with a `.mid` file: wait for the learner's notes step by step, judge them, and score the run (the player from Phase 9 only plays). Also: loop a section, mute a hand or track, drag and drop, a built-in example, a metronome / count-in.
 - Chord / interval / key analyzer with a chord dictionary.
-- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; Phase 14 adds key signatures and flats; beams and several voices are Phases 15 and 16; tuplets remain) and falling-notes ("waterfall") view.
+- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; Phase 14 adds key signatures and flats; Phase 15 beams; several voices are Phase 16; tuplets remain) and falling-notes ("waterfall") view.
+- From Phase 15: beams from the MusicXML file (`<beam>`); beams over rests and across a half bar in 4/4 (MuseScore's default); a grouping setting per piece; cross-staff beams; tuplet brackets.
 - From Phase 14: a harmonic speller for MIDI (today a black key follows the sign of the key, so an F♯ in F major is written G♭); cancelling naturals at a key change and courtesy accidentals; double sharps and flats as glyphs; note names outside the staff following the spelling (D♭4 on the piano keys and in labels); key signatures in the built-in lessons (all in C today).
 - Session recorder with `.mid` export.
 - Metronome and tempo-following play-along mode.
