@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–11 are done; the MVP scope from `mission.md` is covered. Phase 13 (MusicXML import) is done, pending manual validation with real files. Phase 12 (keyboard size) is specified on its own branch (`feature/keyboard-size-calibration`) and not yet implemented.
+> Phases 1–13 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size) and 13 (MusicXML import) are pending manual validation.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -145,16 +145,16 @@ Spec: [`specs/phase-11-melody-learning/`](phase-11-melody-learning/). Branch `fe
 - A **"Pieces you are learning"** section on Home.
 - **Outcome:** the course builder is pure (`src/core/course.ts`): steps come from the score's columns (a tied note is pressed once, rests are skipped), parts are at most 4 bars and 32 steps (first 6 parts), and a hand stage has at most 37 lessons per piece. A notes drill needs at least 2 distinct pitches and a chord drill at least 2 distinct chords; the both-hands stage exists only when both hand stages do. Lesson ids are stable (`melody:<pieceId>:<hand>:<kind>[-n]`), so the saved progress format is unchanged (`version: 1`). `src/course/` loads the piece and caches its course; lessons show their bars through the Player's `ScoreView` (`NotationView`; the current step is the "sounding" note and the cursor position), drills show quarter notes; the on-screen piano shows the lesson's whole range and the computer-key octave is picked to fit. `Lesson` gained optional `hand`, `pieceTitle`, `titleParams`, and `notation`; the judge is unchanged. Back from a course lesson returns to the course. No new dependencies. A test builds the course of all 34 library pieces from their real files. The user validated the feature by hand.
 
-## Phase 12 — Keyboard size & calibration 🔨
+## Phase 12 — Keyboard size & calibration ✅
 
 Goal: lessons and the on-screen piano know how many keys the learner's real keyboard has.
 
 Spec: [`specs/phase-12-keyboard-size-calibration/`](phase-12-keyboard-size-calibration/). Branch `feature/keyboard-size-calibration`.
 
-From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added, on to Phase 11 when the MIDI library was added, and on to Phase 12 when melody learning was added.
+From a backlog note (removed after the phase; decisions are in the spec); split out of Phase 8 during its spec; moved from Phase 9 to Phase 10 when MIDI file playback was added, on to Phase 11 when the MIDI library was added, and on to Phase 12 when melody learning was added.
 
 - A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
-- Re-check the open questions in the backlog note when the spec is written.
+- **Outcome:** one global range for the device (`KeyboardRange`: lowest and highest note, or `null` = not set, the default; saved as versioned JSON under `piano-tutor.keyboard`, invalid data means not set). A **Keyboard** button next to the MIDI status (shown when Web MIDI is available, hidden while a lesson is open) opens an inline panel: the six key counts with common start notes (25 / 37 from C3, 49 / 61 from C2, 76 from E1, 88 from A0), octave down / up (disabled at A0–C8), **Clear**, and **Calibrate** (needs a connected device): press the lowest key, then the highest; only `noteon` with source `midi` counts, the same key twice is ignored, and a disconnect stops it. The result (any size, also e.g. 32 keys) is saved or cancelled. Out-of-range keys of the on-screen piano are dimmed in every mode (they still play, light up, and flash); a lesson with notes outside the range shows a notice with the count of distinct pitches and the lowest / highest of them, and stays playable. The pure core is `src/core/keyboardRange.ts` (33 tests); `src/keyboard/` holds storage, the provider, and `useCalibration` (a note-bus subscriber). No new dependencies; the saved progress format is unchanged. **Manual validation was still open when this replan was written** (`validation.md`: the panel and the notice at 360 px, the dimmed key contrast, and calibration with a real MIDI keyboard; only the automated gates were run).
 
 ## Phase 13 — MusicXML import ✅
 
@@ -179,6 +179,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
+- From Phase 12: a separate range per MIDI device and a MIDI device picker (the range is global today); a first-connect hint to set the keyboard size; guessing the size from the device name as a hint; marks on lesson cards, course lists, and library pieces for notes the keyboard lacks; choosing lessons by range, or transposing a lesson into it; sizing the on-screen piano to the range.
 - From Phase 13: tempo marks, repeats / voltas, and grace notes from MusicXML; key signatures, flats as written, and several voices per staff (real notation, see the sheet-music item); keeping opened files on the device (IndexedDB) so a course from your own file shows on Home; `.mscz`; drag and drop; a hand override for MIDI files, which still split at middle C.
 - From Phase 11: **timing and play-along** inside a course lesson (judge rhythm, not only pitches; tempo; a metronome); a hand override for pieces where the staff split puts a melody in the wrong hand; a "Next lesson" button on the summary; lessons for the rest of a long piece (beyond the first 6 parts) or a chosen section; a mastery mark on a piece when all its lessons have 3 stars; a course shortcut on the Player screen for the piece that is open.
 - From Phase 10: a search box and sorting (by title or length); more pieces and composers, always Public Domain on the piece's own Mutopia page (for example Scarlatti, Liszt, Mendelssohn, and more of Haydn and Handel); a default tempo per piece (some Mutopia files carry the default 60 bpm, which is why the Rondo alla Turca was left out); showing a short note or biography per composer; recently played pieces; deep links to a piece; a computed difficulty to cross-check the hand ratings; letting a done mark count towards progress. CC-BY pieces with visible credit only if the licence policy is ever relaxed.

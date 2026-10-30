@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-30 — Phase 12: keyboard size
+
+### Added
+
+- A **Keyboard** button next to the MIDI status: tell the app how many keys your real keyboard has — 25, 37, 49, 61, 76 or 88 — and move the range up or down by octaves if it starts on another note. The size is saved on your device.
+- **Calibrate** by playing: press the lowest key of your keyboard, then the highest, and save the result (any size works, not only the standard ones). It needs a connected MIDI keyboard and only listens to it.
+- Keys of the on-screen piano that your keyboard doesn't have are **dimmed**. They still play, light up, and show right and wrong in lessons.
+- A lesson that has notes your keyboard doesn't have shows a notice with how many there are and the lowest and highest of them. The lesson stays playable.
+- All new messages are translated into Ukrainian, German, and French.
+
+### Notes
+
+- Nothing is set until you choose a size, and the app looks and works as before. The Keyboard button is hidden while a lesson is open.
+- The size is one setting for this device, not one per MIDI keyboard.
+
 ## 2026-10-30 — Phase 13: MusicXML import
 
 ### Added
