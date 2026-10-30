@@ -16,6 +16,8 @@ import {
 } from './course.ts';
 import { LIBRARY_PIECES } from './libraryCatalog.ts';
 import { buildScore, type Score } from './score.ts';
+import { parseMusicXml } from './musicxml.ts';
+import { attributes, backup, measure, note, part, score } from './musicxmlTestHelpers.ts';
 import type { Piece } from './smf.ts';
 
 // One tick is one sixteenth note (4 ticks per quarter) at 120 bpm: 0.125 s each. A 4/4 bar is 16
@@ -539,7 +541,45 @@ describe('lesson ids and progress', () => {
     ]);
   });
 
+  it('leaves out courses of files opened from disk', () => {
+    const id = lessonId('file-0a1b2c3d', 'right', 'part', '1');
+    expect(pieceIdOfLesson(id)).toBe('file-0a1b2c3d');
+    expect(piecesInProgress({ [id]: record(3) }, LIBRARY_PIECES)).toEqual([]);
+  });
+
   it('shows nothing when no course lesson is finished', () => {
     expect(piecesInProgress({ 'note-reading': record(3) }, LIBRARY_PIECES)).toEqual([]);
+  });
+});
+
+describe('a course built from MusicXML', () => {
+  // The right-hand melody goes below middle C (B3, A3); the left hand plays D4 above it.
+  const xml = score([
+    part(
+      'P1',
+      measure(
+        attributes({ divisions: 1, beats: '4', staves: 2 }),
+        note('C', 4, 1, { staff: 1 }),
+        note('B', 3, 1, { staff: 1 }),
+        note('A', 3, 1, { staff: 1 }),
+        note('B', 3, 1, { staff: 1 }),
+        backup(4),
+        note('C', 3, 2, { staff: 2 }),
+        note('D', 4, 2, { staff: 2 }),
+      ),
+    ),
+  ]);
+
+  it('keeps each note in the hand it was written for', () => {
+    const result = parseMusicXml(xml);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const built = buildScore(result.piece);
+    const pitches = (hand: 'right' | 'left') =>
+      new Set(stepsOf(built.bars, hand).flatMap((step) => step.notes));
+    expect(pitches('right')).toEqual(new Set([60, 59, 57]));
+    expect(pitches('left')).toEqual(new Set([48, 62]));
+    const course = buildCourse(built, { id: 'file-test', title: 'Test' });
+    expect(course.stages.map((stage) => stage.hand)).toEqual(['right', 'left', 'both']);
   });
 });

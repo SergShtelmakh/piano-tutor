@@ -89,3 +89,28 @@ describe('spellNote', () => {
     }
   });
 });
+
+describe('spellNote on a chosen staff', () => {
+  it('is unchanged when the staff is the natural one', () => {
+    expect(spellNote(64, 'treble')).toEqual(spellNote(64));
+    expect(spellNote(50, 'bass')).toEqual(spellNote(50));
+  });
+
+  it('puts B3 on the treble staff with the ledger lines it needs there', () => {
+    const { position } = spellNote(59, 'treble'); // B3: one step below middle C
+    expect(position.clef).toBe('treble');
+    expect(position.index).toBe(-1);
+    expect(position.ledger).toEqual([0]);
+  });
+
+  it('puts D4 on the bass staff with ledger lines above it', () => {
+    const { position } = spellNote(62, 'bass');
+    expect(position.clef).toBe('bass');
+    expect(position.index).toBe(1);
+    expect(position.ledger).toEqual([0]);
+  });
+
+  it('keeps the sharp of a black key', () => {
+    expect(spellNote(58, 'treble')).toMatchObject({ sharp: true, position: { clef: 'treble' } });
+  });
+});

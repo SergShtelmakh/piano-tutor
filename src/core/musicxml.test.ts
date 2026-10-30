@@ -1,0 +1,282 @@
+import { describe, expect, it } from 'vitest';
+import { parseMusicXml } from './musicxml.ts';
+import {
+  attributes,
+  backup,
+  forward,
+  measure,
+  note,
+  part,
+  pedal,
+  rest,
+  score,
+} from './musicxmlTestHelpers.ts';
+import type { Piece } from './smf.ts';
+
+function parse(xml: string): Piece {
+  const result = parseMusicXml(xml);
+  if (!result.ok) throw new Error(`parse failed: ${result.error}`);
+  return result.piece;
+}
+
+const simple = (...content: string[]) =>
+  parse(score([part('P1', measure(attributes({ divisions: 1, beats: '4' }), ...content))]));
+
+describe('parseMusicXml: notes', () => {
+  it('reads step, alter, and octave', () => {
+    const piece = simple(
+      note('C', 4, 1),
+      note('C', 4, 1, { alter: 1 }),
+      note('B', 3, 1, { alter: -1 }),
+      note('A', 0, 1),
+    );
+    expect(piece.notes.map((n) => n.note).sort((a, b) => a - b)).toEqual([21, 58, 60, 61]);
+  });
+
+  it('places notes by duration and counts rests', () => {
+    const piece = simple(note('C', 4, 1), rest(2), note('D', 4, 1));
+    expect(piece.notes.map((n) => [n.note, n.startTick, n.endTick])).toEqual([
+      [60, 0, 1],
+      [62, 3, 4],
+    ]);
+  });
+
+  it('follows a change of divisions inside a part', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 2, beats: '2' }), note('C', 4, 2), note('D', 4, 2)),
+          measure(attributes({ divisions: 4 }), note('E', 4, 4), note('F', 4, 4)),
+        ),
+      ]),
+    );
+    expect(piece.ticksPerQuarter).toBe(4);
+    expect(piece.notes.map((n) => [n.note, n.startTick, n.endTick])).toEqual([
+      [60, 0, 4],
+      [62, 4, 8],
+      [64, 8, 12],
+      [65, 12, 16],
+    ]);
+  });
+
+  it('starts chord notes together', () => {
+    const piece = simple(note('C', 4, 2), note('E', 4, 2, { chord: true }), note('G', 4, 2));
+    expect(piece.notes.map((n) => [n.note, n.startTick])).toEqual([
+      [60, 0],
+      [64, 0],
+      [67, 2],
+    ]);
+  });
+
+  it('puts two voices on one timeline with backup and forward', () => {
+    const piece = simple(
+      note('E', 5, 4, { voice: 1 }),
+      backup(4),
+      note('C', 4, 2, { voice: 2 }),
+      note('D', 4, 1, { voice: 2 }),
+      forward(1),
+    );
+    expect(piece.notes.map((n) => [n.note, n.startTick])).toEqual([
+      [60, 0],
+      [76, 0],
+      [62, 2],
+    ]);
+  });
+
+  it('starts the next measure after the longest voice', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4' }), note('C', 4, 4), backup(4), rest(2)),
+          measure(note('D', 4, 4)),
+        ),
+      ]),
+    );
+    expect(piece.notes.map((n) => n.startTick)).toEqual([0, 4]);
+  });
+
+  it('joins tied notes into one', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(
+            attributes({ divisions: 1, beats: '4' }),
+            rest(2),
+            note('C', 4, 2, { tie: 'start' }),
+          ),
+          measure(note('C', 4, 2, { tie: 'both' }), note('D', 4, 2)),
+          measure(note('C', 4, 4, { tie: 'stop' })),
+        ),
+      ]),
+    );
+    const c = piece.notes.filter((n) => n.note === 60);
+    expect(c).toHaveLength(1);
+    expect([c[0].startTick, c[0].endTick]).toEqual([2, 12]);
+  });
+
+  it('skips grace notes, and cue notes sound nothing but still take time', () => {
+    const piece = simple(
+      note('D', 4, 0, { grace: true }),
+      note('C', 4, 1),
+      note('G', 5, 2, { cue: true }),
+      note('E', 4, 1),
+    );
+    expect(piece.notes.map((n) => [n.note, n.startTick])).toEqual([
+      [60, 0],
+      [64, 3],
+    ]);
+  });
+
+  it('adds the transposition of the part', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4', transpose: -2 }), note('C', 5, 4)),
+        ),
+      ]),
+    );
+    expect(piece.notes[0].note).toBe(70);
+  });
+});
+
+describe('parseMusicXml: parts and hands', () => {
+  it('merges parts and ignores percussion parts and unpitched notes', () => {
+    const xml = score(
+      [
+        part('P1', measure(attributes({ divisions: 1, beats: '4' }), note('C', 4, 4))),
+        part('P2', measure(attributes({ divisions: 1 }), note('G', 3, 4))),
+        part('P3', measure(attributes({ divisions: 1 }), note('C', 2, 4))),
+        part(
+          'P4',
+          measure(
+            attributes({ divisions: 1 }),
+            note('C', 2, 2, { unpitched: true }),
+            note('A', 4, 2),
+          ),
+        ),
+      ],
+      ['P3'],
+    );
+    expect(parse(xml).notes.map((n) => n.note)).toEqual([55, 60, 69]);
+  });
+
+  it('takes the hand from the staff of a two-staff part', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(
+            attributes({ divisions: 1, beats: '4', staves: 2 }),
+            note('B', 3, 4, { staff: 1 }),
+            backup(4),
+            note('D', 4, 4, { staff: 2 }),
+          ),
+        ),
+      ]),
+    );
+    const byNote = Object.fromEntries(piece.notes.map((n) => [n.note, n.hand]));
+    expect(byNote).toEqual({ 59: 'right', 62: 'left' });
+  });
+
+  it('leaves the hand unset for a one-staff part and for MIDI-style data', () => {
+    expect(simple(note('C', 4, 4)).notes[0].hand).toBeUndefined();
+  });
+});
+
+describe('parseMusicXml: time', () => {
+  it('uses 120 bpm: a quarter note lasts half a second', () => {
+    const piece = simple(note('C', 4, 2), note('D', 4, 2));
+    expect(piece.notes[1].start).toBeCloseTo(1);
+    expect(piece.duration).toBeCloseTo(2);
+    expect(piece.tempos).toHaveLength(1);
+  });
+
+  it('defaults to 4/4 and reads time signature changes', () => {
+    const none = parse(score([part('P1', measure(attributes({ divisions: 1 }), note('C', 4, 4)))]));
+    expect(none.timeSignatures).toEqual([{ tick: 0, numerator: 4, denominator: 4 }]);
+
+    const changed = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4' }), note('C', 4, 4)),
+          measure(attributes({ beats: '3+2', beatType: 8 }), note('D', 4, 2)),
+        ),
+      ]),
+    );
+    expect(changed.timeSignatures).toEqual([
+      { tick: 0, numerator: 4, denominator: 4 },
+      { tick: 4, numerator: 5, denominator: 8 },
+    ]);
+  });
+
+  it('pads a pickup bar so bar lines match the file', () => {
+    const piece = parse(
+      score([
+        part(
+          'P1',
+          measure(attributes({ divisions: 1, beats: '4' }), note('G', 4, 1)),
+          measure(note('C', 5, 4)),
+        ),
+      ]),
+    );
+    expect(piece.notes.map((n) => [n.note, n.startTick])).toEqual([
+      [67, 3],
+      [72, 4],
+    ]);
+  });
+
+  it('does not pad a full first bar', () => {
+    expect(simple(note('C', 4, 4)).notes[0].startTick).toBe(0);
+  });
+
+  it('reads pedal start, stop, and change', () => {
+    const piece = simple(
+      pedal('start'),
+      note('C', 4, 2),
+      pedal('change'),
+      note('D', 4, 1),
+      pedal('stop'),
+      rest(1),
+    );
+    expect(piece.pedal.map((p) => [p.tick, p.on])).toEqual([
+      [0, true],
+      [2, false],
+      [2, true],
+      [3, false],
+    ]);
+  });
+});
+
+describe('parseMusicXml: errors', () => {
+  it.each([
+    ['not xml at all', 'damaged'],
+    ['<score-partwise><part></score-partwise>', 'damaged'],
+    ['<score-timewise/>', 'unsupported'],
+    ['<html/>', 'notMidi'],
+  ])('%s -> %s', (text, error) => {
+    expect(parseMusicXml(text)).toEqual({ ok: false, error });
+  });
+
+  it('reports a score without pitched notes as empty', () => {
+    const xml = score([part('P1', measure(attributes({ divisions: 1, beats: '4' }), rest(4)))]);
+    expect(parseMusicXml(xml)).toEqual({ ok: false, error: 'empty' });
+  });
+
+  it('refuses too many notes', () => {
+    const notes = Array.from({ length: 50_001 }, () => note('C', 4, 1)).join('');
+    const xml = score([part('P1', measure(attributes({ divisions: 1, beats: '4' }), notes))]);
+    expect(parseMusicXml(xml)).toEqual({ ok: false, error: 'tooLarge' });
+  });
+
+  it('refuses a piece that lasts too long', () => {
+    const xml = score([
+      part('P1', measure(attributes({ divisions: 1, beats: '4' }), note('C', 4, 40_000_000))),
+    ]);
+    expect(parseMusicXml(xml)).toEqual({ ok: false, error: 'tooLarge' });
+  });
+});

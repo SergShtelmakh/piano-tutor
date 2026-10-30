@@ -5,7 +5,7 @@ import type { Piece } from '../core/smf.ts';
 import { useNoteBus } from '../input/context.ts';
 import { loadLibraryPiece } from '../library/loadLibraryPiece.ts';
 import { PlayerContext, type LoadedPiece, type PlayerError, type PlayerValue } from './context.ts';
-import { loadMidiFile } from './loadMidiFile.ts';
+import { loadScoreFile } from './loadScoreFile.ts';
 import { createPlayer } from './player.ts';
 
 /** Keeps the player and the open piece for the whole app, so leaving the Player keeps the piece. */
@@ -20,9 +20,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   useEffect(() => () => player.dispose(), [player]);
 
   const show = useCallback(
-    (piece: Piece, name: string, library?: LibraryPiece) => {
+    (piece: Piece, name: string, library?: LibraryPiece, fileId?: string) => {
       player.load(piece);
-      setLoaded({ name, piece, score: buildScore(piece), library });
+      setLoaded({ name, piece, score: buildScore(piece), library, fileId });
       setError(null);
     },
     [player],
@@ -32,13 +32,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     async (file: File) => {
       const request = ++latestRequest.current;
       setLoading(null);
-      const result = await loadMidiFile(file);
+      const result = await loadScoreFile(file);
       if (request !== latestRequest.current) return; // a newer choice was made meanwhile
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      show(result.piece, file.name.replace(/\.[^.]*$/, ''));
+      show(result.piece, file.name.replace(/\.[^.]*$/, ''), undefined, result.id);
     },
     [show],
   );

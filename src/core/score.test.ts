@@ -400,3 +400,42 @@ describe('stemDirection', () => {
     expect(stemDirection([note(4), note(10)], 'treble')).toBe('down'); // the middle is 7
   });
 });
+
+describe('buildScore with hands', () => {
+  const withHands = (notes: [number, number, number, 'right' | 'left' | undefined][]): Piece => {
+    const piece = makePiece(notes.map(([note, start, end]) => [note, start, end]));
+    return {
+      ...piece,
+      notes: piece.notes.map((note, i) => (notes[i][3] ? { ...note, hand: notes[i][3] } : note)),
+    };
+  };
+
+  it('draws a right-hand note below middle C on the treble staff', () => {
+    const score = buildScore(withHands([[59, 0, 4, 'right']])); // B3
+    expect(score.bars[0].columns.bass.every((column) => column.rest)).toBe(true);
+    const note = score.bars[0].columns.treble.find((column) => !column.rest)!.notes[0];
+    expect(note.index).toBe(-1);
+    expect(note.ledger).toEqual([0]);
+  });
+
+  it('draws a left-hand note above middle C on the bass staff', () => {
+    const score = buildScore(withHands([[62, 0, 4, 'left']])); // D4
+    expect(score.bars[0].columns.treble.every((column) => column.rest)).toBe(true);
+    const note = score.bars[0].columns.bass.find((column) => !column.rest)!.notes[0];
+    expect(note.index).toBe(1);
+    expect(note.ledger).toEqual([0]);
+  });
+
+  it('splits at middle C for notes without a hand, as before', () => {
+    const score = buildScore(
+      withHands([
+        [59, 0, 4, undefined],
+        [62, 0, 4, undefined],
+      ]),
+    );
+    expect(score.bars[0].columns.bass.find((c) => !c.rest)!.notes.map((n) => n.note)).toEqual([59]);
+    expect(score.bars[0].columns.treble.find((c) => !c.rest)!.notes.map((n) => n.note)).toEqual([
+      62,
+    ]);
+  });
+});

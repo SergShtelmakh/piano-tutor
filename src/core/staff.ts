@@ -65,10 +65,16 @@ export interface SpelledNote {
   sharp: boolean;
 }
 
-/** Where a note sits on the staff, black keys included (spelled with sharps only, no flats). */
-export function spellNote(note: number): SpelledNote {
+/**
+ * Where a note sits on the staff, black keys included (spelled with sharps only, no flats).
+ * Without `clef` the staff is chosen by the middle-C split; with it, the note is placed on that
+ * staff, with the ledger lines it needs there (a note written for the right hand below middle C).
+ */
+export function spellNote(note: number, clef?: Clef): SpelledNote {
   const sharp = isBlackKey(note);
   // The key below a black key is always a white key, so `staffPosition` can't be null here.
-  const position = staffPosition(sharp ? note - 1 : note)!;
-  return { position, sharp };
+  const natural = staffPosition(sharp ? note - 1 : note)!;
+  if (clef === undefined || clef === natural.clef) return { position: natural, sharp };
+  const ledger = ledgerLines(natural.index, clef === 'treble' ? TREBLE_LINES : BASS_LINES);
+  return { position: { clef, index: natural.index, ledger }, sharp };
 }

@@ -12,6 +12,8 @@ export interface LoadedPiece {
   score: Score;
   /** Set when the piece came from the library. */
   library?: LibraryPiece;
+  /** `file-<hash>`, set when the piece came from a file on the learner's disk. */
+  fileId?: string;
 }
 
 /** Why a piece could not be shown. `network` is a library file that could not be fetched. */
