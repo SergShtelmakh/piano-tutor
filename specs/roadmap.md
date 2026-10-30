@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–11 are done; the MVP scope from `mission.md` is covered. Phase 12 (keyboard size) is specified on its own branch; Phase 13 (MusicXML import) is in progress.
+> Phases 1–11 are done; the MVP scope from `mission.md` is covered. Phase 13 (MusicXML import) is done, pending manual validation with real files. Phase 12 (keyboard size) is specified on its own branch (`feature/keyboard-size-calibration`) and not yet implemented.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -154,7 +154,7 @@ From [`backlog/keyboard-size.md`](backlog/keyboard-size.md); split out of Phase 
 - A key-count setting (25 / 37 / 49 / 61 / 76 / 88) and calibration by pressing the lowest and highest key; "this note is not on your keyboard" handling.
 - Re-check the open questions in the backlog note when the spec is written.
 
-## Phase 13 — MusicXML import 🔨
+## Phase 13 — MusicXML import ✅
 
 Goal: open a score exported from MuseScore (`.mxl` or `.musicxml`) in the Player and learn it as a course, with every note in the hand it was written for.
 
@@ -163,6 +163,7 @@ Spec: [`specs/phase-13-musicxml-import/`](phase-13-musicxml-import/). Branch `fe
 - In-house XML and zip readers (pure; decompression through `DecompressionStream`); MusicXML becomes the existing `Piece`, with the hand of each note taken from its staff.
 - The Player opens MIDI and MusicXML files (detected by content); a **Learn** button builds a course from any file opened from disk. Stars are saved under an id from the file's content; the file is not kept, so it is not shown on Home.
 - Not in this phase: tempo marks (fixed 120 bpm), repeats, grace notes, key signatures and real notation, MusicXML in the library.
+- **Outcome:** three pure readers in `src/core/`: `xml.ts` (a minimal XML reader; `null` on malformed input, depth limit, DOCTYPE skipped and never expanded), `zip.ts` (the central directory of a zip and the score lookup through `META-INF/container.xml`) and `musicxml.ts` (`parseMusicXml` → the same `Piece` as a MIDI file: `divisions` merged into one tick unit with a float cursor, chords, `backup` / `forward`, ties, grace and cue notes, percussion parts and `<unpitched>` skipped, `<transpose>` applied, a pickup bar shifted so bar lines match the file, a fixed 120 bpm, the pedal from `<pedal>` directions). `PieceNote` gained an optional `hand` (staff 1 → right, 2+ → left in a part with several staves); `buildScore` draws such a note on that hand's staff (`spellNote(note, clef)` gives the ledger lines for the chosen staff), so the course builder splits hands by the file, not by middle C. `src/playback/loadScoreFile.ts` replaced `loadMidiFile.ts`: it detects `MThd`, a zip, or XML text by content, inflates with `DecompressionStream('deflate-raw')` (20 MB limit), and returns an id `file-<FNV-1a hash of the bytes>` (`core/contentHash.ts`). `CourseProvider` now takes a **source** (library piece or file); a **Learn** button next to the name of any file opened from disk builds its course from the open score. Lesson ids are `melody:file-<hash>:…`, so stars survive a reload of the same file; `piecesInProgress` ignores them, so they are not on Home. No new dependencies; the saved progress format is unchanged. **Manual validation with real MuseScore exports was still open when this replan was written** (see `validation.md`; only the automated gates were run, on files built in code).
 
 ## Backlog 💡
 
@@ -176,6 +177,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Scales and arpeggio drills; adaptive practice.
 - Dark mode / theming.
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
+- From Phase 13: tempo marks, repeats / voltas, and grace notes from MusicXML; key signatures, flats as written, and several voices per staff (real notation, see the sheet-music item); keeping opened files on the device (IndexedDB) so a course from your own file shows on Home; `.mscz`; drag and drop; a hand override for MIDI files, which still split at middle C.
 - From Phase 11: **timing and play-along** inside a course lesson (judge rhythm, not only pitches; tempo; a metronome); a hand override for pieces where the staff split puts a melody in the wrong hand; a "Next lesson" button on the summary; lessons for the rest of a long piece (beyond the first 6 parts) or a chosen section; a mastery mark on a piece when all its lessons have 3 stars; a course shortcut on the Player screen for the piece that is open.
 - From Phase 10: a search box and sorting (by title or length); more pieces and composers, always Public Domain on the piece's own Mutopia page (for example Scarlatti, Liszt, Mendelssohn, and more of Haydn and Handel); a default tempo per piece (some Mutopia files carry the default 60 bpm, which is why the Rondo alla Turca was left out); showing a short note or biography per composer; recently played pieces; deep links to a piece; a computed difficulty to cross-check the hand ratings; letting a done mark count towards progress. CC-BY pieces with visible credit only if the licence policy is ever relaxed.
 - From Phase 9: playing along with a file (see above); loop a section, mute a hand or a track, a metronome / count-in; drag and drop, a built-in example, remembering the last file; a scrollable overview of the whole score; key signatures and flats, beams, tuplets, and several voices per staff; a look-ahead scheduler (Web Audio) so playback stays on time in a background tab.
