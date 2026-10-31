@@ -19,7 +19,7 @@ All notable changes to this project are documented here. The format is based on 
 ### Notes
 
 - The first visit downloads about 12 MB of piano samples with the app; after that the piano also sounds offline.
-- Some listeners hear crackles; this is being looked into. Try switching Reverb off.
+- Reverb is a light room sound; switch it off if you prefer a dry piano.
 
 ## 2026-10-31 — Phase 16: two voices on a staff
 

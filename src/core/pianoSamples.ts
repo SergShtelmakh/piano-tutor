@@ -97,6 +97,12 @@ export function impulseResponse(
       low += open * (noise - low);
       out[n] = low * Math.exp(-t / tau);
     }
+    // Unit energy, so the wet level alone sets how much room is heard (the convolver's own
+    // normalisation is switched off; it made a noise impulse nearly inaudible).
+    let energy = 0;
+    for (const value of out) energy += value * value;
+    const scale = energy > 0 ? 1 / Math.sqrt(energy) : 0;
+    for (let n = 0; n < length; n++) out[n] *= scale;
     return out;
   };
   return { left: channel(), right: channel() };
