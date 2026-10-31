@@ -40,7 +40,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,jpg}'],
+        // The piano samples (public/piano/*.mp3) are precached so the piano also sounds offline.
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,jpg,mp3}'],
         navigateFallback: `${basePath}index.html`,
         cleanupOutdatedCaches: true,
         // Library pieces (public/library/**/*.mid) are not precached, so the install stays small.

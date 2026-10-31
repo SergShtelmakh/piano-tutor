@@ -88,6 +88,8 @@ Die Formen von Violin- und Bassschlüssel sowie die Kreuze, Auflösungszeichen, 
 
 Die Stücke der Bibliothek stammen vom [Mutopia Project](https://www.mutopiaproject.org/) (gemeinfreie Ausgaben), und die Porträts der Komponisten sind gemeinfreie Bilder von [Wikimedia Commons](https://commons.wikimedia.org/) (siehe [licenses/library-sources.md](licenses/library-sources.md)).
 
+Der Klaviersound stammt aus dem Sample-Set [Upright Piano KW](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) des Projekts FreePats, aufgenommen von Gonzalo und Roberto an einem Kawai-Klavier und veröffentlicht unter der Gemeinfreiheits-Erklärung [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (siehe [licenses/piano-samples.md](licenses/piano-samples.md)). Die App wird nicht von Kawai hergestellt, gesponsert oder empfohlen.
+
 ## Sprache
 
 Die Oberfläche gibt es auf Englisch, Ukrainisch, Deutsch und Französisch. Beim ersten Besuch wird die Browsersprache verwendet (mit Englisch als Rückfall); die Sprachauswahl merkt sich deine Wahl.
