@@ -4,7 +4,7 @@
 
 A gamified piano-learning web app: connect a MIDI keyboard (Web MIDI) and get real-time feedback on whether you play the right notes. Client-side only, no backend. See [specs/mission.md](specs/mission.md).
 
-> Status: Phases 1–16 are done. Free play with a MIDI keyboard, the computer keyboard, or the on-screen piano; a 13-lesson first-week curriculum; local progress (stars, XP, levels, daily streak); an installable offline app (PWA); a responsive on-screen piano; a Player for MIDI and MusicXML files with sheet music; a library of 34 public-domain classical pieces; and **courses** that teach the opening of a library piece, hand by hand. The app is deployed online (see Deployment). Next steps — see [specs/roadmap.md](specs/roadmap.md).
+> Status: Phases 1–17 are done. Free play with a MIDI keyboard, the computer keyboard, or the on-screen piano; a 13-lesson first-week curriculum; local progress (stars, XP, levels, daily streak); an installable offline app (PWA); a responsive on-screen piano; a Player for MIDI and MusicXML files with sheet music; a library of 34 public-domain classical pieces; and **courses** that teach the opening of a library piece, hand by hand; and a recorded piano sound. The app is deployed online (see Deployment). Next steps — see [specs/roadmap.md](specs/roadmap.md).
 
 > **Keeping the translations in sync:** this file is the source. `README.uk.md`, `README.de.md`, and `README.fr.md` are translations of it; update them whenever this file changes.
 
@@ -31,6 +31,7 @@ bun run dev      # http://localhost:3000
 - **MuseScore / MusicXML:** the Player also opens a score exported from MuseScore (**File → Export → MusicXML**) as compressed `.mxl` or plain `.musicxml` / `.xml` (up to 2 MB); the format is detected from the content. All parts are merged, percussion is skipped, and the piece plays at 120 bpm once through, as written (tempo marks, repeats, and grace notes are ignored; the tempo slider still works). In a part with two staves, the upper staff is the right hand and the lower one the left hand, so a **Learn** button next to the file name builds a course (as for a library piece) in which every note is in the hand it was written for. **Learn** also works for your own `.mid` file (hands split at middle C there). Stars and XP of such a course are saved on your device, but the file itself is not kept, so it is not listed on Home; open the same file again to see its stars.
 - **Library:** the **Library** button in the Player opens 34 classical piano pieces by 10 composers (Bach, Beethoven, Brahms, Burgmüller, Chopin, Handel, Haydn, Mozart, Schubert, Schumann), grouped by composer, with a portrait of each, and rated from 1 (Beginner) to 5 (Expert). Filter by difficulty or favourites, pick a piece, and press **Play**. Mark pieces as favourite (★) or done (☑); the marks stay on your device. A piece you have opened once also opens offline. The files are mechanical renderings of the score, so they sound exact but not expressive.
 - **Learn a piece:** press **Learn** next to any library piece (or in its info line above the score). The app builds a **course** from the opening of the piece (its first 6 parts, each up to 4 bars) and orders the lessons from the simplest to the hardest. For the **right hand**, then the **left hand**: read the notes the piece uses, then its chords (if there are any), then the parts one by one, then the parts joined (1–2, 3–4, 5–6, 1–4, 1–6). Then **both hands together**: the parts, then the joined parts. Every lesson shows the real notation of the piece with the current step marked blue; you play what you see, and the app judges the notes (not the timing). Nothing is locked, a **Next** badge marks the first lesson you have not finished, and Home lists the pieces you are learning. Both hands at once can need several fingers or keys together, so the on-screen piano or a MIDI keyboard helps there.
+- **Sound:** every key plays a recorded piano (an upright, two loudness layers, so soft and hard keys sound different). Notes fade by themselves like on a real piano and stop when you let go, unless the sustain pedal is down. **Volume** and **Mute** sit in the header, next to a **Reverb** button that adds a light room sound (on by default); all three are saved on your device. The sound loads when the app opens: until then keys are silent and "Loading piano sound…" is shown; if loading fails, press **Retry**.
 - **Progress:** XP raises your level, and finishing at least one lesson per day builds a daily streak. Everything is saved on your device only; **Reset progress** on Home clears it.
 
 ## Library
@@ -51,21 +52,23 @@ Piano Tutor is an installable web app (PWA). Open it once online; after that it 
 
 - **Install:** in Chrome (Android or desktop) Home shows an **Install** card, or use the browser menu / the install icon in the address bar. **Not now** hides the card for good.
 - **Updates:** when a new version has been deployed, a banner offers **Reload** or **Later**. The app never reloads by itself, and the banner waits until you leave a lesson. Progress and settings are kept.
+- **Size:** the first visit downloads about 12 MB of piano samples with the app, so the piano also sounds offline.
 - **Dev:** `bun run dev` has no service worker. To try offline mode, use `bun run build && bun run preview`.
 - **Icon:** drawn as `public/icon.svg`. After changing it, run `bun run icons` to regenerate the PNG and ICO files, and commit them.
 
 ## Scripts
 
-| Script                 | What it does                                |
-| ---------------------- | ------------------------------------------- |
-| `bun run dev`          | Dev server on http://localhost:3000         |
-| `bun run build`        | Type check + production build into `dist/`  |
-| `bun run preview`      | Serve the production build locally          |
-| `bun run lint`         | TypeScript type check, then ESLint          |
-| `bun run format`       | Format all files with Prettier              |
-| `bun run format:check` | Fail if any file is not formatted           |
-| `bun run test`         | Run unit tests once (Vitest)                |
-| `bun run icons`        | Regenerate app icons from `public/icon.svg` |
+| Script                           | What it does                                                                                                                       |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`                    | Dev server on http://localhost:3000                                                                                                |
+| `bun run build`                  | Type check + production build into `dist/`                                                                                         |
+| `bun run preview`                | Serve the production build locally                                                                                                 |
+| `bun run lint`                   | TypeScript type check, then ESLint                                                                                                 |
+| `bun run format`                 | Format all files with Prettier                                                                                                     |
+| `bun run format:check`           | Fail if any file is not formatted                                                                                                  |
+| `bun run test`                   | Run unit tests once (Vitest)                                                                                                       |
+| `bun run icons`                  | Regenerate app icons from `public/icon.svg`                                                                                        |
+| `bun run piano-samples <folder>` | Rebuild `public/piano/` from the extracted FreePats set (needs ffmpeg; see [licenses/piano-samples.md](licenses/piano-samples.md)) |
 
 CI (GitHub Actions) runs `lint`, `format:check`, `build`, and `test` on every pull request and every push to `main`.
 

@@ -64,6 +64,15 @@ The Player's library (`public/library/`, catalogue in `src/core/libraryCatalog.t
 - No composers of Russian origin.
 - Record the source, licence, and check date of everything in the catalogue and in `licenses/library-sources.md`; the tests enforce the allowlists. See "Library" in the README for how to add a piece.
 
+## Piano sample policy
+
+The piano sound (`public/piano/*.mp3`, map in `src/core/pianoSampleMap.ts`) follows the same kind of rule, also decided by the user:
+
+- Samples only from a set whose **own source page** says CC0 or public domain. Never CC-BY, CC-BY-SA, or custom licences. The current set is FreePats "Upright Piano KW" (CC0 1.0).
+- Read the source page again before committing new samples. Record the verbatim licence sentence, version, check date, and changes in `licenses/piano-samples.md`.
+- The brand of the recorded piano appears only in `licenses/` and the README credits, never in the UI or manifest (a test enforces this).
+- Rebuild the files with `bun run piano-samples <extracted folder>`. It needs ffmpeg (set `FFMPEG` if it is not on PATH). Don't edit `pianoSampleMap.ts` by hand.
+
 ## Language
 
 - Docs, specs, code comments, commit messages, PR descriptions: **English**.
