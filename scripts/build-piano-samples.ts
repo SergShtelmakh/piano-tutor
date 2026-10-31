@@ -26,7 +26,7 @@ const SOFT_TOP = 80;
 /** Longest sample in seconds; the long bass tails are already very quiet by then. */
 const MAX_SECONDS = 10;
 const END_FADE = 0.4;
-const BITRATE = '256k';
+const BITRATE = '320k';
 /** Mean level of the first second of a sample, the same for both layers (dB). */
 const TARGET_MEAN = -20;
 const PEAK_LIMIT = -1;
