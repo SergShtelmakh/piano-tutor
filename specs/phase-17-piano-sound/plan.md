@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 17 — Piano sound from real samples
 > Branch: `feature/piano-sound`
-> Status: Implemented (automated gates pass; listening and device checks open)
+> Status: Implemented; automated gates pass, listening and device checks open (crackles reported, cause unknown)
 
 ## Goal
 

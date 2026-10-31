@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-31 — Phase 17: a real piano sound
+
+### Changed
+
+- Every key now plays a **recorded piano** instead of the old electronic tone: the FreePats "Upright Piano KW" set, which is in the public domain (CC0). Soft and hard keys use different recordings, so they sound different, not only quieter or louder.
+- Notes fade by themselves like on a real piano, and stop with a short damper fade when you let go (unless the sustain pedal is down). Up to 32 notes sound at once.
+
+### Added
+
+- A **Reverb** button next to the volume adds a light room sound. It is on by default and remembered on your device.
+- While the piano sound loads, "Loading piano sound…" is shown and keys are silent; if loading fails, **Retry** tries again.
+
+### Notes
+
+- The first visit downloads about 12 MB of piano samples with the app; after that the piano also sounds offline.
+- Some listeners hear crackles; this is being looked into. Try switching Reverb off.
+
 ## 2026-10-31 — Phase 16: two voices on a staff
 
 ### Added

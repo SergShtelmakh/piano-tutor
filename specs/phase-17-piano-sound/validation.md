@@ -36,6 +36,6 @@ Run `bun run dev`, open http://localhost:3000 in Chrome, use headphones or decen
 
 ## Constitution follow-up
 
-- [ ] `specs/tech-stack.md`: Audio row and sample licence policy updated (done in group 1); known technical debt updated
-- [ ] `specs/roadmap.md`: Phase 17 status; the "better piano sound" backlog item removed or narrowed
-- [ ] `CHANGELOG.md` / README (all four languages): credits for the samples (`README.md` first, then the three translations in the same commit)
+- [x] `specs/tech-stack.md`: Audio row and sample licence policy updated (done in group 1); known technical debt updated
+- [x] `specs/roadmap.md`: Phase 17 status; the "better piano sound" backlog item removed or narrowed
+- [x] `CHANGELOG.md` / README (all four languages): credits for the samples (`README.md` first, then the three translations in the same commit)

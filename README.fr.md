@@ -4,7 +4,7 @@
 
 Une application web ludique pour apprendre le piano : branchez un clavier MIDI (Web MIDI) et obtenez en temps réel un retour sur la justesse de vos notes. Côté client uniquement, sans serveur. Voir [specs/mission.md](specs/mission.md).
 
-> État : les phases 1 à 16 sont terminées. Jeu libre avec un clavier MIDI, le clavier de l'ordinateur ou le piano à l'écran ; un parcours de 13 leçons pour la première semaine ; une progression locale (étoiles, XP, niveaux, série quotidienne) ; une application installable et utilisable hors ligne (PWA) ; un piano à l'écran adaptatif ; un lecteur de fichiers MIDI avec partition ; une bibliothèque de 34 pièces classiques du domaine public ; et des **cours** qui enseignent le début d'une pièce de la bibliothèque, main par main. L'application est déployée en ligne (voir Déploiement). Suite — voir [specs/roadmap.md](specs/roadmap.md).
+> État : les phases 1 à 17 sont terminées. Jeu libre avec un clavier MIDI, le clavier de l'ordinateur ou le piano à l'écran ; un parcours de 13 leçons pour la première semaine ; une progression locale (étoiles, XP, niveaux, série quotidienne) ; une application installable et utilisable hors ligne (PWA) ; un piano à l'écran adaptatif ; un lecteur de fichiers MIDI avec partition ; une bibliothèque de 34 pièces classiques du domaine public ; et des **cours** qui enseignent le début d'une pièce de la bibliothèque, main par main ; et un son de piano enregistré. L'application est déployée en ligne (voir Déploiement). Suite — voir [specs/roadmap.md](specs/roadmap.md).
 
 > Ce fichier est une traduction de [README.md](README.md) (la version anglaise fait foi). En cas de divergence, c'est la version anglaise qui compte.
 
@@ -31,6 +31,7 @@ bun run dev      # http://localhost:3000
 - **MuseScore / MusicXML :** le lecteur ouvre aussi une partition exportée depuis MuseScore (**Fichier → Exporter → MusicXML**) en `.mxl` compressé ou en `.musicxml` / `.xml` simple (jusqu’à 2 Mo) ; le format est reconnu d’après le contenu. Toutes les parties sont fusionnées, les percussions sont ignorées, et la pièce est jouée une fois à 120 bpm, comme écrite (les indications de tempo, les reprises et les notes d’agrément sont ignorées ; le curseur de tempo fonctionne toujours). Dans une partie à deux portées, la portée du haut est la main droite et celle du bas la main gauche : le bouton **Learn** à côté du nom du fichier crée donc un cours (comme pour une pièce de la bibliothèque) où chaque note est dans la main pour laquelle elle est écrite. **Learn** fonctionne aussi pour votre propre fichier `.mid` (les mains y sont séparées au do central). Les étoiles et l’XP d’un tel cours sont enregistrées sur votre appareil, mais le fichier lui-même n’est pas conservé et n’apparaît donc pas sur Home ; rouvrez le même fichier pour revoir ses étoiles.
 - **Bibliothèque :** le bouton **Library** du lecteur ouvre 34 pièces classiques pour piano de 10 compositeurs (Bach, Beethoven, Brahms, Burgmüller, Chopin, Haendel, Haydn, Mozart, Schubert, Schumann), regroupées par compositeur, avec un portrait de chacun, et notées de 1 (débutant) à 5 (expert). Filtrez par difficulté ou par favoris, choisissez une pièce et appuyez sur **Play**. Marquez les pièces comme favorites (★) ou terminées (☑) ; les marques restent sur votre appareil. Une pièce déjà ouverte une fois s'ouvre aussi hors ligne. Les fichiers sont des rendus mécaniques de la partition : ils sonnent avec exactitude mais sans expression.
 - **Apprendre une pièce :** appuyez sur **Learn** à côté d'une pièce de la bibliothèque (ou dans sa ligne d'information au-dessus de la partition). L'application construit un **cours** à partir du début de la pièce (ses 6 premières parties, de 4 mesures au plus chacune) et ordonne les leçons du plus simple au plus difficile. D'abord pour la **main droite**, puis la **main gauche** : lire les notes utilisées dans la pièce, puis ses accords (s'il y en a), puis les parties une à une, puis les parties réunies (1–2, 3–4, 5–6, 1–4, 1–6). Ensuite, les **deux mains ensemble** : les parties, puis les parties réunies. Chaque leçon affiche la vraie partition de la pièce, l'étape en cours étant marquée en bleu ; vous jouez ce que vous voyez, et l'application juge les notes (pas le rythme). Rien n'est verrouillé, un repère **Next** signale la première leçon non terminée, et Home liste les pièces que vous apprenez. Les deux mains en même temps peuvent demander plusieurs doigts ou touches à la fois ; le piano à l'écran ou un clavier MIDI aide alors.
+- **Son :** chaque touche joue un piano enregistré (un piano droit, deux couches de nuance, donc une touche douce et une touche forte sonnent différemment). Les notes s'éteignent d'elles-mêmes comme sur un vrai piano et s'arrêtent quand vous relâchez la touche, sauf si la pédale est enfoncée. **Volume** et **Mute** sont dans l'en-tête, à côté d'un bouton **Reverb** qui ajoute un léger son de pièce (activé par défaut) ; les trois réglages sont enregistrés sur votre appareil. Le son se charge à l'ouverture de l'application : jusque-là les touches sont muettes et « Chargement du son du piano… » s'affiche ; si le chargement échoue, appuyez sur **Retry**.
 - **Progression :** l'XP fait monter votre niveau, et terminer au moins une leçon par jour construit une série quotidienne. Tout est enregistré uniquement sur votre appareil ; **Reset progress** sur Home l'efface.
 
 ## Bibliothèque
@@ -52,20 +53,22 @@ Piano Tutor est une application web installable (PWA). Ouvrez-la une fois en lig
 - **Installer :** dans Chrome (Android ou ordinateur), Home affiche une carte **Install**, ou utilisez le menu du navigateur / l'icône d'installation dans la barre d'adresse. **Not now** masque la carte définitivement.
 - **Mises à jour :** quand une nouvelle version est déployée, une bannière propose **Reload** ou **Later**. L'application ne se recharge jamais seule, et la bannière attend que vous quittiez une leçon. La progression et les réglages sont conservés.
 - **Développement :** `bun run dev` n'a pas de service worker. Pour essayer le mode hors ligne, utilisez `bun run build && bun run preview`.
+- **Taille :** la première visite télécharge environ 12 Mo d'échantillons de piano avec l'application, pour que le piano sonne aussi hors connexion.
 - **Icône :** dessinée dans `public/icon.svg`. Après une modification, lancez `bun run icons` pour régénérer les fichiers PNG et ICO, et commitez-les.
 
 ## Scripts
 
-| Script                 | Ce qu'il fait                                                 |
-| ---------------------- | ------------------------------------------------------------- |
-| `bun run dev`          | Serveur de développement sur http://localhost:3000            |
-| `bun run build`        | Vérification des types + build de production dans `dist/`     |
-| `bun run preview`      | Sert le build de production en local                          |
-| `bun run lint`         | Vérification des types TypeScript, puis ESLint                |
-| `bun run format`       | Formate tous les fichiers avec Prettier                       |
-| `bun run format:check` | Échoue si un fichier n'est pas formaté                        |
-| `bun run test`         | Lance les tests unitaires une fois (Vitest)                   |
-| `bun run icons`        | Régénère les icônes de l'application depuis `public/icon.svg` |
+| Script                            | Ce qu'il fait                                                                                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bun run dev`                     | Serveur de développement sur http://localhost:3000                                                                                                  |
+| `bun run build`                   | Vérification des types + build de production dans `dist/`                                                                                           |
+| `bun run preview`                 | Sert le build de production en local                                                                                                                |
+| `bun run lint`                    | Vérification des types TypeScript, puis ESLint                                                                                                      |
+| `bun run format`                  | Formate tous les fichiers avec Prettier                                                                                                             |
+| `bun run format:check`            | Échoue si un fichier n'est pas formaté                                                                                                              |
+| `bun run test`                    | Lance les tests unitaires une fois (Vitest)                                                                                                         |
+| `bun run icons`                   | Régénère les icônes de l'application depuis `public/icon.svg`                                                                                       |
+| `bun run piano-samples <dossier>` | Reconstruit `public/piano/` depuis l'ensemble FreePats décompressé (nécessite ffmpeg ; voir [licenses/piano-samples.md](licenses/piano-samples.md)) |
 
 La CI (GitHub Actions) lance `lint`, `format:check`, `build` et `test` sur chaque pull request et chaque push vers `main`.
 
