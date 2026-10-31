@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "icons": "pwa-assets-generator"
+    "icons": "pwa-assets-generator",
+    "piano-samples": "bun scripts/build-piano-samples.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

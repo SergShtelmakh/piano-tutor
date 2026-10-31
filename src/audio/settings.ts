@@ -1,5 +1,6 @@
 const VOLUME_KEY = 'piano-tutor.volume';
 const MUTED_KEY = 'piano-tutor.muted';
+const REVERB_KEY = 'piano-tutor.reverb';
 
 export const DEFAULT_VOLUME = 80;
 
@@ -29,6 +30,24 @@ export function loadMuted(): boolean {
     return localStorage.getItem(MUTED_KEY) === '1';
   } catch {
     return false;
+  }
+}
+
+/** The room reverb is on unless the learner switched it off. */
+export function loadReverb(): boolean {
+  try {
+    return localStorage.getItem(REVERB_KEY) !== '0';
+  } catch {
+    return true;
+  }
+}
+
+/** Best effort: failures (blocked or full storage) are ignored. */
+export function saveReverb(reverb: boolean): void {
+  try {
+    localStorage.setItem(REVERB_KEY, reverb ? '1' : '0');
+  } catch {
+    // The reverb choice still applies for this session.
   }
 }
 

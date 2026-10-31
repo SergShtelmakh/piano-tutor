@@ -100,6 +100,8 @@ The treble and bass clef shapes, and the sharps, naturals, flags, and rests of t
 
 The library pieces are from the [Mutopia Project](https://www.mutopiaproject.org/), public domain editions, and the composers' portraits are public-domain images from [Wikimedia Commons](https://commons.wikimedia.org/) (see [licenses/library-sources.md](licenses/library-sources.md)).
 
+The piano sound is made from the [Upright Piano KW](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) sample set of the FreePats project, recorded by Gonzalo and Roberto from a Kawai upright piano and published under the [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) public domain dedication (see [licenses/piano-samples.md](licenses/piano-samples.md)). The app is not made, sponsored, or endorsed by Kawai.
+
 ## Language
 
 The UI is available in English, Ukrainian, German, and French. The first visit follows the browser language (falling back to English); the language selector remembers your choice.

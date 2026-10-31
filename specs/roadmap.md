@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–16 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), and 16 (several voices) are pending manual validation. No phase is planned yet; candidates are in the Backlog (a better piano sound came up during Phase 16).
+> Phases 1–16 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), and 16 (several voices) are pending manual validation. Phase 17 (piano sound from real samples) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -201,6 +201,18 @@ Spec: [`specs/phase-16-voices/`](phase-16-voices/). Branch `feature/voices`.
 - Beams and ties per voice; course steps, lesson ids, and saved progress unchanged.
 - **Outcome:** `PieceNote` gained `voice?: 1 | 2` (only the lower voice is marked; MIDI never sets it). `musicxml.ts` reads `<voice>` and ranks voices per staff of a part (`rankVoices`: lowest number upper, next lower, voices 3–4 join the one with the closer average pitch); ties are keyed by voice and pitch. `buildScore` builds each voice of a staff separately (`voiceColumns`) and joins them per bar (`joinVoices`): no lower voice means the staff is built exactly as before; a bar where only the lower voice plays is drawn as one voice; where both play, `Column.stem` is forced (up / down), rests get `restShift` (±2 steps, lower-voice rests only in its bars), and a lower column touching the upper voice's noteheads gets `offset`. Columns stay in one list per staff, sorted by unit then voice, so the accidental rule, `measureBars` (which also reserves room for forced stems), the layout slots (plus room for `offset`), and `course.stepsOf` work unchanged. `beamGroups` walks each voice on its own and uses the forced direction. `ScoreView` draws forced stems, offset noteheads, shifted rests, and ties within a voice. 13 new unit tests. Checked by rendering a small two-voice score with headless Chrome; **manual validation with a real MuseScore export was still open when this replan was written**.
 
+## Phase 17 — Piano sound from real samples 🔨
+
+Goal: every key sounds like a real piano instead of the "plastic" oscillator synth. From the Backlog item "A better piano sound" (raised during Phase 16); the user chose real samples over richer synthesis.
+
+Spec: [`specs/phase-17-piano-sound/`](phase-17-piano-sound/). Branch `feature/piano-sound`.
+
+- Samples of the FreePats **Upright Piano KW** (CC0 1.0 on its own source page), both velocity layers, prepared once by a dev script (ffmpeg) into 10–20 MB of MP3 in `public/piano/` and precached for offline.
+- Replaces the synth (no setting for the old sound). Notes fade naturally while held and stop with a damper fade; pedal and repeats as today; at least 32 notes.
+- A light generated reverb with an on/off toggle next to the volume (saved, default on).
+- Silence until the samples are decoded, with a loading / failed text and Retry.
+- Changes the tech-stack rule "no sample downloads" and adds a sample licence policy like the library's.
+
 ## Backlog 💡
 
 Ideas not yet scheduled — see `specs/backlog/` for notes.
@@ -208,7 +220,6 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Play along with a `.mid` file: wait for the learner's notes step by step, judge them, and score the run (the player from Phase 9 only plays). Also: loop a section, mute a hand or track, drag and drop, a built-in example, a metronome / count-in.
 - Chord / interval / key analyzer with a chord dictionary.
 - Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; Phase 14 adds key signatures and flats; Phase 15 beams; Phase 16 two voices per staff from MusicXML; tuplets remain) and falling-notes ("waterfall") view.
-- **A better piano sound** (asked for during Phase 16: the synth sounds "plastic"). Options discussed: richer synthesis (more partials, slight string detuning, hammer noise, a closing filter, reverb; no downloads) or real piano samples (5–30 MB, cached for offline; needs a licence decision like the library's, and a change to the tech-stack rule "no sample downloads"). Recommended order: richer synthesis first, a few samples later if needed.
 - From Phase 16: guessing voices for MIDI files (split by rhythm); a third and fourth drawn voice; shared noteheads for a unison; cross-staff notes; voice-aware ties written across voices in a file.
 - From Phase 15: beams from the MusicXML file (`<beam>`); beams over rests and across a half bar in 4/4 (MuseScore's default); a grouping setting per piece; cross-staff beams; tuplet brackets.
 - From Phase 14: a harmonic speller for MIDI (today a black key follows the sign of the key, so an F♯ in F major is written G♭); cancelling naturals at a key change and courtesy accidentals; double sharps and flats as glyphs; note names outside the staff following the spelling (D♭4 on the piano keys and in labels); key signatures in the built-in lessons (all in C today).

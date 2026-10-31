@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { loadMuted, loadVolume } from '../audio/settings.ts';
+import { loadMuted, loadReverb, loadVolume } from '../audio/settings.ts';
 import { createSynth } from '../audio/synth.ts';
 import { shiftOctave } from '../core/computerKeymap.ts';
 import { clampBaseOctave, DEFAULT_BASE_OCTAVE } from '../core/notes.ts';
@@ -13,7 +13,7 @@ function createServices() {
   return {
     bus,
     lit: createLitStore(bus),
-    synth: createSynth(bus, { volume: loadVolume(), muted: loadMuted() }),
+    synth: createSynth(bus, { volume: loadVolume(), muted: loadMuted(), reverb: loadReverb() }),
   };
 }
 
@@ -38,6 +38,9 @@ export function NoteInputProvider({ children }: { children: ReactNode }) {
     () => attachComputerKeyboard(services.bus, () => baseOctaveRef.current, shiftBaseOctave),
     [services.bus, shiftBaseOctave],
   );
+
+  // The piano samples start loading with the app, not with the first key.
+  useEffect(() => services.synth.start(), [services.synth]);
 
   // Browsers only start audio after a user gesture.
   useEffect(() => {

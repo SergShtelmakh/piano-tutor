@@ -88,6 +88,8 @@ Les formes des clés de sol et de fa, ainsi que les dièses, bécarres, crochets
 
 Les pièces de la bibliothèque proviennent du [Mutopia Project](https://www.mutopiaproject.org/) (éditions du domaine public), et les portraits des compositeurs sont des images du domaine public de [Wikimedia Commons](https://commons.wikimedia.org/) (voir [licenses/library-sources.md](licenses/library-sources.md)).
 
+Le son du piano provient de l’ensemble d’échantillons [Upright Piano KW](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) du projet FreePats, enregistré par Gonzalo et Roberto sur un piano droit Kawai et publié sous la dédicace au domaine public [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (voir [licenses/piano-samples.md](licenses/piano-samples.md)). L’application n’est ni créée, ni parrainée, ni approuvée par Kawai.
+
 ## Langue
 
 L'interface est disponible en anglais, ukrainien, allemand et français. À la première visite, la langue du navigateur est utilisée (avec l'anglais en repli) ; le sélecteur de langue mémorise votre choix.
