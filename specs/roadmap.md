@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–15 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), and 15 (beams) are pending manual validation. Phase 16 (several voices) is in progress.
+> Phases 1–16 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), and 16 (several voices) are pending manual validation. No phase is planned yet; candidates are in the Backlog (a better piano sound came up during Phase 16).
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -190,7 +190,7 @@ Spec: [`specs/phase-15-beams/`](phase-15-beams/). Branch `feature/beams`.
 - Only the drawing changes (`ScoreView`); the score model, layout, playback, and courses stay as they are.
 - **Outcome:** a pure module `src/core/beams.ts`: `beatUnits` (the beat of a metre in sixteenths), `beamGroups(bar, clef)` (runs of neighbouring eighth / sixteenth columns that start in the same beat, at least two; the group's stem direction by the existing `stemDirection` over all its notes; second beams over runs of sixteenths and a hook, right for the first column and left otherwise, on a lone one), and `beamLine` / `heightAt` (the beam through the nearest notes of the first and last stem, a minimum stem of 7 steps away, its slope limited to 2 steps, then moved out until every stem is long enough). `ScoreView` computes the beams of each system once (`beamsOfSystem`), ends beamed stems on the beam (not cut at the staff edge, no flag), draws the beams as polygons half a staff space thick, and gives ties the group's direction. 40 new unit tests; no model, layout, or dependency changes. Checked by rendering `Pitces Of Memory.mxl`, the Fantaisie-Impromptu, and a 330 px system with headless Chrome; **manual validation in the app was still open when this replan was written**.
 
-## Phase 16 — Real notation: several voices per staff 🔨
+## Phase 16 — Real notation: several voices per staff ✅
 
 Goal: two voices on one staff are drawn with their own rhythms and stems (up for the upper voice, down for the lower), as in MuseScore, instead of being merged into one voice. Split out of Phase 14 during its spec (user decision); likely needs voices in the score model and in MusicXML reading (`<voice>`).
 
@@ -199,6 +199,7 @@ Spec: [`specs/phase-16-voices/`](phase-16-voices/). Branch `feature/voices`.
 - Voices only from MusicXML `<voice>` (the library MIDI tracks are per staff, so MIDI stays one voice per staff).
 - Up to two voices per staff: upper stems up, lower stems down; voices 3–4 merge into the nearer one. Lower-voice rests only in bars where it plays; colliding noteheads move right.
 - Beams and ties per voice; course steps, lesson ids, and saved progress unchanged.
+- **Outcome:** `PieceNote` gained `voice?: 1 | 2` (only the lower voice is marked; MIDI never sets it). `musicxml.ts` reads `<voice>` and ranks voices per staff of a part (`rankVoices`: lowest number upper, next lower, voices 3–4 join the one with the closer average pitch); ties are keyed by voice and pitch. `buildScore` builds each voice of a staff separately (`voiceColumns`) and joins them per bar (`joinVoices`): no lower voice means the staff is built exactly as before; a bar where only the lower voice plays is drawn as one voice; where both play, `Column.stem` is forced (up / down), rests get `restShift` (±2 steps, lower-voice rests only in its bars), and a lower column touching the upper voice's noteheads gets `offset`. Columns stay in one list per staff, sorted by unit then voice, so the accidental rule, `measureBars` (which also reserves room for forced stems), the layout slots (plus room for `offset`), and `course.stepsOf` work unchanged. `beamGroups` walks each voice on its own and uses the forced direction. `ScoreView` draws forced stems, offset noteheads, shifted rests, and ties within a voice. 13 new unit tests. Checked by rendering a small two-voice score with headless Chrome; **manual validation with a real MuseScore export was still open when this replan was written**.
 
 ## Backlog 💡
 
@@ -206,7 +207,9 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 
 - Play along with a `.mid` file: wait for the learner's notes step by step, judge them, and score the run (the player from Phase 9 only plays). Also: loop a section, mute a hand or track, drag and drop, a built-in example, a metronome / count-in.
 - Chord / interval / key analyzer with a chord dictionary.
-- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; Phase 14 adds key signatures and flats; Phase 15 beams; several voices are Phase 16; tuplets remain) and falling-notes ("waterfall") view.
+- Sheet-music view (started in Phase 4 with single notes on a grand staff; Phase 9 adds sharps, note values, rests, and bars for MIDI files; Phase 14 adds key signatures and flats; Phase 15 beams; Phase 16 two voices per staff from MusicXML; tuplets remain) and falling-notes ("waterfall") view.
+- **A better piano sound** (asked for during Phase 16: the synth sounds "plastic"). Options discussed: richer synthesis (more partials, slight string detuning, hammer noise, a closing filter, reverb; no downloads) or real piano samples (5–30 MB, cached for offline; needs a licence decision like the library's, and a change to the tech-stack rule "no sample downloads"). Recommended order: richer synthesis first, a few samples later if needed.
+- From Phase 16: guessing voices for MIDI files (split by rhythm); a third and fourth drawn voice; shared noteheads for a unison; cross-staff notes; voice-aware ties written across voices in a file.
 - From Phase 15: beams from the MusicXML file (`<beam>`); beams over rests and across a half bar in 4/4 (MuseScore's default); a grouping setting per piece; cross-staff beams; tuplet brackets.
 - From Phase 14: a harmonic speller for MIDI (today a black key follows the sign of the key, so an F♯ in F major is written G♭); cancelling naturals at a key change and courtesy accidentals; double sharps and flats as glyphs; note names outside the staff following the spelling (D♭4 on the piano keys and in labels); key signatures in the built-in lessons (all in C today).
 - Session recorder with `.mid` export.
