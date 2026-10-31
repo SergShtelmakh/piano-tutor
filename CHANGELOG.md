@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-10-31 — Phase 16: two voices on a staff
+
+### Added
+
+- When a MuseScore file has **two voices on one staff**, both are drawn with their own rhythm, as in MuseScore: the upper voice with stems up, the lower voice with stems down. A long note held under a moving melody now keeps its full length.
+- Rests of the lower voice appear only in bars where it plays; notes of the two voices that would overlap are set side by side. Beams and ties stay within their voice.
+- Course lessons of such a piece show both voices; the lessons themselves, your stars, and your progress are unchanged.
+
+### Notes
+
+- MIDI files and the library pieces have no voice information, so they look as before.
+- A third or fourth voice is drawn together with the nearer of the two.
+
 ## 2026-10-30 — Phase 15: beams
 
 ### Added
