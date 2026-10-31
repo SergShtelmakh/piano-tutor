@@ -9,7 +9,7 @@ export const MAX_VOICES = 32;
 const VOICE_PEAK = 0.8;
 const START_RAMP = 0.002; // avoids a click if a sample does not start at zero
 const ROOM_SECONDS = 1.5;
-const WET_LEVEL = 0.22;
+const WET_LEVEL = 0.4;
 const REVERB_SWITCH_TIME_CONSTANT = 0.02; // ≈ 50 ms to switch
 
 export interface Synth {
@@ -74,6 +74,7 @@ export function createSynth(
     impulse.copyToChannel(room.left, 0);
     impulse.copyToChannel(room.right, 1);
     const convolver = ctx.createConvolver();
+    convolver.normalize = false; // the impulse has unit energy already
     convolver.buffer = impulse;
     wet = ctx.createGain();
     wet.gain.value = reverb ? WET_LEVEL : 0;

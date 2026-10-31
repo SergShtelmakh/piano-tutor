@@ -141,6 +141,17 @@ describe('impulseResponse', () => {
     expect(Array.from(left)).not.toEqual(Array.from(right));
   });
 
+  it('has unit energy in each ear, whatever its length', () => {
+    for (const seconds of [0.5, 1.5, 2.5]) {
+      const { left, right } = impulseResponse(seconds, 8000, seeded());
+      for (const channel of [left, right]) {
+        let energy = 0;
+        for (const value of channel) energy += value * value;
+        expect(energy).toBeCloseTo(1, 5);
+      }
+    }
+  });
+
   it('starts after a short pre-delay', () => {
     const { left } = impulseResponse(1, 8000, seeded());
     expect(left[0]).toBe(0);
