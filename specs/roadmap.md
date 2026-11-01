@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–17 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), and 17 (piano samples) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. No phase is planned yet; candidates are in the Backlog.
+> Phases 1–17 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), and 17 (piano samples) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phase 18 (redesign: visual system and navigation) is in progress; Phases 19–21 take the remaining features of the user's redesign canvas.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -215,6 +215,29 @@ Spec: [`specs/phase-17-piano-sound/`](phase-17-piano-sound/). Branch `feature/pi
 - **Outcome:** the source set is sampled every minor third (A0, C1, D♯1, F♯1, …) in two layers (soft ≤ 80, loud ≥ 81, plus a few extra loud roots), so nearest-root playback shifts at most 2 semitones. `scripts/build-piano-samples.ts` (Bun + ffmpeg) reads the SFZ, builds the map (`src/core/pianoSampleMap.ts`, 66 regions), trims leading silence, cuts tails at 10 s with a 0.4 s fade, levels each layer to the same mean (the velocity curve `(v/127)²` is then the only dynamics, continuous at the split), and encodes **320 kbps MP3**: 66 files, **12.1 MB**, largest 393 KB, about 105 MB decoded. The pure rules are in `src/core/pianoSamples.ts` (`pickSample`, `velocityGain`, `releaseTime` 0.3 → 0.1 s, `onsetIndex`, `impulseResponse`, `mapProblems`; 17 tests); `src/audio/sampleLoader.ts` fetches and decodes at app start (4 in parallel; any failure → `failed`, Retry loads only what is missing); `synth.ts` keeps the `Synth` interface and adds `start`, `setReverb`, and the load status (voices → dry + convolver (unit-energy impulse, `normalize` off) / wet 0.4 → master → compressor). `VolumeControl` got the Reverb toggle and the loading / failed text. `config/pianoSampleFiles.test.ts` checks the files (each < 2 MB, total ≤ 20 MB), the map, the CC0 record, and that the piano brand is not in `src/`, `index.html`, `public/`, or `vite.config.ts`. The licence was re-read on the source page and in the archive's `readme.txt` / `cc0.txt` on 2026-10-31. No new dependencies; ffmpeg was a portable build used once.
 - **Changed during the phase:** the first encoding was 256 kbps (9.7 MB); after the user reported "not very good quality, crackles" it was raised to 320 kbps. Clipping was ruled out by measurement (the whole chain rendered in Chrome: a 16-note chord at velocity 127 peaks at 0.76; one note at 0.19–0.28), and the sample edges have no clicks. After the 320 kbps encoding the user said the sound "became better". Then they could not hear any difference between Reverb on and off, and the measurement agreed: the tail right after a released note was about −43 dB below the note's peak (the damper leaves −49 dB), because Chrome's automatic normalisation of a noise impulse made it very quiet. Fixed: `impulseResponse` now returns unit energy per ear (unit-tested), the convolver's `normalize` is off, and the wet level is 0.4 (tail about −27 to −30 dB). **Still open when this replan was written:** whether the crackles are fully gone (not confirmed by the user), and whether the new reverb level is pleasant. If crackles remain, the suspects are linear interpolation of the pitch shift in `AudioBufferSourceNode` and noise in the source recording (a Zoom H1 in a living room). The rest of the listening checks, Android Chrome, the 360 px layout, and a skim of the new `uk` / `de` / `fr` strings are also open (`validation.md`).
 
+## Phase 18 — Redesign: visual system and navigation 🔨
+
+Goal: the app gets the dark, card-based look of the user's design canvas ([Piano Tutor — оновлений дизайн](https://claude.ai/artifact/8TBSo2UjJ2PTqZ4hoMbcrn)) and a clear structure, with no change to what it does.
+
+Spec: [`specs/phase-18-redesign/`](phase-18-redesign/). Branch `feature/redesign`.
+
+- Dark theme only (tokens in `src/index.css`, contrast checked by a test), the Manrope font self-hosted (SIL OFL), logo option 13 as the logo and app icon.
+- Screens: Home (Continue card, stats strip, tiles), Lessons (curriculum + pieces you are learning), Library (the Player), Free play, Settings (language, MIDI keyboard, sound, about). Back + title on phones, a navigation rail from 768 px, a sidebar from 1280 px; a focused lesson screen without navigation.
+- Notation and the piano redrawn light-on-dark; feedback colours distinguishable by lightness.
+- Split during the spec (user decision): the canvas's new features are Phases 19–21.
+
+## Phase 19 — My lessons 📋
+
+Goal: one list of what the learner is working on, as on the canvas's "My lessons" screens: pieces added from the library or from a file on the device, each with its progress, and a "Continue" that opens the last one played. Likely needs files kept on the device (IndexedDB) and a "last played" time in progress (a saved-format change). Includes library search and the difficulty chips from the canvas.
+
+## Phase 20 — Lesson controls 📋
+
+Goal: the controls in the canvas's lesson header: tempo (−/+ bpm), hand choice (left / both / right), pause, and a "highlight the next note" hint on the piano. Tempo needs a decision on what it means while lessons judge pitches only (see the play-along items in the Backlog).
+
+## Phase 21 — Lesson layout editor 📋
+
+Goal: the canvas's layout editor: keyboard height (S–XL, also by dragging), octaves on screen, staff size, note names on keys, and the next-note hint, changed live while an example plays; saved on the device and used by every lesson.
+
 ## Backlog 💡
 
 Ideas not yet scheduled — see `specs/backlog/` for notes.
@@ -229,7 +252,7 @@ Ideas not yet scheduled — see `specs/backlog/` for notes.
 - Session recorder with `.mid` export.
 - Metronome and tempo-following play-along mode.
 - Scales and arpeggio drills; adaptive practice.
-- Dark mode / theming.
+- A light theme and a theme switch (Phase 18 is dark only); language flags in the selector; browser Back / history for the screens.
 - From Phase 6: locked lessons / unlock gates (see [`backlog/lesson-unlocks.md`](backlog/lesson-unlocks.md)); rhythm and note values; accidentals and key signatures (black-key content); hands together; chord inversions, seventh chords, and an interval / chord naming quiz; a "played together within N ms" window for chords; a shorter page on narrow screens if 8 notes are too small.
 - From Phase 12: a separate range per MIDI device and a MIDI device picker (the range is global today); a first-connect hint to set the keyboard size; guessing the size from the device name as a hint; marks on lesson cards, course lists, and library pieces for notes the keyboard lacks; choosing lessons by range, or transposing a lesson into it; sizing the on-screen piano to the range.
 - From Phase 13: tempo marks, repeats / voltas, and grace notes from MusicXML; key signatures, flats as written, and several voices per staff (real notation, see the sheet-music item); keeping opened files on the device (IndexedDB) so a course from your own file shows on Home; `.mscz`; drag and drop; a hand override for MIDI files, which still split at middle C.
