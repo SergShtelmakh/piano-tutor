@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-11-02 — Phase 23: browser Back and history
+
+### Added
+
+- **Back works inside the app.** The phone's Back gesture, Android's Back in the installed app, and the browser's Back button now go one step back: from a lesson to its course (or My lessons / Home), from a course to the screen it was opened from, from the layout editor to Settings, and from any main screen to Home. Back on Home leaves the app, as before. Switching screens in the navigation does not stack up steps.
+- **Back in a running lesson pauses it** and opens the pause dialog; Back again leaves the lesson. Back also closes the Add lesson sheet.
+- **The address shows where you are** (`#/library`, `#/settings`, `#/library/course/…`), so a reload or a bookmark opens the same screen or course. A lesson or the layout editor reloads to the screen below it instead of restarting.
+- Forward reopens a screen or a course you just left, but never a lesson.
+
 ## 2026-11-01 — Phase 22: paper sheet music
 
 ### Added
