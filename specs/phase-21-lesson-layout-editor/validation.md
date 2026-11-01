@@ -25,6 +25,7 @@ Run `bun run dev`, open http://localhost:3000 in Chrome.
 - [ ] FR-9: Change every setting, reload: all are kept. In DevTools, set `piano-tutor.lessonSettings` to `{"version":1,"tempo":120,"metronome":true,"hint":false}`, reload: tempo 120 and the metronome are kept, the layout is at its defaults. Set `"keyboardHeight":"huge"`: only that field falls back to M.
 - [ ] FR-10: **Reset** sets M / Auto / M / names off / hint off at once; a lesson's tempo and metronome are unchanged.
 - [ ] FR-11: At 1024 × 768, 1440 × 900, and 844 × 390 the options panel is to the right of the preview (scrolling on its own when needed); at 360 × 800 and 768 × 1024 the options come first and the preview below; no sideways scroll except inside the piano.
+- [ ] FR-12: The header badge reads "Screen W × H px" with the real window size (compare with DevTools' device toolbar). Resize the window or switch the device emulation between 390 × 844 and 844 × 390: the numbers follow within a moment. The badge is not a button and nothing is saved.
 - [ ] Accessibility: Tab through the editor: focus rings everywhere; segmented buttons report `aria-pressed`, switches `role="switch"` + `aria-checked`, the Back button has a name; size letters have translated names; touch targets ≥ 44 px.
 - [ ] Works with the computer keyboard (`A`–`;`, `W E T Y U O P`, `Z` / `X`) without a MIDI device, in the editor and in a lesson with every layout; a real MIDI keyboard on the Cloudflare preview.
 - [ ] No console errors
