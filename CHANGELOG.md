@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-11-01 — Phase 20: lesson controls
+
+### Added
+
+- **Listen** in every lesson: the app plays the rest of the page for you, and the keys light up. In a course lesson it follows the piece's rhythm. What it plays never counts as your notes or your mistakes.
+- **Tempo** (− / +, 40–200 bpm, 80 by default) for Listen, the metronome, and the other hand. Lessons still judge the notes you play, not the timing.
+- **Metronome**: a click on every beat at the chosen tempo, through the app's volume and mute.
+- **Hint**: a ring on the piano marks the key (or all keys of a chord) to play now. A run with the hint on still gets all its stars.
+- **Left / Both / Right** in a both-hands course lesson: play one hand, and the app plays the other after each step. A one-hand run is practice: the summary shows your accuracy but saves no stars or XP.
+- **Pause**: stops all sound and shows **Resume**, **Restart**, and **Back**. Space pauses and resumes too (when no button is focused), and switching to another tab pauses the lesson.
+
+### Notes
+
+- Tempo, metronome, and hint are saved on your device and apply to every lesson.
+- On a phone held upright and on a small tablet the controls sit in a second row under the lesson header; from 1024 px wide and on a phone held sideways they share one row.
+
 ## 2026-11-01 — Phase 19: My lessons
 
 ### Added

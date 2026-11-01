@@ -32,6 +32,6 @@ Run `bun run dev`, open http://localhost:3000 in Chrome.
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md` — phase status updated
-- [ ] `specs/tech-stack.md` — layout (`practice.ts`, `src/lesson/`, `synth.click`), known debt
-- [ ] `CHANGELOG.md` / README (all four languages) updated
+- [x] `specs/roadmap.md` — phase status updated
+- [x] `specs/tech-stack.md` — layout (`practice.ts`, `src/lesson/`, `synth.click`), known debt
+- [x] `CHANGELOG.md` / README (all four languages) updated
