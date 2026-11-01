@@ -1,1 +1,85 @@
 @import 'tailwindcss';
+
+/* Manrope (SIL OFL 1.1, see licenses/Manrope-OFL-1.1.txt): one variable file per script. */
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/manrope-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/manrope-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/manrope-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/manrope-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* The dark theme. Values are checked by config/themeContrast.test.ts: change them there too. */
+@theme {
+  --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-bg: #0e1117;
+  --color-surface: #171b24;
+  --color-surface-raised: #1f2430;
+  --color-rail: #12161e;
+  --color-line: #2a3040;
+  --color-line-strong: #3a4258;
+  --color-ink: #f3f1ec;
+  --color-ink-muted: #a7aebf;
+  --color-staff: #6b7389;
+  --color-accent: #5ed6c1;
+  --color-accent-strong: #8becdb;
+  --color-accent-ink: #04201b;
+  --color-accent-soft: #1b2b2c;
+  --color-warm: #f4b860;
+  --color-wrong: #ff7a7a;
+  --color-wrong-soft: #2e1c20;
+  --color-key-white: #f3f1ec;
+  --color-key-black: #0a0c11;
+  --color-key-label: #4b5265;
+}
+
+/* `wide`: room for the navigation rail (a phone in landscape is wide but short, so it gets none). */
+@custom-variant wide (@media (min-width: 768px) and (min-height: 501px));
+@custom-variant sidebar (@media (min-width: 1280px) and (min-height: 501px));
+@custom-variant short (@media (max-height: 500px));
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

@@ -89,6 +89,8 @@ Die Einrichtung der beiden Hosts (einmalig: GitHub Pages mit der Quelle **GitHub
 
 Die Formen von Violin- und Bassschlüssel sowie die Kreuze, Auflösungszeichen, Fähnchen und Pausen in den Noten des MIDI-Players sind Umrisse der Musikschrift [Bravura](https://github.com/steinbergmedia/bravura), © Steinberg Media Technologies GmbH, verwendet unter der SIL Open Font License 1.1 (siehe [licenses/Bravura-OFL-1.1.txt](licenses/Bravura-OFL-1.1.txt)).
 
+Die Schrift der App ist [Manrope](https://github.com/sharanda/manrope), © The Manrope Project Authors, verwendet unter der SIL Open Font License 1.1 (siehe [licenses/Manrope-OFL-1.1.txt](licenses/Manrope-OFL-1.1.txt)). Sie wird von der App selbst ausgeliefert.
+
 Die Stücke der Bibliothek stammen vom [Mutopia Project](https://www.mutopiaproject.org/) (gemeinfreie Ausgaben), und die Porträts der Komponisten sind gemeinfreie Bilder von [Wikimedia Commons](https://commons.wikimedia.org/) (siehe [licenses/library-sources.md](licenses/library-sources.md)).
 
 Der Klaviersound stammt aus dem Sample-Set [Upright Piano KW](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) des Projekts FreePats, aufgenommen von Gonzalo und Roberto an einem Kawai-Klavier und veröffentlicht unter der Gemeinfreiheits-Erklärung [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (siehe [licenses/piano-samples.md](licenses/piano-samples.md)). Die App wird nicht von Kawai hergestellt, gesponsert oder empfohlen.
