@@ -4,6 +4,27 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-11-01 — Phase 21: lesson layout editor
+
+### Added
+
+- **Settings → Lesson layout → Edit layout** opens an editor that shows how every lesson will look: a lesson with an example held still, and the controls on top of it (a slim bar, a small panel you can hide, a handle on the piano).
+- **Keyboard height** S / M / L / XL; drag the handle above the piano, or use the arrow keys on it.
+- **Octaves on screen**: Auto (as before) or 1 to 4 octaves around the lesson's notes, with wider keys.
+- **Rows of music**: a course lesson shows 1, 2 (as before), or 3 lines at once; **row height** S / M / L / XL makes the music smaller or larger.
+- **A layout for each orientation**: portrait and landscape keep their own choices. The editor edits the one you hold the device in, and a lesson switches when you rotate it, without losing your place.
+- The editor's top bar shows the **size of the window** and its orientation.
+
+### Changed
+
+- Lesson pianos name only the C keys (and the keys that are lit) unless **Note names on keys** is turned on. Free play and the Library still name every key.
+
+### Notes
+
+- The hint is the same switch in the editor and in the lesson header, for both orientations.
+- With many rows, large rows, and a large keyboard on a phone held sideways, the music area scrolls; the piano always stays on screen.
+- The reset button restores the defaults of the orientation you are in (and turns the hint off); tempo and metronome are not touched.
+
 ## 2026-11-01 — Phase 20: lesson controls
 
 ### Added

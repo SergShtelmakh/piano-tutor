@@ -35,6 +35,6 @@ Run `bun run dev`, open http://localhost:3000 in Chrome (the device toolbar in D
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md` — phase status updated
-- [ ] `specs/tech-stack.md` — project layout (`lessonLayout.ts`, `layoutExample.ts`, the editor, the layouts in the settings)
-- [ ] `CHANGELOG.md` / README (all four languages) updated
+- [x] `specs/roadmap.md` — phase status updated
+- [x] `specs/tech-stack.md` — project layout (`lessonLayout.ts`, `layoutExample.ts`, the editor, the layouts in the settings)
+- [x] `CHANGELOG.md` / README (all four languages) updated
