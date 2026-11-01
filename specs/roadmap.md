@@ -251,6 +251,12 @@ Spec: [`specs/phase-21-lesson-layout-editor/`](phase-21-lesson-layout-editor/). 
 
 - **Outcome:** the layout is part of the lesson settings (`piano-tutor.lessonSettings`, still `version: 1`): `layouts` holds one `LessonLayout` per orientation (keyboard height, octaves, rows, row height, note names); the hint stays one value. The pure rules are `src/core/lessonLayout.ts` (orientation from the window's shape, size tables with a short-screen table, snapping of a dragged height, the parser), `fixedRange` in `keyboardLayout.ts` (1–4 octaves, the window of whole octaves that covers the lesson's notes nearest to their middle), `visibleSystems(…, rows)`, and `layoutExample.ts` (20 bars built in code). `LessonScreen` reads the layout of the window's orientation, so a rotation only redraws; its root became `h-dvh` and the area above the piano scrolls when the rows do not fit. `ScoreView` gained `zoom` for the row height. Added during the phase at the user's request: a layout per orientation, rows of music and row height (instead of the canvas's staff size), a screen-size readout, one octave as the minimum. Changed after three previews on the user's phone: the layout is the bottom layer and the controls float over it (the first version stacked a tall header and panel over a squeezed preview); the panel shows one setting at a time behind short wrapped chips; there is no orientation control (the editor edits the window's orientation and follows a rotation); the example is held still at one moment instead of looping. Note names are off by default in lessons (user decision; Free play and the Library still name every key). No new dependencies. Checked with the unit tests (796) and a headless-Chrome script (not in the repo) at 360 × 800, 384 × 783, 768 × 1024, 844 × 390, and 1440 × 900, including rotations in the editor and in a lesson and the worst case on a phone held sideways; **manual validation (a real phone, a real MIDI keyboard, keyboard navigation, the `uk` / `de` / `fr` strings) was still open when this replan was written**.
 
+## Phase 22 — Paper sheet music 🔨
+
+Goal: the notation reads like printed music, with black notes on a warm-white card, everywhere the app draws it (lessons, the Library's player, the layout editor). A switch in Settings brings back the dark sheet music. The rest of the app stays dark. This was the user's request after Phase 21.
+
+Spec: [`specs/phase-22-paper-staff/`](phase-22-paper-staff/). Branch `feature/paper-staff`.
+
 ## Backlog 💡
 
 Ideas not yet scheduled — see `specs/backlog/` for notes.
