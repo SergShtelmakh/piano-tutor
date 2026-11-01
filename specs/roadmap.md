@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–18 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), and 18 (redesign) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phases 19–21 (planned) take the remaining features of the user's redesign canvas; Phase 19 (My lessons) is next.
+> Phases 1–18 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), and 18 (redesign) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phases 19–21 (planned) take the remaining features of the user's redesign canvas; Phase 19 (My lessons) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -227,9 +227,11 @@ Spec: [`specs/phase-18-redesign/`](phase-18-redesign/). Branch `feature/redesign
 - Split during the spec (user decision): the canvas's new features are Phases 19–21.
 - **Outcome:** the palette is the `@theme` block of `src/index.css` (background `#0e1117`, cards `#171b24`, teal accent `#5ed6c1`, amber `#f4b860`, coral `wrong` `#ff7a7a`); `src/core/contrast.ts` (WCAG ratio) and `config/themeContrast.test.ts` check the token pairs. Two tokens moved from the canvas: `staff` `#5b6375` → `#6b7389` (2.86:1 on a card failed the 3:1 test), and `key-label` `#4b5265` was added for labels on the ivory keys. Manrope comes as four variable WOFF2 subsets from the Google Fonts CSS API (`src/assets/fonts/`, about 57 KB; the smallest is inlined by Vite), recorded in `licenses/manrope.md` and checked by `config/fontFiles.test.ts`. Logo 13 is `public/icon.svg` (keys scaled into the maskable safe zone) and the `Logo` component. The shell is one `Navigation` component (rail from 768 px, sidebar from 1280 px) behind Tailwind variants `wide` / `sidebar` / `short` that also look at the height, so a phone in landscape gets Home tiles and Back buttons instead of a rail; a lesson hides the navigation and, in landscape, the counters (Restart moves to the header), with a smaller staff and piano, so header, staff, and piano fit 844 × 390. Settings holds language, MIDI keyboard (the connection moved to `MidiProvider`, so it survives leaving Settings), sound, and the build line; the play screens have a `MuteButton`. A lesson's Back returns to where it was opened from, so `lessonBack` became plain "Back". `PianoKeyboard` now measures its container instead of the window (it overlapped the sidebar). New strings in all four locales; `mode*` and `tagline` were removed. No new dependencies; the saved data is unchanged. Checked by rendering every screen with headless Chrome at 390 × 844, 844 × 390, 1024 × 768, and 1440 × 900; **manual validation (real MIDI keyboard, offline font, keyboard navigation, the `uk` / `de` / `fr` strings) was still open when this replan was written**.
 
-## Phase 19 — My lessons 📋
+## Phase 19 — My lessons 🔨
 
 Goal: one list of what the learner is working on, as on the canvas's "My lessons" screens: pieces added from the library or from a file on the device, each with its progress, and a "Continue" that opens the last one played. Likely needs files kept on the device (IndexedDB) and a "last played" time in progress (a saved-format change). Includes library search and the difficulty chips from the canvas.
+
+Spec: [`specs/phase-19-my-lessons/`](phase-19-my-lessons/). Branch `feature/my-lessons`.
 
 ## Phase 20 — Lesson controls 📋
 
