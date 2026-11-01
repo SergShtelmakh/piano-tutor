@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LESSON_CATALOG, LESSON_UNITS, nextLessonId } from '../core/lessons.ts';
 import { useT } from '../i18n/context.ts';
+import { useBackLayer } from '../navigation/useBackLayer.ts';
 import { useProgress } from '../progress/context.ts';
 import AddLessonSheet from './AddLessonSheet.tsx';
 import { PlusIcon } from './icons.tsx';
@@ -22,6 +23,10 @@ export default function LessonsScreen({
   const { progress } = useProgress();
   const nextId = nextLessonId(LESSON_CATALOG, progress.lessons);
   const [sheetOpen, setSheetOpen] = useState(false);
+  useBackLayer('sheet', sheetOpen, () => {
+    setSheetOpen(false);
+    return 'leave';
+  });
 
   return (
     <div className="flex w-full max-w-3xl flex-col gap-6">

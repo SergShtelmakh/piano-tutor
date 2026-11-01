@@ -1,1 +1,1 @@
-export type Screen = 'home' | 'lessons' | 'library' | 'free' | 'settings';
+export type { Screen } from '../../core/route.ts';

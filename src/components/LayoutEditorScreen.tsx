@@ -12,6 +12,7 @@ import {
 import { useT } from '../i18n/context.ts';
 import type { MessageKey } from '../i18n/locales/en.ts';
 import { useLessonSettings } from '../lesson/settingsContext.ts';
+import { useBackLayer } from '../navigation/useBackLayer.ts';
 import { BackIcon, ResetIcon, SlidersIcon } from './icons.tsx';
 import { KeyboardHeightHandle, SegmentedControl, SwitchRow } from './LayoutControls.tsx';
 import { SIZE_NAME_KEYS } from './layoutLabels.ts';
@@ -42,6 +43,10 @@ type Section = 'keyboard' | 'octaves' | 'rows' | 'rowHeight' | 'names' | 'hint';
  */
 export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
   const t = useT();
+  useBackLayer('editor', true, () => {
+    onExit();
+    return 'leave';
+  });
   const { settings, setLayout, setHint, resetLayout } = useLessonSettings();
   const windowSize = useWindowSize();
   // The layout being edited is the one of the window's orientation: a rotation switches it.

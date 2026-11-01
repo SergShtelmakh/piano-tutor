@@ -15,8 +15,9 @@ import { nextCourseLesson, pieceIdOfLesson } from './core/course.ts';
 import { LESSON_CATALOG } from './core/lessons.ts';
 import { LIBRARY_PIECES } from './core/libraryCatalog.ts';
 import type { MyLessonEntry } from './core/myLessons.ts';
+import type { Route } from './core/route.ts';
 import { CourseProvider } from './course/CourseProvider.tsx';
-import { useCourse } from './course/context.ts';
+import { sourceId, useCourse } from './course/context.ts';
 import { useT } from './i18n/context.ts';
 import type { MessageKey } from './i18n/locales/en.ts';
 import { MidiProvider } from './input/MidiProvider.tsx';
@@ -25,6 +26,7 @@ import { KeyboardRangeProvider } from './keyboard/KeyboardRangeProvider.tsx';
 import { LessonSettingsProvider } from './lesson/LessonSettingsProvider.tsx';
 import { LibraryMarksProvider } from './library/LibraryMarksProvider.tsx';
 import { useMyLessons } from './myLessons/context.ts';
+import { appHistory } from './navigation/history.ts';
 import { MyLessonsProvider } from './myLessons/MyLessonsProvider.tsx';
 import { PlayerProvider } from './playback/PlayerProvider.tsx';
 import { useProgress } from './progress/context.ts';
@@ -35,8 +37,11 @@ function Shell() {
   const t = useT();
   const course = useCourse();
   const { progress, setLastLesson } = useProgress();
-  const { markPlayed } = useMyLessons();
-  const [screen, setScreen] = useState<Screen>('home');
+  const { markPlayed, entries: myLessons } = useMyLessons();
+  // Where the address says the app starts; a course in it is opened once it is found (below).
+  const [initial] = useState(() => appHistory.start());
+  const [screen, setScreen] = useState<Screen>(initial.screen);
+  const [pendingCourse, setPendingCourse] = useState<string | null>(initial.course);
   // The lesson layout editor, opened from Settings: a full-window screen like a lesson.
   const [layoutEditorOpen, setLayoutEditorOpen] = useState(false);
   // The id of the open lesson; while set, it replaces every other screen (and the navigation).
@@ -77,6 +82,46 @@ function Shell() {
       if (next) openLesson(next.id);
     }
   }, [courseSource, courseStatus, builtCourse, progress.lessons, openLesson]);
+
+  // Opens the course with this id, or closes the course when it is not a library piece or a kept
+  // file (a file opened from disk and not kept cannot come back).
+  const openCourseById = (id: string) => {
+    const piece = LIBRARY_PIECES.find((item) => item.id === id);
+    const kept = myLessons.find((item) => item.id === id && item.source === 'file');
+    if (piece) course.openCourse(piece);
+    else if (kept) course.openStoredFile({ id: kept.id, title: kept.title });
+    else course.closeCourse();
+  };
+  const startCourse = useRef<(id: string) => void>(openCourseById);
+  useEffect(() => {
+    startCourse.current = openCourseById;
+  });
+  useEffect(() => {
+    if (pendingCourse === null) return;
+    startCourse.current(pendingCourse);
+    // Once the course is open (or was not found) the route follows the course state.
+    queueMicrotask(() => setPendingCourse(null));
+  }, [pendingCourse]);
+
+  // The history follows the app: the route is the screen and the open course.
+  const courseId = (course.source ? sourceId(course.source) : null) ?? pendingCourse;
+  useEffect(() => {
+    appHistory.setRoute({ screen, course: courseId });
+  }, [screen, courseId]);
+  // Back and Forward change the app's state the same way the navigation does.
+  const applyRoute = useRef<(route: Route) => void>(() => {});
+  useEffect(() => {
+    applyRoute.current = (route) => {
+      setLessonId(null);
+      setLayoutEditorOpen(false);
+      setScreen(route.screen);
+      if (route.course === null) course.closeCourse();
+      else if ((course.source ? sourceId(course.source) : null) !== route.course)
+        openCourseById(route.course);
+    };
+  });
+  useEffect(() => appHistory.onRoute((route) => applyRoute.current(route)), []);
+
   const catalogEntry = LESSON_CATALOG.find((item) => item.id === lessonId);
   const courseEntry = lessonId ? course.lessonById(lessonId) : undefined;
   const entry = catalogEntry ?? courseEntry;

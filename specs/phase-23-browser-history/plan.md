@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 23 — Browser Back and history
 > Branch: `feature/browser-history`
-> Status: Draft
+> Status: Implemented (manual validation pending)
 
 ## Goal
 
@@ -43,22 +43,22 @@ Leaving by Back unmounts the same components as leaving in the app does, so FR-7
 ## Task groups
 
 1. **Route rules (pure)**
-   - [ ] `src/core/route.ts`: `Screen`, `Route`, `parseHash`, `formatHash`, `routeEntries`, `historySteps`. Re-export `Screen` from `components/shell/screens.ts`.
-   - [ ] `src/core/route.test.ts`: every main screen and course hash both ways, `#`, `#/`, and no hash as Home, unknown screen / extra segments / bad encoding as `null`, ids with special characters, and `historySteps` for push, replace between main screens, back from a course to Home, a course to another screen (back 1 + replace), and no change.
+   - [x] `src/core/route.ts`: `Screen`, `Route`, `parseHash`, `formatHash`, `routeEntries`, `historySteps`. Re-export `Screen` from `components/shell/screens.ts`.
+   - [x] `src/core/route.test.ts`: every main screen and course hash both ways, `#`, `#/`, and no hash as Home, unknown screen / extra segments / bad encoding as `null`, ids with special characters, and `historySteps` for push, replace between main screens, back from a course to Home, a course to another screen (back 1 + replace), and no change.
 2. **History controller**
-   - [ ] `src/navigation/history.ts`: the `HistoryLike` type, the controller (stack, layers, `syncRoute`, `popstate`, the start), and a default instance on `window.history`.
-   - [ ] `src/navigation/useBackLayer.ts` and `useHistoryRoute.ts` (the hooks the components use).
-   - [ ] `src/navigation/history.test.ts` with a fake history: a fresh start at `#/library` builds `[home, library]`, a reload on a route entry keeps the stack, a reload on a layer goes back, Back from a layer calls `onBack` (`'stay'` pushes again), closing a layer in the app pops it, Forward into a layer is undone, own `go` events are ignored, and a foreign entry is replaced.
+   - [x] `src/navigation/history.ts`: the `HistoryLike` type, the controller (stack, layers, `syncRoute`, `popstate`, the start), and a default instance on `window.history`.
+   - [x] `src/navigation/useBackLayer.ts` and `useHistoryRoute.ts` (the hooks the components use).
+   - [x] `src/navigation/history.test.ts` with a fake history: a fresh start at `#/library` builds `[home, library]`, a reload on a route entry keeps the stack, a reload on a layer goes back, Back from a layer calls `onBack` (`'stay'` pushes again), closing a layer in the app pops it, Forward into a layer is undone, own `go` events are ignored, and a foreign entry is replaced.
 3. **Screens and courses**
-   - [ ] `App.tsx`: derive the route, `syncRoute`, apply routes from `popstate`, resolve a course id at start (library piece, kept file, else the screen).
-   - [ ] Check that the in-app Back of the header, the course, and Open in player leave the expected stack (FR-2).
+   - [x] `App.tsx`: derive the route, `syncRoute`, apply routes from `popstate`, resolve a course id at start (library piece, kept file, else the screen).
+   - [x] Check that the in-app Back of the header, the course, and Open in player leave the expected stack (FR-2).
 4. **Layers**
-   - [ ] `LessonScreen`: the lesson layer with pause-first (FR-3).
-   - [ ] `LayoutEditorScreen`: the editor layer.
-   - [ ] `LessonsScreen`: the Add lesson sheet as a layer (FR-4).
+   - [x] `LessonScreen`: the lesson layer with pause-first (FR-3).
+   - [x] `LayoutEditorScreen`: the editor layer.
+   - [x] `LessonsScreen`: the Add lesson sheet as a layer (FR-4).
 5. **Checks**
-   - [ ] `bun run lint`, `format:check`, `build`, `test`.
-   - [ ] A headless-Chrome script (not in the repo) on `bun run preview`, also with `BASE_PATH=/piano-tutor/`: walk the FR-2 to FR-6 flows with `history.back()` / `forward()` / reload, and assert the screen and `location.hash` after each step. Check the console for errors.
+   - [x] `bun run lint`, `format:check`, `build`, `test`.
+   - [x] A headless-Chrome script (not in the repo) on `bun run preview`, also with `BASE_PATH=/piano-tutor/`: walk the FR-2 to FR-6 flows with `history.back()` / `forward()` / reload, and assert the screen and `location.hash` after each step. Check the console for errors.
 
 ## Files touched
 

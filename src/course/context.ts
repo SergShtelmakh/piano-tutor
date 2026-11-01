@@ -28,6 +28,11 @@ export interface StoredCourseSource {
 export type CourseSource =
   { kind: 'library'; piece: LibraryPiece } | FileCourseSource | StoredCourseSource;
 
+/** The id of a course source: the piece id, or `file-<hash>`. */
+export function sourceId(source: CourseSource): string {
+  return source.kind === 'library' ? source.piece.id : source.id;
+}
+
 export interface CourseValue {
   /** What the open course screen is for, or null when no course is open. */
   source: CourseSource | null;
