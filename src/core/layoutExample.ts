@@ -49,6 +49,12 @@ function examplePiece(): Piece {
   };
 }
 
+/**
+ * The moment of the example the editor holds still (a step from the start): both hands play, so
+ * the cursor, the lit keys, and the hint ring show on both staves.
+ */
+export const EXAMPLE_STEP = 4;
+
 export interface LayoutExample {
   /** What `NotationView` draws, with the time of each step. */
   notation: LessonNotation;

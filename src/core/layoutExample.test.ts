@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutExample } from './layoutExample.ts';
+import { EXAMPLE_STEP, layoutExample } from './layoutExample.ts';
 import { layoutSystems } from './scoreLayout.ts';
 
 describe('layoutExample', () => {
@@ -32,5 +32,11 @@ describe('layoutExample', () => {
     for (const width of [330, 800, 1300]) {
       expect(layoutSystems(example.notation.score, width).systems.length).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  it('holds a moment where both hands play', () => {
+    const notes = example.steps[EXAMPLE_STEP];
+    expect(notes.some((note) => note >= 60)).toBe(true);
+    expect(notes.some((note) => note < 60)).toBe(true);
   });
 });
