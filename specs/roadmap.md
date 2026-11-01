@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–20 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), 18 (redesign), 19 (My lessons), and 20 (lesson controls) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phase 21 (planned, the lesson layout editor) takes the last feature of the user's redesign canvas.
+> Phases 1–20 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), 18 (redesign), 19 (My lessons), and 20 (lesson controls) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phase 21 (the lesson layout editor, the last feature of the user's redesign canvas) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -243,9 +243,11 @@ Spec: [`specs/phase-20-lesson-controls/`](phase-20-lesson-controls/). Branch `fe
 
 - **Outcome:** tempo paces only what the app plays (user decision: Listen and a metronome, no timing judgement). The pure rules are `src/core/practice.ts` (tempo 40–200 bpm in steps of 5, default 80; `listenChunks`; `oneHandLesson`, which keeps one hand's notes, drops steps without any, and hands back the other hand's notes per finished step; the saved settings parser). `Lesson` gained optional `stepUnits` and `stepHands` (filled by `playLesson`, hands only for both-hands lessons), and `judge` ignores events with source `playback`, so Listen and the other hand never advance a step or count a mistake. `src/lesson/` holds a sequencer on the note bus (every `noteon` gets its `noteoff`, `stop` releases all), the metronome (`Synth.click` on the audio clock, 100 ms look-ahead), the settings (`piano-tutor.lessonSettings`: tempo, metronome, hint, one value for every lesson), and the extended `useLesson` (hand, pause). A one-hand run is practice (user decision): the summary shows accuracy and a note, nothing is recorded. Pause is a modal `<dialog>` with Resume / Restart / Exit; the page hiding pauses too. The hint is a ring on the target keys (new token `key-hint` `#1c8f7c` on white keys, `accent` on black ones). Changes against the spec, written back into it: Space toggles the pause only when no Tab-reachable control has focus (otherwise Space would stop activating buttons); the controls share the header row from 1024 px and on a phone in landscape (at 768 px they did not fit), where Listen is icon-only and the progress bar hidden; the piano shows the whole lesson's range in a one-hand run, so the other hand's keys are visible. No new dependencies; saved progress is unchanged. Checked with the unit tests (766) and a headless-Chrome script (not in the repo) at 390 × 844, 844 × 390, and 1440 × 900; **manual validation (how the metronome and Listen sound, a real MIDI keyboard during Listen and the other hand, keyboard navigation, a real phone, the `uk` / `de` / `fr` strings) was still open when this replan was written**.
 
-## Phase 21 — Lesson layout editor 📋
+## Phase 21 — Lesson layout editor 🔨
 
 Goal: the canvas's layout editor: keyboard height (S–XL, also by dragging), octaves on screen, staff size, note names on keys, and the next-note hint, changed live while an example plays; saved on the device and used by every lesson. Phase 20 already has the hint toggle and a settings store for every lesson (`piano-tutor.lessonSettings`, `LessonSettingsProvider`); the editor adds its fields there and can play its example with the Phase 20 sequencer.
+
+Spec: [`specs/phase-21-lesson-layout-editor/`](phase-21-lesson-layout-editor/). Branch `feature/lesson-layout-editor`.
 
 ## Backlog 💡
 
