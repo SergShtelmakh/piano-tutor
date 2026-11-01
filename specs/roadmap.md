@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–21 are done; the MVP scope from `mission.md` is covered, and so is the user's redesign canvas. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), 18 (redesign), 19 (My lessons), 20 (lesson controls), and 21 (lesson layout editor) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. No phase is planned yet: the next one comes from the Backlog.
+> Phases 1–21 are done; the MVP scope from `mission.md` is covered, and so is the user's redesign canvas. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), 18 (redesign), 19 (My lessons), 20 (lesson controls), and 21 (lesson layout editor) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phase 23 (browser Back and history) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -258,6 +258,17 @@ Goal: the notation reads like printed music, with black notes on a warm-white ca
 Spec: [`specs/phase-22-paper-staff/`](phase-22-paper-staff/). Branch `feature/paper-staff`, PR #29.
 
 - **Outcome:** five tokens in the `@theme` block (`paper` `#faf8f3`, `paper-ink` `#16181d`, `paper-staff` `#6b6f78`, `paper-accent` `#0b7a68`, `paper-wrong` `#b3261e`) and a `.sheet-paper` scope in `src/index.css` that redefines `surface`, `line`, `ink`, `staff`, `accent`, and `wrong` for the notation card. The drawing code did not change: `ScoreView`'s card (course lessons, the Player, the layout editor) and the built-in lesson's card around `StaffView` get the class. The choice (user decision: a switch, paper by default, in Settings only) is `src/display/sheetStyle.ts` (`piano-tutor.sheetStyle`, anything but `dark` is paper, a module store with listeners) and `useSheetStyle` (`useSyncExternalStore`), so a change redraws every view without a provider. Contrast pairs for the paper tokens were added to `config/themeContrast.test.ts`. No new dependencies; the lesson settings and progress are unchanged. Checked with the unit tests (803) and a headless-Chrome script (not in the repo) at 390 × 844, 844 × 390, and 1440 × 900 in both styles: the editor, a built-in lesson with a wrong and a right press, a course lesson, saving, and a bad saved value. **The Library's player on paper was not seen in a screenshot** (the script did not open it; it is the same `ScoreView` as the course lessons), and **manual validation (a real phone, the Player while it plays, the `uk` / `de` / `fr` strings) was still open when this replan was written**.
+
+## Phase 23 — Browser Back and history 🔨
+
+Goal: the phone's Back gesture and the browser's Back and Forward buttons move through the app (lesson → course → screen → Home → out) instead of leaving it, and a reload stays on the same screen or course. From the Phase 18 Backlog item "browser Back / history for the screens"; picked by the user after Phase 22.
+
+Spec: [`specs/phase-23-browser-history/`](phase-23-browser-history/). Branch `feature/browser-history`.
+
+- Hash routes (`#/library`, `#/lessons/course/<id>`); an app-like tree with Home as the root, where switching main screens replaces the entry.
+- Back in a running lesson pauses first, and a second Back exits. Back closes the Add lesson sheet.
+- A reload restores a course (library piece or kept file), not a lesson or the layout editor. Forward never reopens a lesson.
+- Plain app state with a small history controller; no router library.
 
 ## Backlog 💡
 
