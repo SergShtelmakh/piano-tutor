@@ -4,10 +4,10 @@ The feature is done (and the branch can be merged) only when every box is checke
 
 ## Automated
 
-- [ ] `bun run lint` passes
-- [ ] `bun run format:check` passes
-- [ ] `bun run build` passes
-- [ ] `bun run test` passes: the new `src/core/route.test.ts` and `src/navigation/history.test.ts`
+- [x] `bun run lint` passes
+- [x] `bun run format:check` passes
+- [x] `bun run build` passes
+- [x] `bun run test` passes: the new `src/core/route.test.ts` and `src/navigation/history.test.ts`
 
 ## Manual checks
 

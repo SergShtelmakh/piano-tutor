@@ -28,6 +28,7 @@ import {
   TempoControl,
 } from './LessonControls.tsx';
 import MuteButton from './MuteButton.tsx';
+import { useBackLayer } from '../navigation/useBackLayer.ts';
 import PauseOverlay from './PauseOverlay.tsx';
 import { useOrientation } from './useWindowSize.ts';
 import PianoKeyboard from './PianoKeyboard.tsx';
@@ -130,6 +131,15 @@ export default function LessonScreen({
     pause();
   };
   const togglePause = () => (paused ? resume() : pauseLesson());
+  // Back pauses a running lesson (the pause dialog opens); Back on the dialog or the summary exits.
+  useBackLayer('lesson', true, () => {
+    if (state.finished || paused) {
+      onExit();
+      return 'leave';
+    }
+    pauseLesson();
+    return 'stay';
+  });
 
   // The page hiding pauses the lesson; Space (when no control has focus) toggles the pause.
   const actions = useRef({ autoPause: pauseLesson, toggle: togglePause });
