@@ -61,6 +61,7 @@ From Settings the learner opens a full-window editor and sets how every lesson l
 | `src/components/StaffView.tsx`, `NotationView.tsx`               | `scale`                                                  |
 | `src/components/LessonScreen.tsx`                                | Pass the layout                                          |
 | `src/components/LayoutEditorScreen.tsx` (+ `LayoutControls.tsx`) | New: the editor                                          |
+| `src/components/useWindowSize.ts`                                | New: window size, throttled                              |
 | `src/components/SettingsScreen.tsx`, `src/App.tsx`               | Section and routing                                      |
 | `src/components/icons.tsx`                                       | Sliders icon                                             |
 | `src/i18n/locales/{en,uk,de,fr}.ts`                              | New strings                                              |
