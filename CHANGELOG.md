@@ -4,6 +4,26 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-11-01 — Phase 19: My lessons
+
+### Added
+
+- **My lessons**: one list of the pieces you are learning, the last played first. Each row shows where the piece came from, a progress bar, and how much of its course you have finished (**New** before the first lesson). Filter by **All**, **From file**, or **From library**; press a row to open its course.
+- **Add lesson** offers **From file** and **From library**. A file you add is kept on your device, so it opens later, also offline, without choosing it again.
+- The **Library** has a **search box** (title or composer, in your language) and a **+** on every piece that adds it to My lessons. A file open in the Library has **Add to My lessons** next to **Learn**.
+
+### Changed
+
+- The **Lessons** screen is now **My lessons**: your pieces on top, then **Add lesson**, then the built-in lessons under **Basics**.
+- **Continue** on Home picks up what you played last: the next lesson of the piece you were learning, or the next built-in lesson.
+- "Pieces you are learning" is replaced by My lessons. Pieces you had already started are added to the list once.
+
+### Notes
+
+- **Remove** (the bin) asks first. Your stars stay; a kept file is deleted from your device.
+- **Learn** alone doesn't add a piece to My lessons; use **+** or **Add lesson**.
+- **Reset progress** clears stars, XP, and the streak, but keeps My lessons.
+
 ## 2026-11-01 — Phase 18: a new look
 
 ### Changed

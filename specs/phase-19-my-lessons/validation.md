@@ -38,6 +38,6 @@ Run `bun run dev`, open http://localhost:3000 in Chrome. For the offline check u
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md` — phase status updated
-- [ ] `specs/tech-stack.md` — Persistence (IndexedDB for kept files), project layout, known debt
-- [ ] `CHANGELOG.md` / README (all four languages) updated
+- [x] `specs/roadmap.md` — phase status updated
+- [x] `specs/tech-stack.md` — Persistence (IndexedDB for kept files), project layout, known debt
+- [x] `CHANGELOG.md` / README (all four languages) updated
