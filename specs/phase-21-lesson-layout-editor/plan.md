@@ -19,6 +19,7 @@ From Settings the learner opens a full-window editor and sets how every lesson l
   - `PianoKeyboard`: new props `height` (`'s' | 'm' | 'l' | 'xl'`, default `'m'`), `octaves` (default `'auto'`), `allNames` (default `true`, so Free play and the Library keep today's labels), and `shown` (extra notes drawn lit without sound, for the example). Heights come from `lessonLayout.ts` (inline style; the `short` variant picks the short table via a media query hook or both values as CSS variables — whichever keeps one render path).
   - `StaffView` and `NotationView`: a `scale` prop (default 1). `StaffView` scales its max width and its short-screen max height; `NotationView` lays out systems for `width / scale` and draws the SVG at `scale`.
   - `LessonScreen`: reads the layout from `useLessonSettings()` and passes it to `PianoKeyboard`, `StaffView`, and `NotationView`.
+  - New `useWindowSize` hook (`src/components/useWindowSize.ts`): the window's `innerWidth` × `innerHeight`, updated on `resize` (throttled to 250 ms); the editor shows it as a `role="status"` badge (FR-12).
   - New `LayoutEditorScreen.tsx` (full window, like a lesson): header (Back, title + subtitle, Reset, Done), the options panel (three `SegmentedControl`s and two `Switch`es, small components in the same file or `LayoutControls.tsx`), the preview (`NotationView` of the example in a dashed frame, the drag handle `KeyboardHeightHandle` with `role="slider"`, `PianoKeyboard` with the settings and `shown`/`hints`), and a timer that advances the example's step (a `useExampleLoop` hook: `setInterval`, paused on `visibilitychange`). Pointer drag on the handle uses pointer capture and `snapKeyboardHeight` relative to the height at the start of the drag.
   - `SettingsScreen`: a "Lesson layout" section with a description and an **Edit layout** button. `App.tsx`: a `layoutEditorOpen` state rendered like a lesson (outside `AppShell`); Back / Done close it and land on Settings.
   - Strings in all four locales; a sliders icon in `icons.tsx` for the Settings button.
@@ -38,6 +39,7 @@ From Settings the learner opens a full-window editor and sets how every lesson l
    - [ ] `LayoutEditorScreen` with header, panel (segmented controls, switches), preview, example loop, Reset.
    - [ ] `KeyboardHeightHandle`: pointer drag with snapping, slider keys and `aria-valuetext`.
    - [ ] Responsive layout (FR-11): panel at the right from `lg` / `short`, one column below; the panel scrolls on its own.
+   - [ ] `useWindowSize` and the screen-size badge in the editor header (FR-12).
    - [ ] `SettingsScreen` section + `App.tsx` routing; the editor is outside the shell.
 4. **Strings, docs, checks**
    - [ ] Strings in `en`, `uk`, `de`, `fr`.
