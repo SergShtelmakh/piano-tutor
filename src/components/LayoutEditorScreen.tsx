@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { layoutExample } from '../core/layoutExample.ts';
+import { EXAMPLE_STEP, layoutExample } from '../core/layoutExample.ts';
 import {
   LAYOUT_SIZES,
   OCTAVE_CHOICES,
@@ -18,11 +18,7 @@ import { SIZE_NAME_KEYS } from './layoutLabels.ts';
 import NotationView from './NotationView.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import { buttonIcon, buttonPrimary, buttonSmall, chip, chipOn } from './ui.ts';
-import { useExampleLoop } from './useExampleLoop.ts';
 import { useWindowSize } from './useWindowSize.ts';
-
-/** How long the silent example stays on each step. */
-const STEP_MS = 600;
 
 const ORIENTATION_KEYS: Record<Orientation, MessageKey> = {
   portrait: 'layoutPortrait',
@@ -39,7 +35,7 @@ type Section = 'keyboard' | 'octaves' | 'rows' | 'rowHeight' | 'names' | 'hint';
 
 /**
  * The full-window editor of how lessons look. The bottom layer is the lesson itself, drawn as a
- * lesson draws it (a silent example plays, so every change is seen at once); the controls float
+ * lesson draws it (an example held still at one moment, so every change is seen at once); the controls float
  * over it: a slim bar at the top, a small panel with one setting at a time (it can be hidden), and
  * the keyboard height handle on the piano. Changes are saved as they are made, for the orientation
  * of the window (it follows a rotation) or the one picked in the panel.
@@ -56,7 +52,8 @@ export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
   const change = (patch: Partial<LessonLayout>) => setLayout(editing, patch);
 
   const example = useMemo(() => layoutExample(), []);
-  const stepIndex = useExampleLoop(example.steps.length, STEP_MS);
+  // The example is held still at one moment, so the edited layout is easy to look at.
+  const stepIndex = EXAMPLE_STEP;
   const targets = example.steps[stepIndex];
 
   const sizeOptions = LAYOUT_SIZES.map((size) => ({
