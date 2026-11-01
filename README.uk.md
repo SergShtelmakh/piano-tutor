@@ -89,6 +89,8 @@ CI (GitHub Actions) запускає `lint`, `format:check`, `build` і `test` �
 
 Форми скрипкового й басового ключів, а також дієзи, бекари, хвостики та паузи в нотах MIDI-плеєра — контури зі шрифту [Bravura](https://github.com/steinbergmedia/bravura), © Steinberg Media Technologies GmbH, використані за ліцензією SIL Open Font License 1.1 (див. [licenses/Bravura-OFL-1.1.txt](licenses/Bravura-OFL-1.1.txt)).
 
+Шрифт застосунку — [Manrope](https://github.com/sharanda/manrope), © The Manrope Project Authors, за ліцензією SIL Open Font License 1.1 (див. [licenses/Manrope-OFL-1.1.txt](licenses/Manrope-OFL-1.1.txt)). Він віддається самим застосунком.
+
 Твори бібліотеки — з [Mutopia Project](https://www.mutopiaproject.org/), видання у суспільному надбанні, а портрети композиторів — зображення у суспільному надбанні з [Wikimedia Commons](https://commons.wikimedia.org/) (див. [licenses/library-sources.md](licenses/library-sources.md)).
 
 Звук піаніно зроблено з набору семплів [Upright Piano KW](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) проєкту FreePats: його записали Gonzalo і Roberto з піаніно Kawai, опубліковано за відмовою від прав [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (див. [licenses/piano-samples.md](licenses/piano-samples.md)). Застосунок не створений, не спонсорований і не схвалений компанією Kawai.

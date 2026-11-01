@@ -101,6 +101,8 @@ Cloudflare sets `CF_PAGES*` (Pages) or `WORKERS_CI*` (Workers Builds, which is w
 
 The treble and bass clef shapes, and the sharps, naturals, flags, and rests of the MIDI player's score, are outlines from the [Bravura](https://github.com/steinbergmedia/bravura) music font, © Steinberg Media Technologies GmbH, used under the SIL Open Font License 1.1 (see [licenses/Bravura-OFL-1.1.txt](licenses/Bravura-OFL-1.1.txt)).
 
+The app font is [Manrope](https://github.com/sharanda/manrope), © The Manrope Project Authors, used under the SIL Open Font License 1.1 (see [licenses/Manrope-OFL-1.1.txt](licenses/Manrope-OFL-1.1.txt)). It is served from the app itself.
+
 The library pieces are from the [Mutopia Project](https://www.mutopiaproject.org/), public domain editions, and the composers' portraits are public-domain images from [Wikimedia Commons](https://commons.wikimedia.org/) (see [licenses/library-sources.md](licenses/library-sources.md)).
 
 The piano sound is made from the [Upright Piano KW](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) sample set of the FreePats project, recorded by Gonzalo and Roberto from a Kawai upright piano and published under the [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) public domain dedication (see [licenses/piano-samples.md](licenses/piano-samples.md)). The app is not made, sponsored, or endorsed by Kawai.
