@@ -8,6 +8,7 @@ import {
   lessonId,
   MAX_PARTS,
   mergeGroups,
+  nextCourseLesson,
   pieceIdOfLesson,
   piecesInProgress,
   splitParts,
@@ -649,5 +650,29 @@ describe('course steps of a two-voice score', () => {
     expect(built.bars[0].columns.treble.filter((c) => c.voice === 2)).toHaveLength(1);
     const steps = stepsOf(built.bars, 'right');
     expect(steps.map((step) => step.notes)).toEqual([[72, 84], [86], [88], [89]]);
+  });
+});
+
+describe('nextCourseLesson', () => {
+  const course = buildCourse(scoreOf(twoHands(10)), PIECE);
+  const lessons = courseLessons(course);
+  const done = (...ids: string[]) =>
+    Object.fromEntries(
+      ids.map((id) => [id, { bestAccuracy: 1, bestStars: 3 as const, completions: 1 }]),
+    );
+
+  it('is the first lesson without a finished run, in course order', () => {
+    expect(nextCourseLesson(course, {}, null)?.id).toBe(lessons[0].id);
+    expect(nextCourseLesson(course, done(lessons[0].id, lessons[1].id), null)?.id).toBe(
+      lessons[2].id,
+    );
+    // A gap is filled before moving on.
+    expect(nextCourseLesson(course, done(lessons[1].id), lessons[1].id)?.id).toBe(lessons[0].id);
+  });
+
+  it('is the last played lesson again when every lesson has a run', () => {
+    const all = done(...lessons.map((lesson) => lesson.id));
+    expect(nextCourseLesson(course, all, lessons[3].id)?.id).toBe(lessons[3].id);
+    expect(nextCourseLesson(course, all, 'gone')?.id).toBe(lessons[0].id);
   });
 });

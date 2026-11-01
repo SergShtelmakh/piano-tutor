@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
 import { buildCourse, courseLessons, type Course } from '../core/course.ts';
 import type { LibraryPiece } from '../core/libraryCatalog.ts';
+import { useMyLessons } from '../myLessons/context.ts';
 import type { PlayerError } from '../playback/context.ts';
 import {
   CourseContext,
@@ -8,6 +9,7 @@ import {
   type CourseStatus,
   type CourseValue,
   type FileCourseSource,
+  type StoredCourseSource,
 } from './context.ts';
 import { loadCourse } from './loadCourse.ts';
 
@@ -21,35 +23,46 @@ const idOf = (source: CourseSource) => (source.kind === 'library' ? source.piece
 
 /** Which course screen is open, and the course once it is built (kept for the session). */
 export function CourseProvider({ children }: { children: ReactNode }) {
+  const { loadFileSource, setLessonCount } = useMyLessons();
   const [source, setSource] = useState<CourseSource | null>(null);
   const [loaded, setLoaded] = useState<Loaded>({ status: 'loading', course: null, error: null });
   const cache = useRef(new Map<string, Course>());
   const latestRequest = useRef(0);
 
-  const load = useCallback(async (target: CourseSource) => {
-    const cached = cache.current.get(idOf(target));
-    if (cached) {
-      setLoaded({ status: 'ready', course: cached, error: null });
-      return;
-    }
-    if (target.kind === 'file') {
-      // The score is already in memory: nothing to fetch.
-      const course = buildCourse(target.score, { id: target.id, title: target.title });
-      cache.current.set(target.id, course);
-      setLoaded({ status: 'ready', course, error: null });
-      return;
-    }
-    const request = ++latestRequest.current;
-    setLoaded({ status: 'loading', course: null, error: null });
-    const result = await loadCourse(target.piece);
-    if (request !== latestRequest.current) return; // another piece was opened, or the screen closed
-    if (result.ok) {
-      cache.current.set(target.piece.id, result.course);
-      setLoaded({ status: 'ready', course: result.course, error: null });
-    } else {
-      setLoaded({ status: 'error', course: null, error: result.error });
-    }
-  }, []);
+  const load = useCallback(
+    async (target: CourseSource) => {
+      const id = idOf(target);
+      const ready = (course: Course) => {
+        cache.current.set(id, course);
+        setLessonCount(id, courseLessons(course).length);
+        setLoaded({ status: 'ready', course, error: null });
+      };
+      const cached = cache.current.get(id);
+      if (cached) {
+        ready(cached);
+        return;
+      }
+      if (target.kind === 'file') {
+        // The score is already in memory: nothing to fetch.
+        ready(buildCourse(target.score, { id: target.id, title: target.title }));
+        return;
+      }
+      const request = ++latestRequest.current;
+      setLoaded({ status: 'loading', course: null, error: null });
+      if (target.kind === 'stored') {
+        const result = await loadFileSource(target.id);
+        if (request !== latestRequest.current) return;
+        if (result.ok) ready(buildCourse(result.score, { id: result.id, title: result.title }));
+        else setLoaded({ status: 'error', course: null, error: result.error });
+        return;
+      }
+      const result = await loadCourse(target.piece);
+      if (request !== latestRequest.current) return; // another piece was opened, or the screen closed
+      if (result.ok) ready(result.course);
+      else setLoaded({ status: 'error', course: null, error: result.error });
+    },
+    [loadFileSource, setLessonCount],
+  );
 
   const open = useCallback(
     (target: CourseSource) => {
@@ -62,6 +75,10 @@ export function CourseProvider({ children }: { children: ReactNode }) {
   const openCourse = useCallback((piece: LibraryPiece) => open({ kind: 'library', piece }), [open]);
   const openFileCourse = useCallback(
     (file: Omit<FileCourseSource, 'kind'>) => open({ kind: 'file', ...file }),
+    [open],
+  );
+  const openStoredFile = useCallback(
+    (file: Omit<StoredCourseSource, 'kind'>) => open({ kind: 'stored', ...file }),
     [open],
   );
   const closeCourse = useCallback(() => {
@@ -86,6 +103,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
       error: loaded.error,
       openCourse,
       openFileCourse,
+      openStoredFile,
       closeCourse,
       retry,
       lessonById,
@@ -97,6 +115,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
       course,
       openCourse,
       openFileCourse,
+      openStoredFile,
       closeCourse,
       retry,
       lessonById,

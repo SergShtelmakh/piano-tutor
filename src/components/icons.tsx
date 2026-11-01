@@ -67,3 +67,23 @@ export const MuteIcon = icon(
     <path d="M17 9.5l4 5M21 9.5l-4 5" />
   </>,
 );
+export const PlusIcon = icon(<path d="M12 5v14M5 12h14" />);
+export const CloseIcon = icon(<path d="M6 6l12 12M18 6L6 18" />);
+export const FileIcon = icon(
+  <>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5M12 17v-5M9.5 14.5L12 12l2.5 2.5" />
+  </>,
+);
+export const TrashIcon = icon(
+  <>
+    <path d="M4 7h16M10 11v6M14 11v6" />
+    <path d="M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3" />
+  </>,
+);
+export const SearchIcon = icon(
+  <>
+    <circle cx="11" cy="11" r="6" />
+    <path d="M20 20l-4.2-4.2" />
+  </>,
+);

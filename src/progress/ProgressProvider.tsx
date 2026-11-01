@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react';
-import { EMPTY_PROGRESS, recordRun as applyRun, type Progress } from '../core/progress.ts';
+import {
+  EMPTY_PROGRESS,
+  recordRun as applyRun,
+  withLastLesson,
+  type Progress,
+} from '../core/progress.ts';
 import { ProgressContext, type ProgressValue } from './context.ts';
 import { clearProgress, loadProgress, saveProgress } from './storage.ts';
 import { localDay } from './today.ts';
@@ -19,6 +24,14 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return result.reward;
   }, []);
 
+  const setLastLesson = useCallback((lessonId: string) => {
+    const next = withLastLesson(progressRef.current, lessonId);
+    if (next === progressRef.current) return;
+    progressRef.current = next;
+    setProgress(next);
+    setStorageAvailable(saveProgress(next));
+  }, []);
+
   const reset = useCallback(() => {
     progressRef.current = EMPTY_PROGRESS;
     setProgress(EMPTY_PROGRESS);
@@ -26,8 +39,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ progress, storageAvailable, recordRun, reset }),
-    [progress, storageAvailable, recordRun, reset],
+    () => ({ progress, storageAvailable, recordRun, setLastLesson, reset }),
+    [progress, storageAvailable, recordRun, setLastLesson, reset],
   );
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

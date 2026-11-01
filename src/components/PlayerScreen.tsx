@@ -5,7 +5,9 @@ import { useLocale, usePluralT, useT } from '../i18n/context.ts';
 import { formatPercent } from '../i18n/core.ts';
 import { usePlayerState, usePlayerValue } from '../playback/context.ts';
 import { PLAYER_ERROR_KEYS } from '../playback/errorKeys.ts';
+import { SCORE_FILE_ACCEPT } from '../playback/loadScoreFile.ts';
 import { MAX_RATE, MIN_RATE } from '../playback/player.ts';
+import AddFileToMyLessons from './AddFileToMyLessons.tsx';
 import LibraryPanel from './LibraryPanel.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import PieceInfo from './PieceInfo.tsx';
@@ -69,7 +71,7 @@ export default function PlayerScreen() {
         <input
           ref={fileInput}
           type="file"
-          accept=".mid,.midi,.mxl,.musicxml,.xml,audio/midi,audio/x-midi,application/vnd.recordare.musicxml,application/vnd.recordare.musicxml+xml,application/xml"
+          accept={SCORE_FILE_ACCEPT}
           className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0];
@@ -92,6 +94,7 @@ export default function PlayerScreen() {
             {t('libraryLearn')}
           </button>
         )}
+        {loaded?.fileId && <AddFileToMyLessons loaded={loaded} />}
         <span className="ml-auto">
           <MuteButton />
         </span>

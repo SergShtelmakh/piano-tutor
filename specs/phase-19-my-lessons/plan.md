@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 19 — My lessons
 > Branch: `feature/my-lessons`
-> Status: Draft
+> Status: Implemented (manual validation pending)
 
 ## Goal
 
@@ -12,7 +12,7 @@ The learner keeps one list of the pieces they are learning, from the library or 
 
 - **Pure core** — new `src/core/myLessons.ts`:
   - `MyLessonEntry = { kind: 'library'; pieceId; addedAt; lastPlayedAt?; lessonCount? } | { kind: 'file'; id: 'file-<hash>'; title; fileName; addedAt; lastPlayedAt?; lessonCount? }`; `MyLessons = { entries }`.
-  - `addEntry` (no duplicates; an existing entry moves to the top by refreshing `addedAt` and reports `alreadyThere`), `removeEntry`, `markPlayed(entries, pieceId, at)`, `setLessonCount`, `orderedEntries` (FR-3), `filterBySource`, `entryProgress(entry, records)` → `{ finished, percent | null }` (uses `pieceIdOfLesson`), `parseMyLessons` / `serialiseMyLessons` (versioned JSON, bad entries dropped), `migrateFromProgress(records, pieces)` (FR-11, built on `piecesInProgress`).
+  - `addEntry` (no duplicates; an existing entry is kept as it is and reported as `alreadyThere`), `removeEntry`, `markPlayed(entries, pieceId, at)`, `setLessonCount`, `orderedEntries` (FR-3), `filterBySource`, `entryProgress(entry, records)` → `{ finished, percent | null }` (uses `pieceIdOfLesson`), `parseMyLessons` / `serialiseMyLessons` (versioned JSON, bad entries dropped), `migrateFromProgress(records, pieces)` (FR-11, built on `piecesInProgress`).
   - Times are passed in (ms); no clock access.
 - **Progress core** — `src/core/progress.ts`: optional `lastLessonId?: string` on `Progress` (still `version: 1`), `withLastLesson(progress, id)`; `parseProgress` keeps a string `lastLessonId`. `EMPTY_PROGRESS` (reset) has none.
 - **Course and Continue rules** — `src/core/course.ts`: `nextCourseLesson(course, records, lastId)` (first unfinished in course order, else `lastId`). New `continueTarget(progress, entries, pieces)` in `src/core/myLessons.ts` returns `{ kind: 'builtin', lessonId } | { kind: 'piece', entry, lastLessonId } | null` (FR-16).
@@ -33,22 +33,22 @@ The learner keeps one list of the pieces they are learning, from the library or 
 ## Task groups
 
 1. **Pure rules and tests**
-   - [ ] `src/core/myLessons.ts` + `myLessons.test.ts`: add / duplicate / remove, markPlayed, setLessonCount, ordering, filter, percent (incl. unknown count → `null`), parse / serialise (bad data → empty, bad entries dropped), migration (only finished library lessons, once).
-   - [ ] `progress.ts`: optional `lastLessonId`, `withLastLesson`, parse keeps it (still version 1); tests incl. an old save without the field.
-   - [ ] `course.ts`: `nextCourseLesson`; `myLessons.ts`: `continueTarget` (built-in, piece, removed piece, piece no longer in the catalogue, fresh start, all finished); tests.
-   - [ ] `library.ts`: `normaliseSearch`, `searchPieces` (title, composer in the locale, accents, case, chips and favourites applied, title order); tests.
+   - [x] `src/core/myLessons.ts` + `myLessons.test.ts`: add / duplicate / remove, markPlayed, setLessonCount, ordering, filter, percent (incl. unknown count → `null`), parse / serialise (bad data → empty, bad entries dropped), migration (only finished library lessons, once).
+   - [x] `progress.ts`: optional `lastLessonId`, `withLastLesson`, parse keeps it (still version 1); tests incl. an old save without the field.
+   - [x] `course.ts`: `nextCourseLesson`; `myLessons.ts`: `continueTarget` (built-in, piece, removed piece, piece no longer in the catalogue, fresh start, all finished); tests.
+   - [x] `library.ts`: `normaliseSearch`, `searchPieces` (title, composer in the locale, accents, case, chips and favourites applied, title order); tests.
 2. **Storage and provider**
-   - [ ] `src/myLessons/storage.ts`, `fileStore.ts` (IndexedDB wrapper with result values), `context.ts`, `MyLessonsProvider.tsx` (migration on first load, add / remove deleting the kept file, markPlayed, setLessonCount, `loadFileSource`).
-   - [ ] Wire into `App.tsx`; `CourseProvider`: `openStoredFile`, `onBuilt` lesson count, `missingFile` error; `PlayerProvider` keeps the open `File` for `addOpenFile`.
-   - [ ] `Shell`: record `lastLessonId` and `markPlayed` when a lesson opens; Reset progress clears `lastLessonId` only.
+   - [x] `src/myLessons/storage.ts`, `fileStore.ts` (IndexedDB wrapper with result values), `context.ts`, `MyLessonsProvider.tsx` (migration on first load, add / remove deleting the kept file, markPlayed, setLessonCount, `loadFileSource`).
+   - [x] Wire into `App.tsx`; `CourseProvider`: `openStoredFile`, `onBuilt` lesson count, `missingFile` error; `PlayerProvider` keeps the open `File` for `addOpenFile`.
+   - [x] `Shell`: record `lastLessonId` and `markPlayed` when a lesson opens; Reset progress clears `lastLessonId` only.
 3. **My lessons screen and Add lesson sheet**
-   - [ ] `MyLessonsList` (rows, chips, empty states, Remove confirmation, background counts) and `AddLessonSheet` (From file with errors and "already there", From library → Library screen).
-   - [ ] `LessonsScreen` layout (list, Add lesson, Basics, Reset progress); delete `LearningPieces`; `CourseScreen` Remove for `missingFile`; icons; strings (`en`, `uk`, `de`, `fr`).
+   - [x] `MyLessonsList` (rows, chips, empty states, Remove confirmation, background counts) and `AddLessonSheet` (From file with errors and "already there", From library → Library screen).
+   - [x] `LessonsScreen` layout (list, Add lesson, Basics, Reset progress); delete `LearningPieces`; `CourseScreen` Remove for `missingFile`; icons; strings (`en`, `uk`, `de`, `fr`).
 4. **Library: search and add**
-   - [ ] `LibraryPanel`: search box, flat result list with composer line, scrolling chip row, + / ✓ per row; `PlayerScreen`: Add to My lessons for an open file; strings.
+   - [x] `LibraryPanel`: search box, flat result list with composer line, scrolling chip row, + / ✓ per row; `PlayerScreen`: Add to My lessons for an open file; strings.
 5. **Continue and wrap-up**
-   - [ ] `ContinueCard` with `continueTarget`: built-in, piece (loading state, then the next lesson), fallback; strings.
-   - [ ] Update `specs/tech-stack.md` project layout (new `src/core/myLessons.ts`, `src/myLessons/`, IndexedDB under Persistence, `lastLessonId`); run `validation.md`.
+   - [x] `ContinueCard` with `continueTarget`: built-in, piece (the course screen loads, then the next lesson starts), fallback; strings.
+   - [x] Update `specs/tech-stack.md` project layout (new `src/core/myLessons.ts`, `src/myLessons/`, IndexedDB under Persistence, `lastLessonId`); run `validation.md`.
 
 ## Files touched
 

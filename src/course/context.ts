@@ -16,8 +16,17 @@ export interface FileCourseSource {
   score: Score;
 }
 
-/** What a course is built from: a library piece (fetched) or a file the learner opened. */
-export type CourseSource = { kind: 'library'; piece: LibraryPiece } | FileCourseSource;
+/** A file kept in My lessons: its copy is read from the device when the course opens. */
+export interface StoredCourseSource {
+  kind: 'stored';
+  /** `file-<hash>`, as for a file opened from disk. */
+  id: string;
+  title: string;
+}
+
+/** What a course is built from: a library piece (fetched), a file just opened, or a kept file. */
+export type CourseSource =
+  { kind: 'library'; piece: LibraryPiece } | FileCourseSource | StoredCourseSource;
 
 export interface CourseValue {
   /** What the open course screen is for, or null when no course is open. */
@@ -29,6 +38,8 @@ export interface CourseValue {
   openCourse: (piece: LibraryPiece) => void;
   /** Opens the course of a file that is open in the Player. */
   openFileCourse: (file: Omit<FileCourseSource, 'kind'>) => void;
+  /** Opens the course of a file kept in My lessons. */
+  openStoredFile: (file: Omit<StoredCourseSource, 'kind'>) => void;
   closeCourse: () => void;
   retry: () => void;
   /** A lesson of the open course, shaped like a lesson of the curriculum. */

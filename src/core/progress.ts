@@ -22,6 +22,8 @@ export interface Progress {
   xp: number;
   streak: Streak;
   lessons: Record<string, LessonRecord>;
+  /** The lesson opened last (built-in or a course lesson); absent before any was opened. */
+  lastLessonId?: string;
 }
 
 export interface RunReward {
@@ -107,6 +109,11 @@ function nextStreak(streak: Streak, today: string): Streak {
   return { current, best: Math.max(streak.best, current), lastDay: today };
 }
 
+/** Remembers the lesson that was opened last. Returns a new object. */
+export function withLastLesson(progress: Progress, lessonId: string): Progress {
+  return progress.lastLessonId === lessonId ? progress : { ...progress, lastLessonId: lessonId };
+}
+
 /** Applies one finished run. Returns new objects; the input is not changed. */
 export function recordRun(
   progress: Progress,
@@ -165,7 +172,7 @@ export function parseProgress(raw: string | null): Progress {
     return EMPTY_PROGRESS;
   }
   if (typeof data !== 'object' || data === null) return EMPTY_PROGRESS;
-  const { version, xp, streak, lessons } = data as Record<string, unknown>;
+  const { version, xp, streak, lessons, lastLessonId } = data as Record<string, unknown>;
   if (version !== 1 || !isCount(xp)) return EMPTY_PROGRESS;
   if (typeof streak !== 'object' || streak === null) return EMPTY_PROGRESS;
   const { current, best, lastDay } = streak as Record<string, unknown>;
@@ -182,10 +189,12 @@ export function parseProgress(raw: string | null): Progress {
     const record = parseRecord(value);
     if (record) parsedLessons[id] = record;
   }
-  return {
+  const parsed: Progress = {
     version: 1,
     xp,
     streak: { current, best: Math.max(best, current), lastDay },
     lessons: parsedLessons,
   };
+  if (typeof lastLessonId === 'string' && lastLessonId !== '') parsed.lastLessonId = lastLessonId;
+  return parsed;
 }

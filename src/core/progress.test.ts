@@ -8,6 +8,7 @@ import {
   parseProgress,
   recordRun,
   starsFor,
+  withLastLesson,
   xpFor,
   xpForLevel,
   type Progress,
@@ -176,5 +177,33 @@ describe('parseProgress', () => {
       },
     });
     expect(Object.keys(parseProgress(raw).lessons)).toEqual(['good']);
+  });
+});
+
+describe('the last lesson', () => {
+  it('is remembered without touching the rest, and not changed when it is the same', () => {
+    const progress = withLastLesson(EMPTY_PROGRESS, 'melody-mary');
+    expect(progress.lastLessonId).toBe('melody-mary');
+    expect(progress.xp).toBe(0);
+    expect(withLastLesson(progress, 'melody-mary')).toBe(progress);
+    expect(EMPTY_PROGRESS.lastLessonId).toBeUndefined();
+  });
+
+  it('survives a finished run and a save', () => {
+    const played = withLastLesson(EMPTY_PROGRESS, 'melody-mary');
+    const { progress } = recordRun(played, 'melody-mary', 1, '2026-11-01');
+    expect(progress.lastLessonId).toBe('melody-mary');
+    expect(parseProgress(JSON.stringify(progress)).lastLessonId).toBe('melody-mary');
+  });
+
+  it('reads an older save without it, and drops a value that is not a string', () => {
+    const old = JSON.stringify({ ...EMPTY_PROGRESS });
+    expect(parseProgress(old).lastLessonId).toBeUndefined();
+    expect(
+      parseProgress(JSON.stringify({ ...EMPTY_PROGRESS, lastLessonId: 5 })).lastLessonId,
+    ).toBeUndefined();
+    expect(
+      parseProgress(JSON.stringify({ ...EMPTY_PROGRESS, lastLessonId: '' })).lastLessonId,
+    ).toBeUndefined();
   });
 });

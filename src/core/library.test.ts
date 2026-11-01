@@ -6,11 +6,13 @@ import {
   DIFFICULTIES,
   formatDuration,
   initials,
+  normaliseSearch,
   PORTRAIT_HOST,
   PORTRAIT_LICENCES,
   pieceFile,
   portraitUrl,
   pieceUrl,
+  searchPieces,
   SOURCE_HOST,
 } from './library.ts';
 import { LIBRARY_COMPOSERS, LIBRARY_PIECES, type LibraryPiece } from './libraryCatalog.ts';
@@ -228,3 +230,65 @@ describe('initials', () => {
     expect(initials('')).toBe('');
   });
 });
+
+describe('search', () => {
+  const find = (query: string, options: BrowseOptions = NO_FILTER, favourites: string[] = []) =>
+    searchPieces(LIBRARY_PIECES, LIBRARY_COMPOSERS, query, options, favourites, nameOf, 'en');
+  const withComposer = LIBRARY_PIECES.find((piece) => piece.composer === 'bach')!;
+
+  it('ignores case, accents, and extra spaces', () => {
+    expect(normaliseSearch('  Étude   ÄÖÜ ')).toBe('etude aou');
+    expect(normaliseSearch('Fantaisie-Impromptu')).toBe('fantaisie-impromptu');
+  });
+
+  it('finds a piece by a part of its title, in any case', () => {
+    const word = normaliseSearch(withComposer.title).slice(0, 5);
+    const found = find(word.toUpperCase());
+    expect(found.map((piece) => piece.id)).toContain(withComposer.id);
+    for (const piece of found) {
+      expect(normaliseSearch(piece.title) + normaliseSearch(nameOf(composerOf(piece)))).toContain(
+        word,
+      );
+    }
+  });
+
+  it('finds the pieces of a composer by the composer name in the given language', () => {
+    const names: Record<string, string> = { composerBach: 'Йоганн Бах' };
+    const found = searchPieces(
+      LIBRARY_PIECES,
+      LIBRARY_COMPOSERS,
+      'бах',
+      NO_FILTER,
+      [],
+      (composer) => names[composer.nameKey] ?? composer.nameKey,
+      'uk',
+    );
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.every((piece) => piece.composer === 'bach')).toBe(true);
+  });
+
+  it('lists every piece for an empty query, ordered by title', () => {
+    const all = find('');
+    expect(all).toHaveLength(LIBRARY_PIECES.length);
+    const titles = all.map((piece) => piece.title);
+    expect(titles).toEqual([...titles].sort(new Intl.Collator('en').compare));
+  });
+
+  it('applies the difficulty and favourites filters', () => {
+    const level = withComposer.difficulty;
+    expect(
+      find('', { difficulty: level, favouritesOnly: false }).every((p) => p.difficulty === level),
+    ).toBe(true);
+    expect(
+      find('', { difficulty: null, favouritesOnly: true }, [withComposer.id]).map((p) => p.id),
+    ).toEqual([withComposer.id]);
+  });
+
+  it('finds nothing for nonsense', () => {
+    expect(find('zzzzqqqq')).toEqual([]);
+  });
+});
+
+function composerOf(piece: LibraryPiece): LibraryComposer {
+  return LIBRARY_COMPOSERS.find((composer) => composer.id === piece.composer)!;
+}

@@ -8,4 +8,5 @@ export const PLAYER_ERROR_KEYS = {
   tooLarge: 'playerErrorTooLarge',
   damaged: 'playerErrorDamaged',
   network: 'playerErrorNetwork',
+  missingFile: 'playerErrorMissingFile',
 } as const satisfies Record<PlayerError, string>;
