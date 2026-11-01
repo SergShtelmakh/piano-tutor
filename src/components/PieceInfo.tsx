@@ -12,30 +12,30 @@ export default function PieceInfo({ piece }: { piece: LibraryPiece }) {
   const composer = LIBRARY_COMPOSERS.find((item) => item.id === piece.composer);
 
   return (
-    <section className="flex w-full flex-col items-center gap-2 rounded-lg bg-white px-4 py-3 shadow-sm">
+    <section className="flex w-full flex-col items-start gap-2 rounded-2xl border border-line bg-surface px-4 py-4 text-left">
       {composer && <Portrait key={composer.id} composer={composer} size="large" />}
       <h3 className="text-lg font-semibold">{piece.title}</h3>
-      <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-slate-700">
+      <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink">
         {composer && <span>{t(composer.nameKey)}</span>}
         <DifficultyDots level={piece.difficulty} />
       </p>
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-ink-muted">
         {t('librarySource')}:{' '}
         <a
           href={piece.source.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sky-700 underline hover:text-sky-900"
+          className="text-accent underline hover:text-accent-strong"
         >
           Mutopia Project
         </a>{' '}
         · {t('libraryLicencePublicDomain')}
       </p>
-      <span className="flex flex-wrap items-center justify-center gap-2">
+      <span className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => openCourse(piece)}
-          className="min-h-11 rounded-md bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-700"
+          className="min-h-11 rounded-xl bg-accent px-4 text-sm font-extrabold text-accent-ink hover:bg-accent-strong"
         >
           {t('libraryLearn')}
         </button>

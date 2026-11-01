@@ -13,8 +13,8 @@ import { useKeyboardRange } from '../keyboard/context.ts';
 import { useCalibration } from '../keyboard/useCalibration.ts';
 
 const buttonClass =
-  'min-h-11 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white';
-const activeClass = 'border-sky-600 bg-sky-50 text-sky-800';
+  'min-h-11 rounded-xl border border-line-strong bg-transparent px-3 text-sm font-bold text-ink hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-40';
+const activeClass = '!border-accent !bg-accent-soft !text-accent';
 
 /** The Keyboard button and its panel: how many keys the learner's real keyboard has. */
 export default function KeyboardSizeControl({ connected }: { connected: boolean }) {
@@ -37,7 +37,7 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
   const step = calibration.state;
 
   return (
-    <div className="flex w-full flex-col items-center gap-2">
+    <div className="flex w-full flex-col items-start gap-3">
       <button
         type="button"
         className={buttonClass}
@@ -55,13 +55,13 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
         <section
           id={panelId}
           aria-label={t('keyboardPanelTitle')}
-          className="flex w-full max-w-md flex-col items-center gap-3 rounded-lg bg-white p-3 shadow-sm"
+          className="flex w-full max-w-md flex-col items-start gap-4 rounded-2xl bg-bg p-4"
         >
-          <h3 className="font-semibold text-slate-800">{t('keyboardPanelTitle')}</h3>
+          <h3 className="font-bold text-ink">{t('keyboardPanelTitle')}</h3>
 
           {step ? (
-            <div className="flex flex-col items-center gap-3">
-              <p role="status" className="text-slate-800">
+            <div className="flex flex-col items-start gap-3">
+              <p role="status" className="text-ink">
                 {step.step === 'lowest' && t('keyboardCalibrateLowest')}
                 {step.step === 'highest' && t('keyboardCalibrateHighest')}
                 {step.step === 'done' &&
@@ -71,7 +71,7 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
                     names(step.range.low, step.range.high),
                   )}
               </p>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap gap-2">
                 {step.step === 'done' && (
                   <>
                     <button
@@ -99,7 +99,7 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
               <div
                 role="group"
                 aria-label={t('keyboardCountGroup')}
-                className="flex flex-wrap justify-center gap-2"
+                className="flex flex-wrap gap-2"
               >
                 {KEY_COUNTS.map((count) => (
                   <button
@@ -114,7 +114,7 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
                 ))}
               </div>
 
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   className={buttonClass}
@@ -133,7 +133,7 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
                 </button>
               </div>
 
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-start gap-1">
                 <button
                   type="button"
                   className={buttonClass}
@@ -143,11 +143,11 @@ export default function KeyboardSizeControl({ connected }: { connected: boolean 
                   {t('keyboardCalibrate')}
                 </button>
                 {!connected && (
-                  <p className="text-sm text-slate-600">{t('keyboardCalibrateNeedsMidi')}</p>
+                  <p className="text-sm text-ink-muted">{t('keyboardCalibrateNeedsMidi')}</p>
                 )}
               </div>
 
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   className={buttonClass}

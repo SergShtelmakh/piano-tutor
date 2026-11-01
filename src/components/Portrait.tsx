@@ -27,7 +27,7 @@ export default function Portrait({
     return (
       <span
         aria-hidden="true"
-        className={`${box} inline-flex shrink-0 items-center justify-center rounded-full bg-slate-200 font-semibold text-slate-700`}
+        className={`${box} inline-flex shrink-0 items-center justify-center rounded-full bg-line font-semibold text-ink`}
       >
         {initials(t(composer.nameKey))}
       </span>
@@ -42,7 +42,7 @@ export default function Portrait({
       loading="lazy"
       decoding="async"
       onError={() => setFailed(true)}
-      className={`${box} shrink-0 rounded-full bg-slate-200 object-cover`}
+      className={`${box} shrink-0 rounded-full bg-line object-cover`}
     />
   );
 }

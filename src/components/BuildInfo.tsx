@@ -11,8 +11,8 @@ export default function BuildInfo() {
   const host = target === 'local' ? t('buildLocal') : HOST_NAMES[target];
 
   return (
-    <footer className="px-4 pb-4 text-center text-xs text-slate-500">
+    <p className="text-sm text-ink-muted">
       {t('buildLabel')} {commit} · {host}
-    </footer>
+    </p>
   );
 }

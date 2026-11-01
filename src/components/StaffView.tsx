@@ -36,11 +36,11 @@ const CLEFS: Record<Clef, { path: string; lineIndex: number }> = {
 };
 
 const COLOR = {
-  played: 'text-slate-400',
-  current: 'text-sky-600',
-  upcoming: 'text-slate-900',
-  right: 'text-green-600',
-  wrong: 'text-red-600',
+  played: 'text-staff',
+  current: 'text-accent',
+  upcoming: 'text-ink',
+  right: 'text-accent',
+  wrong: 'text-wrong',
 } as const;
 
 export interface StaffFlash {
@@ -98,9 +98,9 @@ export default function StaffView({
       viewBox={`0 0 ${row.width} ${HEIGHT}`}
       role="img"
       aria-label={label}
-      className="h-auto w-full max-w-xl text-slate-900"
+      className="h-auto w-full max-w-xl text-ink short:max-h-40"
     >
-      <g stroke="currentColor" strokeWidth={1} aria-hidden="true">
+      <g stroke="currentColor" strokeWidth={1} className="text-staff" aria-hidden="true">
         {(
           [
             ['treble', TREBLE_LINES],
@@ -197,7 +197,7 @@ function StepNotes({
               cy={cy}
               rx={NOTE_RX * 0.55}
               ry={NOTE_RY * 0.6}
-              fill="white"
+              fill="var(--color-surface)"
               transform={`rotate(-35 ${cx} ${cy})`}
             />
           </g>

@@ -145,7 +145,7 @@ function beamsOfSystem(system: System): SystemBeams {
 /** The beams, second beams, and hooks of a system, drawn over the stems. */
 function BeamsView({ drawings, geometry }: { drawings: BeamDrawing[]; geometry: Geometry }) {
   return (
-    <g className="text-slate-900" fill="currentColor">
+    <g className="text-ink" fill="currentColor">
       {drawings.flatMap((drawing, k) => {
         const toward = drawing.direction === 'up' ? 1 : -1; // from the stem tip towards the notes
         const yAt = (x: number) => yOf(geometry, heightAt(drawing.line, x), drawing.clef);
@@ -308,7 +308,7 @@ function NoteColumn({
           position < column.endTime;
         const nx = noteX(note);
         return (
-          <g key={note.note} className={blue ? 'text-sky-600' : 'text-slate-900'}>
+          <g key={note.note} className={blue ? 'text-accent' : 'text-ink'}>
             {note.accidental && (
               <path
                 d={SIGN_PATH[note.accidental]}
@@ -321,7 +321,7 @@ function NoteColumn({
               cy={y}
               rx={RX}
               ry={RY}
-              fill={open ? 'white' : 'currentColor'}
+              fill={open ? 'var(--color-surface)' : 'currentColor'}
               stroke="currentColor"
               strokeWidth={open ? 1.7 : 0.6}
             />
@@ -360,7 +360,7 @@ function BarView({
   const y1 = yOf(geometry, 10, 'treble');
   const y2 = yOf(geometry, -10, 'bass');
   return (
-    <g className="text-slate-900">
+    <g className="text-ink">
       <line
         x1={right}
         x2={right}
@@ -500,7 +500,7 @@ function Ties({
     });
   });
   return (
-    <g className="text-slate-900" fill="none" stroke="currentColor" strokeWidth={1.3}>
+    <g className="text-ink" fill="none" stroke="currentColor" strokeWidth={1.3}>
       {marks.map((mark) => (
         <path key={mark.key} d={mark.d} />
       ))}
@@ -560,7 +560,7 @@ function CursorLine({
       x2={x}
       y1={yOf(geometry, 10, 'treble') - 14}
       y2={yOf(geometry, -10, 'bass') + 14}
-      stroke="#0ea5e9"
+      stroke="var(--color-accent)"
       strokeWidth={2}
       strokeLinecap="round"
     />
@@ -611,7 +611,7 @@ const SystemView = memo(function SystemView({
       width={displayWidth}
       height={geometry.height * scale}
       aria-hidden="true"
-      className={`block text-slate-900 ${onSeek ? 'cursor-pointer' : ''}`}
+      className={`block text-ink ${onSeek ? 'cursor-pointer' : ''}`}
       onClick={onSeek ? seek : undefined}
     >
       {(
@@ -629,6 +629,7 @@ const SystemView = memo(function SystemView({
             y2={yOf(geometry, index, clef)}
             stroke="currentColor"
             strokeWidth={1}
+            className="text-staff"
           />
         )),
       )}
@@ -713,7 +714,7 @@ export default function ScoreView({
       ref={scroller}
       role="img"
       aria-label={label}
-      className="flex w-full flex-col overflow-x-auto rounded-lg bg-white p-2 shadow-sm"
+      className="flex w-full flex-col overflow-x-auto rounded-2xl border border-line bg-surface p-2"
     >
       {visible.map((index) => (
         <SystemView

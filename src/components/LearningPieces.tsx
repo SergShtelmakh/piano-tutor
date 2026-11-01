@@ -3,6 +3,8 @@ import { LIBRARY_COMPOSERS, LIBRARY_PIECES } from '../core/libraryCatalog.ts';
 import { useCourse } from '../course/context.ts';
 import { usePluralT, useT } from '../i18n/context.ts';
 import { useProgress } from '../progress/context.ts';
+import { LibraryIcon } from './icons.tsx';
+import { buttonPrimary, buttonSmall, card, sectionLabel } from './ui.ts';
 
 /** The pieces the learner has started to learn, with a way back into their course. */
 export default function LearningPieces() {
@@ -14,20 +16,21 @@ export default function LearningPieces() {
   if (pieces.length === 0) return null;
 
   return (
-    <section className="flex w-full flex-col items-center gap-3">
-      <h3 className="w-full text-left text-lg font-semibold text-slate-800">
-        {t('homePiecesTitle')}
-      </h3>
+    <section className="flex w-full flex-col gap-3">
+      <h2 className={`${sectionLabel} text-left`}>{t('homePiecesTitle')}</h2>
       {pieces.map(({ piece, finished }) => {
         const composer = LIBRARY_COMPOSERS.find((item) => item.id === piece.composer);
         return (
           <article
             key={piece.id}
-            className="flex w-full flex-wrap items-center justify-between gap-3 rounded-lg bg-white p-4 text-left shadow-sm"
+            className={`${card} flex w-full items-center gap-4 p-4 text-left`}
           >
-            <div className="flex flex-col gap-1">
-              <h4 className="text-lg font-bold">{piece.title}</h4>
-              <p className="text-sm text-slate-700">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-surface-raised text-warm">
+              <LibraryIcon size={24} />
+            </span>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <h3 className="text-base font-bold">{piece.title}</h3>
+              <p className="text-sm text-ink-muted">
                 {composer ? `${t(composer.nameKey)} · ` : ''}
                 {tp('homePieceFinished', finished)}
               </p>
@@ -35,7 +38,7 @@ export default function LearningPieces() {
             <button
               type="button"
               onClick={() => openCourse(piece)}
-              className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+              className={`${buttonPrimary} ${buttonSmall}`}
             >
               {t('homePieceContinue')}
             </button>

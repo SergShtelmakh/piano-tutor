@@ -10,10 +10,11 @@ import LibraryPanel from './LibraryPanel.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import PieceInfo from './PieceInfo.tsx';
 import ScoreView from './ScoreView.tsx';
+import MuteButton from './MuteButton.tsx';
+import { buttonOutline, buttonPrimary, buttonSmall, card, notice } from './ui.ts';
 import { useElementWidth } from './useElementWidth.ts';
 
-const buttonClass =
-  'rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-white';
+const buttonClass = `${buttonOutline} ${buttonSmall}`;
 const PADDING = 16; // the score box has 8 px of padding on each side
 
 /** Seconds as m:ss. */
@@ -31,7 +32,7 @@ export default function PlayerScreen() {
   const state = usePlayerState();
   const fileInput = useRef<HTMLInputElement>(null);
   const libraryId = useId();
-  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(() => loaded === null);
   const box = useRef<HTMLDivElement>(null);
   const getBox = useCallback(() => box.current, []);
   const boxWidth = useElementWidth(getBox, 328 + PADDING);
@@ -51,8 +52,8 @@ export default function PlayerScreen() {
   const focusNotes = useMemo(() => [...state.sounding].sort((a, b) => a - b), [state.sounding]);
 
   return (
-    <div className="flex w-full flex-col items-center gap-4">
-      <div className="flex flex-wrap items-center justify-center gap-3">
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <button type="button" className={buttonClass} onClick={() => fileInput.current?.click()}>
           {t('playerOpen')}
         </button>
@@ -79,13 +80,11 @@ export default function PlayerScreen() {
             }
           }}
         />
-        {loaded && !loaded.library && (
-          <span className="font-semibold text-slate-800">{loaded.name}</span>
-        )}
+        {loaded && !loaded.library && <span className="font-semibold text-ink">{loaded.name}</span>}
         {loaded?.fileId && (
           <button
             type="button"
-            className="min-h-11 rounded-md bg-sky-600 px-4 text-sm font-semibold text-white hover:bg-sky-700"
+            className={`${buttonPrimary} ${buttonSmall}`}
             onClick={() =>
               openFileCourse({ id: loaded.fileId!, title: loaded.name, score: loaded.score })
             }
@@ -93,10 +92,13 @@ export default function PlayerScreen() {
             {t('libraryLearn')}
           </button>
         )}
+        <span className="ml-auto">
+          <MuteButton />
+        </span>
       </div>
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-800">
+        <p role="alert" className="rounded-xl bg-wrong-soft px-4 py-3 text-sm text-wrong">
           {t(PLAYER_ERROR_KEYS[error])}
         </p>
       )}
@@ -119,16 +121,12 @@ export default function PlayerScreen() {
             onSeek={player.seek}
           />
         ) : (
-          !error && (
-            <p className="rounded-lg bg-white px-4 py-3 text-slate-600 shadow-sm">
-              {t('playerHint')}
-            </p>
-          )
+          !error && <p className={`${notice} text-left`}>{t('playerHint')}</p>
         )}
       </div>
 
       {loaded && (
-        <div className="flex w-full flex-col gap-3 rounded-lg bg-white p-3 text-sm shadow-sm">
+        <div className={`${card} flex w-full flex-col gap-3 p-4 text-sm`}>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
@@ -142,7 +140,7 @@ export default function PlayerScreen() {
             </button>
           </div>
           <label className="flex items-center gap-3">
-            <span className="w-20 shrink-0 text-left text-slate-600">{t('playerPosition')}</span>
+            <span className="w-20 shrink-0 text-left text-ink-muted">{t('playerPosition')}</span>
             <input
               type="range"
               min={0}
@@ -151,14 +149,14 @@ export default function PlayerScreen() {
               value={state.position}
               aria-valuetext={`${formatTime(state.position)} / ${formatTime(state.duration)}`}
               onChange={(event) => player.seek(Number(event.target.value))}
-              className="min-w-0 flex-1"
+              className="h-11 min-w-0 flex-1 accent-accent"
             />
-            <span className="w-24 shrink-0 text-right tabular-nums text-slate-700">
+            <span className="w-24 shrink-0 text-right tabular-nums text-ink">
               {formatTime(state.position)} / {formatTime(state.duration)}
             </span>
           </label>
           <label className="flex items-center gap-3">
-            <span className="w-20 shrink-0 text-left text-slate-600">{t('playerTempo')}</span>
+            <span className="w-20 shrink-0 text-left text-ink-muted">{t('playerTempo')}</span>
             <input
               type="range"
               min={MIN_RATE * 100}
@@ -167,9 +165,9 @@ export default function PlayerScreen() {
               value={Math.round(state.rate * 100)}
               aria-valuetext={formatPercent(locale, state.rate)}
               onChange={(event) => player.setRate(Number(event.target.value) / 100)}
-              className="min-w-0 flex-1"
+              className="h-11 min-w-0 flex-1 accent-accent"
             />
-            <span className="w-24 shrink-0 text-right tabular-nums text-slate-700">
+            <span className="w-24 shrink-0 text-right tabular-nums text-ink">
               {formatPercent(locale, state.rate)}
             </span>
           </label>

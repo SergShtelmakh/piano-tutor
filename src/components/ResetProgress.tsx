@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useT } from '../i18n/context.ts';
 import { useProgress } from '../progress/context.ts';
-
-const buttonClass =
-  'rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100';
+import { buttonDanger, buttonOutline, buttonSmall } from './ui.ts';
 
 export default function ResetProgress() {
   const t = useT();
@@ -12,7 +10,11 @@ export default function ResetProgress() {
 
   if (!confirming) {
     return (
-      <button type="button" onClick={() => setConfirming(true)} className={buttonClass}>
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        className={`${buttonOutline} ${buttonSmall}`}
+      >
         {t('resetProgress')}
       </button>
     );
@@ -22,9 +24,9 @@ export default function ResetProgress() {
     <div
       role="alertdialog"
       aria-label={t('resetProgress')}
-      className="flex flex-col items-center gap-2"
+      className="flex flex-col items-start gap-3"
     >
-      <p className="text-sm text-slate-700">{t('resetConfirmText')}</p>
+      <p className="text-sm text-ink">{t('resetConfirmText')}</p>
       <div className="flex gap-3">
         <button
           type="button"
@@ -32,11 +34,15 @@ export default function ResetProgress() {
             reset();
             setConfirming(false);
           }}
-          className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700"
+          className={`${buttonDanger} ${buttonSmall}`}
         >
           {t('resetConfirm')}
         </button>
-        <button type="button" onClick={() => setConfirming(false)} className={buttonClass}>
+        <button
+          type="button"
+          onClick={() => setConfirming(false)}
+          className={`${buttonOutline} ${buttonSmall}`}
+        >
           {t('resetCancel')}
         </button>
       </div>

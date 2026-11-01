@@ -7,10 +7,11 @@ import { usePlayerValue } from '../playback/context.ts';
 import { PLAYER_ERROR_KEYS } from '../playback/errorKeys.ts';
 import { useProgress } from '../progress/context.ts';
 import DifficultyDots from './DifficultyDots.tsx';
+import { BackIcon } from './icons.tsx';
 import LessonCard from './LessonCard.tsx';
+import { buttonIcon, buttonOutline, buttonSmall, card, sectionLabel } from './ui.ts';
 
-const buttonClass =
-  'rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold hover:bg-slate-100';
+const buttonClass = `${buttonOutline} ${buttonSmall}`;
 
 /** The lessons of the open piece's course, grouped by hand, from the simplest to the hardest. */
 export default function CourseScreen({
@@ -43,25 +44,30 @@ export default function CourseScreen({
   };
 
   return (
-    <div className="flex w-full flex-col items-center gap-4">
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <button type="button" className={buttonClass} onClick={closeCourse}>
-          {t('courseBack')}
+    <div className="flex w-full max-w-3xl flex-col gap-4 text-left">
+      <div className="flex flex-wrap items-center gap-3 py-4 wide:pt-8">
+        <button
+          type="button"
+          className={buttonIcon}
+          onClick={closeCourse}
+          aria-label={t('courseBack')}
+        >
+          <BackIcon size={24} />
         </button>
         <button type="button" className={buttonClass} onClick={openInPlayer}>
           {t('courseOpenInPlayer')}
         </button>
       </div>
 
-      <section className="flex w-full flex-col items-center gap-1 rounded-lg bg-white px-4 py-3 shadow-sm">
-        <h2 className="text-xl font-bold">{title}</h2>
-        <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-slate-700">
+      <section className={`${card} flex w-full flex-col gap-1 p-5`}>
+        <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
+        <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink">
           {composer && <span>{t(composer.nameKey)}</span>}
           {piece && <DifficultyDots level={piece.difficulty} />}
         </p>
         {status === 'ready' && course && (
           <>
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-ink-muted">
               {course.truncated && course.covered
                 ? t('courseCoversPart', {
                     from: course.covered.from,
@@ -70,7 +76,7 @@ export default function CourseScreen({
                   })
                 : t('courseCoversAll', { total: course.totalBars })}
             </p>
-            <p className="text-sm font-semibold text-slate-800">
+            <p className="text-sm font-bold text-ink">
               {tp('courseFinished', lessons.length, { done: finished })}
             </p>
           </>
@@ -78,14 +84,14 @@ export default function CourseScreen({
       </section>
 
       {status === 'loading' && (
-        <p role="status" className="text-slate-600">
+        <p role="status" className="text-ink-muted">
           {t('courseLoading')}
         </p>
       )}
 
       {status === 'error' && error && (
-        <div role="alert" className="flex flex-col items-center gap-2">
-          <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-800">
+        <div role="alert" className="flex flex-col items-start gap-2">
+          <p className="rounded-xl bg-wrong-soft px-4 py-3 text-sm text-wrong">
             {t(PLAYER_ERROR_KEYS[error])}
           </p>
           <button type="button" className={buttonClass} onClick={retry}>
@@ -96,10 +102,8 @@ export default function CourseScreen({
 
       {status === 'ready' &&
         course?.stages.map((stage) => (
-          <section key={stage.hand} className="flex w-full flex-col items-center gap-3">
-            <h3 className="w-full text-left text-lg font-semibold text-slate-800">
-              {t(HAND_KEYS[stage.hand])}
-            </h3>
+          <section key={stage.hand} className="flex w-full flex-col gap-3">
+            <h2 className={sectionLabel}>{t(HAND_KEYS[stage.hand])}</h2>
             {stage.lessons.map((lesson) => (
               <LessonCard
                 key={lesson.id}

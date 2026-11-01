@@ -11,7 +11,7 @@ export default function DifficultyDots({ level }: { level: Difficulty }) {
         {DIFFICULTIES.map((dot) => (
           <span
             key={dot}
-            className={`h-2 w-2 rounded-full ${dot <= level ? 'bg-sky-600' : 'bg-slate-300'}`}
+            className={`h-2 w-2 rounded-full ${dot <= level ? 'bg-accent' : 'bg-line-strong'}`}
           />
         ))}
       </span>
