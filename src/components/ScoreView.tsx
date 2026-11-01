@@ -577,6 +577,8 @@ interface SystemViewProps {
   playing: boolean;
   getPosition: () => number;
   scroller: RefObject<HTMLDivElement | null>;
+  /** Draws the system this many times larger (the lesson layout's row height). */
+  zoom: number;
   onSeek?: (seconds: number) => void;
 }
 
@@ -590,6 +592,7 @@ const SystemView = memo(function SystemView({
   playing,
   getPosition,
   scroller,
+  zoom,
   onSeek,
 }: SystemViewProps) {
   const columns = useMemo(() => placedColumns(system), [system]);
@@ -608,8 +611,8 @@ const SystemView = memo(function SystemView({
   return (
     <svg
       viewBox={`0 0 ${viewWidth} ${geometry.height}`}
-      width={displayWidth}
-      height={geometry.height * scale}
+      width={displayWidth * zoom}
+      height={geometry.height * scale * zoom}
       aria-hidden="true"
       className={`block text-ink ${onSeek ? 'cursor-pointer' : ''}`}
       onClick={onSeek ? seek : undefined}
@@ -670,7 +673,7 @@ const SystemView = memo(function SystemView({
         position={position}
         playing={playing}
         getPosition={getPosition}
-        scale={scale}
+        scale={scale * zoom}
         scroller={scroller}
       />
     </svg>
@@ -690,6 +693,8 @@ export interface ScoreViewProps {
   getPosition: () => number;
   /** The accessible name of the whole score (file name and bar count). */
   label: string;
+  /** The size of the drawing; 1 is the Player's. Lessons use the row height of their layout. */
+  zoom?: number;
   onSeek?: (seconds: number) => void;
 }
 
@@ -702,6 +707,7 @@ export default function ScoreView({
   playing,
   getPosition,
   label,
+  zoom = 1,
   onSeek,
 }: ScoreViewProps) {
   const geometry = useMemo(() => measure(score), [score]);
@@ -728,6 +734,7 @@ export default function ScoreView({
           playing={playing}
           getPosition={getPosition}
           scroller={scroller}
+          zoom={zoom}
           onSeek={onSeek}
         />
       ))}

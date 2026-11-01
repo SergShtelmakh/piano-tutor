@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Lesson } from './lesson.ts';
+import { DEFAULT_LESSON_LAYOUT } from './lessonLayout.ts';
 import {
   beatSeconds,
   clampTempo,
@@ -8,6 +9,7 @@ import {
   oneHandLesson,
   parseLessonSettings,
   practiceHands,
+  resetLayout,
   secondsPerUnit,
   serialiseLessonSettings,
   stepTempo,
@@ -180,7 +182,15 @@ describe('oneHandLesson', () => {
 
 describe('lesson settings', () => {
   it('round-trips', () => {
-    const settings = { tempo: 120, metronome: true, hint: true };
+    const settings = {
+      tempo: 120,
+      metronome: true,
+      hint: true,
+      layouts: {
+        portrait: { ...DEFAULT_LESSON_LAYOUT, keyboardHeight: 'xl' as const, rows: 3 as const },
+        landscape: { ...DEFAULT_LESSON_LAYOUT, keyboardHeight: 's' as const, noteNames: true },
+      },
+    };
     expect(parseLessonSettings(serialiseLessonSettings(settings))).toEqual(settings);
   });
 
@@ -192,7 +202,44 @@ describe('lesson settings', () => {
 
   it('repairs one bad field and keeps the others', () => {
     const text = JSON.stringify({ version: 1, tempo: 'fast', metronome: true, hint: 'yes' });
-    expect(parseLessonSettings(text)).toEqual({ tempo: 80, metronome: true, hint: false });
+    expect(parseLessonSettings(text)).toEqual({
+      ...DEFAULT_LESSON_SETTINGS,
+      metronome: true,
+    });
     expect(parseLessonSettings('{"version":1,"tempo":1000}').tempo).toBe(200);
+  });
+
+  it('gives the default layouts for settings saved before Phase 21', () => {
+    const text = '{"version":1,"tempo":120,"metronome":true,"hint":false}';
+    expect(parseLessonSettings(text)).toEqual({
+      ...DEFAULT_LESSON_SETTINGS,
+      tempo: 120,
+      metronome: true,
+    });
+  });
+
+  it('repairs each orientation and each layout field on its own', () => {
+    const text = JSON.stringify({
+      version: 1,
+      layouts: { portrait: { keyboardHeight: 'huge', rows: 3 }, landscape: 7 },
+    });
+    const { layouts } = parseLessonSettings(text);
+    expect(layouts.portrait).toEqual({ ...DEFAULT_LESSON_LAYOUT, rows: 3 });
+    expect(layouts.landscape).toEqual(DEFAULT_LESSON_LAYOUT);
+  });
+
+  it('resets one layout and the hint, and nothing else', () => {
+    const custom = { ...DEFAULT_LESSON_LAYOUT, keyboardHeight: 'xl' as const, noteNames: true };
+    const settings = {
+      tempo: 120,
+      metronome: true,
+      hint: true,
+      layouts: { portrait: custom, landscape: custom },
+    };
+    expect(resetLayout(settings, 'landscape')).toEqual({
+      ...settings,
+      hint: false,
+      layouts: { portrait: custom, landscape: DEFAULT_LESSON_LAYOUT },
+    });
   });
 });

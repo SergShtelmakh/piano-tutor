@@ -17,11 +17,17 @@ export default function NotationView({
   notation,
   stepIndex,
   targets,
+  rows = 2,
+  scale = 1,
 }: {
   notation: LessonNotation;
   stepIndex: number;
   /** The notes of the current step. */
   targets: readonly number[];
+  /** Lines of music shown at once (the lesson layout). */
+  rows?: number;
+  /** Size of the drawing (the row height of the lesson layout). */
+  scale?: number;
 }) {
   const t = useT();
   const { locale } = useLocale();
@@ -30,8 +36,8 @@ export default function NotationView({
   const boxWidth = useElementWidth(getBox, 328 + PADDING);
 
   const layout = useMemo(
-    () => layoutSystems(notation.score, Math.max(0, boxWidth - PADDING)),
-    [notation.score, boxWidth],
+    () => layoutSystems(notation.score, Math.max(0, boxWidth - PADDING) / scale),
+    [notation.score, boxWidth, scale],
   );
   const position = notation.stepTimes[Math.min(stepIndex, notation.stepTimes.length - 1)] ?? 0;
   const sounding = useMemo(() => new Set(targets), [targets]);
@@ -51,12 +57,13 @@ export default function NotationView({
       <ScoreView
         score={notation.score}
         layout={layout}
-        visible={visibleSystems(layout, position)}
+        visible={visibleSystems(layout, position, rows)}
         sounding={sounding}
         position={position}
         playing={false}
         getPosition={getPosition}
         label={label}
+        zoom={scale}
       />
     </div>
   );

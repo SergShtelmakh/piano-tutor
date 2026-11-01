@@ -3,6 +3,7 @@ import { HAND_KEYS } from '../core/course.ts';
 import { accuracy, pageOf } from '../core/lesson.ts';
 import { notesOutside } from '../core/keyboardRange.ts';
 import { hasChords, type LessonEntry } from '../core/lessons.ts';
+import { ROW_SCALES } from '../core/lessonLayout.ts';
 import { beatSeconds, listenChunks, practiceHands, secondsPerUnit } from '../core/practice.ts';
 import type { RunReward } from '../core/progress.ts';
 import { useLocale, usePluralT, useT } from '../i18n/context.ts';
@@ -28,6 +29,7 @@ import {
 } from './LessonControls.tsx';
 import MuteButton from './MuteButton.tsx';
 import PauseOverlay from './PauseOverlay.tsx';
+import { useOrientation } from './useWindowSize.ts';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import StaffView, { type StaffFlash } from './StaffView.tsx';
 import { buttonIcon, buttonOutline, buttonSmall, card, notice } from './ui.ts';
@@ -53,6 +55,8 @@ export default function LessonScreen({
   const { range: keyboard } = useKeyboardRange();
   const bus = useNoteBus();
   const { settings, setTempo, setMetronome, setHint } = useLessonSettings();
+  // The layout of the screen's orientation; a rotation only redraws, the lesson goes on.
+  const layout = settings.layouts[useOrientation()];
   const [reward, setReward] = useState<RunReward | null>(null);
   // A run with one hand only is practice: it shows a summary but is not recorded.
   const [practiceRun, setPracticeRun] = useState(false);
@@ -214,7 +218,7 @@ export default function LessonScreen({
   const done = state.finished ? lesson.steps.length : state.stepIndex;
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg text-ink">
+    <div className="flex h-dvh flex-col bg-bg text-ink">
       <header className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line px-3 py-3 short:flex-nowrap short:py-1.5 lg:flex-nowrap lg:px-5">
         <button type="button" onClick={onExit} aria-label={t(backKey)} className={buttonIcon}>
           <BackIcon size={24} />
@@ -275,69 +279,74 @@ export default function LessonScreen({
         exitLabel={t(backKey)}
       />
 
-      <main className="flex flex-1 flex-col items-center justify-center gap-4 px-3 py-4 short:gap-2 short:py-2 wide:px-8">
-        {state.finished ? (
-          <LessonSummary
-            state={state}
-            reward={reward}
-            onAgain={() => startAgain()}
-            onExit={onExit}
-            exitKey={backKey}
-            practice={practiceRun}
-          />
-        ) : (
-          <>
-            <p className="text-center text-ink-muted short:hidden">
-              {t(hasChords(lesson) ? 'lessonInstructionChords' : 'lessonInstructionNotes')}
-            </p>
-            {outside.count > 0 && (
-              <p role="note" className={notice}>
-                {tp(
-                  outside.lowest !== undefined && outside.highest !== undefined
-                    ? 'lessonOutsideBoth'
-                    : outside.lowest !== undefined
-                      ? 'lessonOutsideLow'
-                      : 'lessonOutsideHigh',
-                  outside.count,
-                  {
-                    lowest:
-                      outside.lowest === undefined ? '' : noteLabelFor(locale, outside.lowest),
-                    highest:
-                      outside.highest === undefined ? '' : noteLabelFor(locale, outside.highest),
-                  },
-                )}
+      <main className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-3 py-4 short:py-2 wide:px-8">
+        <div className="my-auto flex w-full flex-col items-center gap-4 short:gap-2">
+          {state.finished ? (
+            <LessonSummary
+              state={state}
+              reward={reward}
+              onAgain={() => startAgain()}
+              onExit={onExit}
+              exitKey={backKey}
+              practice={practiceRun}
+            />
+          ) : (
+            <>
+              <p className="text-center text-ink-muted short:hidden">
+                {t(hasChords(lesson) ? 'lessonInstructionChords' : 'lessonInstructionNotes')}
               </p>
-            )}
-            {lesson.notation ? (
-              <NotationView
-                notation={lesson.notation}
-                stepIndex={state.stepIndex}
-                targets={targets}
-              />
-            ) : (
-              <div className={`${card} flex w-full justify-center p-3`}>
-                <StaffView
-                  steps={pageSteps}
-                  current={state.stepIndex - start}
-                  playedNotes={state.playedInStep}
-                  flash={flash}
-                  labelNotes={targets}
+              {outside.count > 0 && (
+                <p role="note" className={notice}>
+                  {tp(
+                    outside.lowest !== undefined && outside.highest !== undefined
+                      ? 'lessonOutsideBoth'
+                      : outside.lowest !== undefined
+                        ? 'lessonOutsideLow'
+                        : 'lessonOutsideHigh',
+                    outside.count,
+                    {
+                      lowest:
+                        outside.lowest === undefined ? '' : noteLabelFor(locale, outside.lowest),
+                      highest:
+                        outside.highest === undefined ? '' : noteLabelFor(locale, outside.highest),
+                    },
+                  )}
+                </p>
+              )}
+              {lesson.notation ? (
+                <NotationView
+                  notation={lesson.notation}
+                  stepIndex={state.stepIndex}
+                  targets={targets}
+                  rows={layout.rows}
+                  scale={ROW_SCALES[layout.rowHeight]}
                 />
+              ) : (
+                <div className={`${card} flex w-full justify-center p-3`}>
+                  <StaffView
+                    steps={pageSteps}
+                    current={state.stepIndex - start}
+                    playedNotes={state.playedInStep}
+                    flash={flash}
+                    labelNotes={targets}
+                    scale={ROW_SCALES[layout.rowHeight]}
+                  />
+                </div>
+              )}
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-muted short:hidden">
+                <span>{tp('correctCount', state.correct)}</span>
+                <span>{tp('mistakesCount', state.mistakes)}</span>
+                <button
+                  type="button"
+                  onClick={() => startAgain()}
+                  className={`${buttonOutline} ${buttonSmall}`}
+                >
+                  {t('lessonRestart')}
+                </button>
               </div>
-            )}
-            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-muted short:hidden">
-              <span>{tp('correctCount', state.correct)}</span>
-              <span>{tp('mistakesCount', state.mistakes)}</span>
-              <button
-                type="button"
-                onClick={() => startAgain()}
-                className={`${buttonOutline} ${buttonSmall}`}
-              >
-                {t('lessonRestart')}
-              </button>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </main>
 
       <div className="px-2 pb-2">
@@ -346,6 +355,9 @@ export default function LessonScreen({
           focusNotes={targets}
           include={range}
           hints={settings.hint && !state.finished ? targets : undefined}
+          height={layout.keyboardHeight}
+          octaves={layout.octaves}
+          allNames={layout.noteNames}
         />
       </div>
     </div>

@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { clampTempo, type LessonSettings } from '../core/practice.ts';
+import { clampTempo, resetLayout, type LessonSettings } from '../core/practice.ts';
 import { LessonSettingsContext, type LessonSettingsValue } from './settingsContext.ts';
 import { loadLessonSettings, saveLessonSettings } from './settings.ts';
 
-/** The tempo, metronome, and hint of the lessons: one value for every lesson, saved on the device. */
+/** The tempo, metronome, hint, and layouts of the lessons: one value for every lesson, saved on the device. */
 export function LessonSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<LessonSettings>(loadLessonSettings);
 
@@ -21,6 +21,19 @@ export function LessonSettingsProvider({ children }: { children: ReactNode }) {
       setTempo: (bpm) => change({ tempo: clampTempo(bpm) }),
       setMetronome: (metronome) => change({ metronome }),
       setHint: (hint) => change({ hint }),
+      setLayout: (orientation, patch) =>
+        change({
+          layouts: {
+            ...settings.layouts,
+            [orientation]: { ...settings.layouts[orientation], ...patch },
+          },
+        }),
+      resetLayout: (orientation) =>
+        setSettings((current) => {
+          const next = resetLayout(current, orientation);
+          saveLessonSettings(next);
+          return next;
+        }),
     }),
     [settings, change],
   );

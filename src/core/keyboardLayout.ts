@@ -72,6 +72,36 @@ export function shownRange(width: number, baseOctave: number, include?: NoteRang
 }
 
 /**
+ * A piano of a fixed number of octaves (Phase 21): `octaves` whole octaves from a C to a C, centred
+ * on the notes of the lesson (`include`), or on the computer-keyboard range without them. It never
+ * leaves A0–C8, and it grows by whole octaves when the lesson has notes outside it; the piano then
+ * covers all of them and scrolls. The caller sizes the keys with `keyLayout` (40 px at least).
+ */
+export function fixedRange(octaves: number, baseOctave: number, include?: NoteRange): NoteRange {
+  const base = keyboardRange(baseOctave);
+  const centre = include
+    ? Math.round((include.low + include.high) / 2)
+    : Math.round((base[0] + base[base.length - 1]) / 2);
+  const span = octaves * OCTAVE;
+  // A C is a multiple of 12; the first C at or below the start that centres the window.
+  let low = Math.floor((centre - span / 2) / OCTAVE) * OCTAVE;
+  let high = low + span;
+  if (low < PIANO_LOW) {
+    low = Math.ceil(PIANO_LOW / OCTAVE) * OCTAVE;
+    high = low + span;
+  }
+  if (high > PIANO_HIGH) {
+    high = PIANO_HIGH;
+    low = high - span;
+  }
+  if (include) {
+    while (include.low < low && low > PIANO_LOW) low -= OCTAVE;
+    while (include.high > high && high + OCTAVE <= PIANO_HIGH) high += OCTAVE;
+  }
+  return { low: Math.max(PIANO_LOW, low), high: Math.min(PIANO_HIGH, high) };
+}
+
+/**
  * Pixel boxes for every key of `range` in a container `width` px wide. White keys fill the width
  * exactly; if that would make them narrower than the minimum, they are fixed at the minimum and
  * the piano is wider than the container (`scrolls`).

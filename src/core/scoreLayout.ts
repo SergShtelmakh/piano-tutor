@@ -242,8 +242,9 @@ export function systemIndexAtTime(layout: ScoreLayout, time: number): number {
   return index;
 }
 
-/** The systems that are shown at a time: the current one and the one after it. */
-export function visibleSystems(layout: ScoreLayout, time: number): number[] {
+/** The systems that are shown at a time: the current one and the ones after it (one more by default). */
+export function visibleSystems(layout: ScoreLayout, time: number, rows = 2): number[] {
   const first = systemIndexAtTime(layout, time);
-  return first + 1 < layout.systems.length ? [first, first + 1] : [first];
+  const last = Math.min(layout.systems.length - 1, first + Math.max(1, rows) - 1);
+  return Array.from({ length: last - first + 1 }, (_, i) => first + i);
 }

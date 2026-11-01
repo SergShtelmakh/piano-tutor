@@ -199,6 +199,15 @@ describe('visible systems', () => {
     const last = layout.systems.length - 1;
     expect(visibleSystems(layout, 1e6)).toEqual([last]);
   });
+
+  it('shows the number of rows asked for, fewer at the end', () => {
+    const second = layout.systems[1].startTime;
+    expect(visibleSystems(layout, second, 1)).toEqual([1]);
+    expect(visibleSystems(layout, second, 3)).toEqual([1, 2, 3]);
+    const last = layout.systems.length - 1;
+    expect(visibleSystems(layout, 1e6, 3)).toEqual([last]);
+    expect(visibleSystems(layout, layout.systems[last - 1].startTime, 3)).toEqual([last - 1, last]);
+  });
 });
 
 describe('layoutSystems: key signatures', () => {
