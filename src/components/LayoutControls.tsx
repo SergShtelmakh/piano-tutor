@@ -139,38 +139,39 @@ export function KeyboardHeightHandle({
   };
 
   return (
-    <div className="flex h-11 items-center justify-center short:h-8">
-      <div
-        role="slider"
-        tabIndex={0}
-        aria-label={t('layoutKeyboardHeight')}
-        aria-orientation="vertical"
-        aria-valuemin={0}
-        aria-valuemax={LAYOUT_SIZES.length - 1}
-        aria-valuenow={LAYOUT_SIZES.indexOf(size)}
-        aria-valuetext={t(SIZE_NAME_KEYS[size])}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
-        onKeyDown={onKeyDown}
-        className="flex h-full cursor-ns-resize touch-none select-none items-center gap-2 rounded-full border border-line-strong bg-surface-raised px-4 text-xs font-bold text-ink-muted"
+    <div
+      role="slider"
+      tabIndex={0}
+      aria-label={t('layoutKeyboardHeight')}
+      aria-orientation="vertical"
+      aria-valuemin={0}
+      aria-valuemax={LAYOUT_SIZES.length - 1}
+      aria-valuenow={LAYOUT_SIZES.indexOf(size)}
+      aria-valuetext={t(SIZE_NAME_KEYS[size])}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+      onKeyDown={onKeyDown}
+      className="flex h-11 cursor-ns-resize touch-none select-none items-center gap-2 rounded-full border border-line-strong bg-surface-raised/95 px-4 text-xs font-bold text-ink shadow-lg backdrop-blur short:h-9"
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
       >
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M8 7l4-4 4 4M8 17l4 4 4-4" />
-        </svg>
-        {t('layoutHandle')}
-      </div>
+        <path d="M8 7l4-4 4 4M8 17l4 4 4-4" />
+      </svg>
+      {t(SIZE_NAME_KEYS[size])}
+      <span className="hidden font-semibold text-ink-muted sm:inline short:hidden">
+        · {t('layoutHandle')}
+      </span>
     </div>
   );
 }
