@@ -327,6 +327,7 @@ export const uk: PartialTranslations = {
   layoutMusicSection: 'Ноти',
   layoutOctaves: 'Октав на екрані',
   layoutOctavesAuto: 'Авто',
+  layoutOctaveOne: '1 октава',
   layoutOctaveCount: '{count} октави',
   layoutRows: 'Рядки нот',
   layoutRowsNote: 'Рядки діють в уроках курсів; вбудовані уроки мають один рядок.',
