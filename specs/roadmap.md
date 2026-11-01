@@ -6,7 +6,7 @@
 >
 > Status: `✅ done` · `🔨 in progress` · `📋 planned` · `💡 idea (backlog)`
 >
-> Phases 1–19 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), 18 (redesign), and 19 (My lessons) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phases 20–21 (planned) take the remaining features of the user's redesign canvas; Phase 20 (lesson controls) is next.
+> Phases 1–19 are done; the MVP scope from `mission.md` is covered. Phases 12 (keyboard size), 13 (MusicXML import), 14 (key signatures), 15 (beams), 16 (several voices), 17 (piano samples), 18 (redesign), and 19 (My lessons) are pending manual validation; in Phase 17 the user reported crackles at first (better after 320 kbps) and the reverb was inaudible (fixed); a final listen is open. Phases 20–21 (planned) take the remaining features of the user's redesign canvas; Phase 20 (lesson controls) is in progress.
 
 ## Phase 1 — Project scaffold & quality gates ✅
 
@@ -235,9 +235,11 @@ Spec: [`specs/phase-19-my-lessons/`](phase-19-my-lessons/). Branch `feature/my-l
 
 - **Outcome:** the Lessons screen became My lessons (the learner's pieces, Add lesson, then the curriculum as "Basics", Reset progress); "Pieces you are learning" was removed. The pure rules are `src/core/myLessons.ts` (entries, order: played first, then newest added; source filter; `entryProgress`; the first-start migration from progress; `continueTarget`; the parser) plus `nextCourseLesson` in `course.ts` and `searchPieces` / `normaliseSearch` in `library.ts`. The list is saved under `piano-tutor.myLessons`; added files are kept in IndexedDB (`fileStore.ts`, a small wrapper whose calls never throw) and parsed again with `loadScoreBytes` when their course opens (a new `CourseSource` kind, `stored`; a missing copy is the `missingFile` error with Remove). `Progress` gained an optional `lastLessonId` and stays `version: 1`, so an older cached build cannot wipe progress. The course size of a row is stored when its course is built and filled in the background for rows without one. Adding is explicit only (user decision): **+** in the library, the Add lesson sheet (a native modal `<dialog>`), or Add to My lessons for a file open in the Player; Learn does not add. Two changes against the spec, written back into it: adding a file that is already in the list leaves its row in place (no move to the top), and Continue on a piece shows the course screen's loading text instead of a loading state on the card. No new dependencies. Checked with the unit tests (734) and a headless-Chrome script (not in the repo) through the flows at 390 × 844, 844 × 390, and 1440 × 900; **manual validation (offline, a real MIDI keyboard, keyboard navigation, the `uk` / `de` / `fr` strings) was still open when this replan was written**.
 
-## Phase 20 — Lesson controls 📋
+## Phase 20 — Lesson controls 🔨
 
 Goal: the controls in the canvas's lesson header: tempo (−/+ bpm), hand choice (left / both / right), pause, and a "highlight the next note" hint on the piano. Tempo needs a decision on what it means while lessons judge pitches only (see the play-along items in the Backlog).
+
+Spec: [`specs/phase-20-lesson-controls/`](phase-20-lesson-controls/). Branch `feature/lesson-controls`.
 
 ## Phase 21 — Lesson layout editor 📋
 
