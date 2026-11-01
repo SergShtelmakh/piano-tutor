@@ -6,10 +6,10 @@ Design reference: the user's canvas [Piano Tutor — оновлений диза
 
 ## Automated
 
-- [ ] `bun run lint` passes
-- [ ] `bun run format:check` passes
-- [ ] `bun run build` passes
-- [ ] `bun run test` passes — `contrast.ts` has unit tests; `config/themeContrast.test.ts` checks the token pairs; `config/fontFiles.test.ts` checks the font files and licence record
+- [x] `bun run lint` passes
+- [x] `bun run format:check` passes
+- [x] `bun run build` passes
+- [x] `bun run test` passes — `contrast.ts` has unit tests; `config/themeContrast.test.ts` checks the token pairs; `config/fontFiles.test.ts` checks the font files and licence record
 
 ## Manual checks
 
@@ -42,6 +42,6 @@ Run `bun run dev`, open http://localhost:3000 in Chrome. Use DevTools device mod
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md` — Phase 18 status updated; Phases 19–21 still match the canvas
-- [ ] `specs/tech-stack.md` — Styling row, layout, font licence line
-- [ ] `CHANGELOG.md` / README (all four languages) updated
+- [x] `specs/roadmap.md` — Phase 18 status updated; Phases 19–21 still match the canvas
+- [x] `specs/tech-stack.md` — Styling row, layout, font licence line
+- [x] `CHANGELOG.md` / README (all four languages) updated

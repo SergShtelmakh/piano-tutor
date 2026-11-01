@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 18 — Redesign: visual system and navigation
 > Branch: `feature/redesign`
-> Status: Implemented; automated gates and the headless render pass done, manual validation open
+> Status: Implemented and replanned; automated gates and the headless render pass done, manual validation open
 
 ## Goal
 
