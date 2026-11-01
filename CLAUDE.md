@@ -84,4 +84,5 @@ The piano sound (`public/piano/*.mp3`, map in `src/core/pianoSampleMap.ts`) foll
 - Pure core logic (theory, judging, lessons, scoring) with no React/DOM/audio imports.
 - Thin UI components; game rules don't live in components.
 - No new runtime dependencies without justification in the feature's `plan.md`.
+- UI colours come only from the theme tokens in `src/index.css` (`bg-surface`, `text-ink-muted`, `bg-accent`, …), never from Tailwind's palette (`slate-*`, `sky-*`). A new colour gets a token and a pair in `config/themeContrast.test.ts`. Shared button and card classes are in `src/components/ui.ts`.
 - Web MIDI works only in Chromium and only in a secure context (localhost / HTTPS); every feature must also work with the on-screen/computer keyboard.

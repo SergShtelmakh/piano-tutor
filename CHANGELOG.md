@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-11-01 — Phase 18: a new look
+
+### Changed
+
+- The whole app has a new **dark design**: dark cards, a teal accent, the Manrope font, larger buttons, and a new icon (three piano keys, the middle one pressed). Reinstall or refresh the installed app to see the new icon.
+- The app is split into screens: **Home**, **Lessons**, **Library**, **Free play**, and **Settings**. On a phone, Home has big tiles and every screen has a back button; on a tablet a rail on the left, and on a computer a sidebar, switch between them.
+- **Home** shows a **Continue** card that opens your next lesson, your level and streak, and the tiles. The lesson list, the pieces you are learning, and **Reset progress** moved to **Lessons**.
+- The Player is now the **Library** screen: the list of pieces opens there, and **Open file** still opens your own MIDI or MuseScore files.
+- Language, the MIDI keyboard (connect and keyboard size), and the sound (volume, mute, reverb) moved to **Settings**. The MIDI keyboard stays connected when you leave Settings. Lessons, Free play, and the Library have a mute button.
+- A lesson fills the whole window: back, title, a progress bar, and mute at the top, the piano at the bottom. On a phone held sideways, the staff and the piano both fit on the screen.
+- Sheet music and the piano are drawn light on dark. Right notes flash teal and wrong notes coral.
+
+### Notes
+
+- Your progress, stars, settings, and library marks are kept.
+- The font is part of the app, so it also works offline and no font is loaded from another site.
+
 ## 2026-10-31 — Phase 17: a real piano sound
 
 ### Changed
