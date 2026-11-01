@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { codeForNote, QWERTY_LABELS } from '../core/computerKeymap.ts';
-import { keyLayout, scrollTarget, shownRange } from '../core/keyboardLayout.ts';
+import { fixedRange, keyLayout, scrollTarget, shownRange } from '../core/keyboardLayout.ts';
 import { isOutside } from '../core/keyboardRange.ts';
+import {
+  blackKeyHeightPx,
+  keyboardHeightPx,
+  type LayoutSize,
+  type OctaveChoice,
+} from '../core/lessonLayout.ts';
 import { pitchClass } from '../core/notes.ts';
 import { useLocale, useT } from '../i18n/context.ts';
 import { noteLabelFor, noteNameFor } from '../i18n/noteNames.ts';
@@ -9,10 +15,16 @@ import { useBaseOctave, useHeldNotes, useNoteBus } from '../input/context.ts';
 import { loadKeyLabels } from '../input/keyboardLabels.ts';
 import { useKeyboardRange } from '../keyboard/context.ts';
 import { useElementWidth } from './useElementWidth.ts';
+import { useShortScreen } from './useWindowSize.ts';
 
 const SCREEN_VELOCITY = 90;
 /** Space kept free on each side of the piano; the screens already pad their content. */
 const GUTTER = 0;
+
+/** Smooth scrolling, unless the learner asked the system for less motion. */
+function scrollBehavior(): ScrollBehavior {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
 
 /** A key that briefly flashes after it was judged in a lesson. */
 export interface KeyFeedback {
@@ -42,7 +54,19 @@ export default function PianoKeyboard({
   include,
   followPlayback = false,
   hints,
+  height = 'm',
+  octaves = 'auto',
+  allNames = true,
+  shown,
 }: {
+  /** The piano's height (the lesson layout); a short screen has its own, smaller heights. */
+  height?: LayoutSize;
+  /** How many octaves to show; `auto` fits as many as the width allows. */
+  octaves?: OctaveChoice;
+  /** Name every white key; `false` names only the C keys and the keys that are lit. */
+  allNames?: boolean;
+  /** Keys drawn as lit without sound (the layout editor's example). */
+  shown?: readonly number[];
   feedback?: KeyFeedback | null;
   /** Keys that get a ring: the notes to play now, when the learner asked for a hint. */
   hints?: readonly number[];
@@ -61,7 +85,13 @@ export default function PianoKeyboard({
   const bus = useNoteBus();
   const { baseOctave } = useBaseOctave();
   const { range: keyboard } = useKeyboardRange();
-  const lit = useHeldNotes();
+  const heldNotes = useHeldNotes();
+  const short = useShortScreen();
+  // Notes drawn as lit without sound count as lit for the colour and for the label.
+  const lit = useMemo<ReadonlySet<number>>(
+    () => (shown && shown.length > 0 ? new Set([...heldNotes, ...shown]) : heldNotes),
+    [heldNotes, shown],
+  );
   const [keyLabels, setKeyLabels] = useState<Record<string, string>>({ ...QWERTY_LABELS });
   // pointerId -> note, so several fingers can hold several keys
   const pressed = useRef(new Map<number, number>());
@@ -74,17 +104,15 @@ export default function PianoKeyboard({
   const width = Math.max(0, viewportWidth - 2 * GUTTER);
   const includeLow = include?.low;
   const includeHigh = include?.high;
-  const range = useMemo(
-    () =>
-      shownRange(
-        width,
-        baseOctave,
-        includeLow !== undefined && includeHigh !== undefined
-          ? { low: includeLow, high: includeHigh }
-          : undefined,
-      ),
-    [width, baseOctave, includeLow, includeHigh],
-  );
+  const range = useMemo(() => {
+    const included =
+      includeLow !== undefined && includeHigh !== undefined
+        ? { low: includeLow, high: includeHigh }
+        : undefined;
+    return octaves === 'auto'
+      ? shownRange(width, baseOctave, included)
+      : fixedRange(octaves, baseOctave, included);
+  }, [width, baseOctave, includeLow, includeHigh, octaves]);
   const layout = useMemo(() => keyLayout(range, width), [range, width]);
   const { low, high } = range;
 
@@ -119,13 +147,13 @@ export default function PianoKeyboard({
   useEffect(() => {
     if (previousOctave.current === baseOctave) return;
     previousOctave.current = baseOctave;
-    scroller.current?.scrollTo({ left: 0, behavior: 'smooth' });
+    scroller.current?.scrollTo({ left: 0, behavior: scrollBehavior() });
   }, [baseOctave]);
 
   // Bring the current notes into view (a lesson's step, or what plays), but not while a key is held.
   const focusKey = focusNotes?.join(',') ?? '';
   const focus = useMemo(() => (focusKey ? focusKey.split(',').map(Number) : []), [focusKey]);
-  const heldCount = lit.size;
+  const heldCount = heldNotes.size;
   const pendingFocus = useRef(false);
   useEffect(() => {
     pendingFocus.current = focusKey !== '';
@@ -139,7 +167,7 @@ export default function PianoKeyboard({
       left: el.scrollLeft,
       width: el.clientWidth,
     });
-    if (target !== null) el.scrollTo({ left: target, behavior: 'smooth' });
+    if (target !== null) el.scrollTo({ left: target, behavior: scrollBehavior() });
   }, [focus, layout, heldCount, followPlayback]);
 
   function press(event: PointerEvent<HTMLElement>, note: number) {
@@ -214,7 +242,8 @@ export default function PianoKeyboard({
             <div
               role="group"
               aria-label={t('pianoLabel')}
-              className="relative h-44 w-full touch-none select-none short:h-28"
+              style={{ height: keyboardHeightPx(height, short) }}
+              className="relative w-full touch-none select-none"
             >
               {layout.keys
                 .filter((key) => !key.black)
@@ -243,7 +272,9 @@ export default function PianoKeyboard({
                     <span className="text-[10px] leading-none sm:text-xs">
                       {pitchClass(key.note) === 0
                         ? noteLabelFor(locale, key.note)
-                        : noteNameFor(locale, key.note)}
+                        : allNames || lit.has(key.note)
+                          ? noteNameFor(locale, key.note)
+                          : null}
                     </span>
                   </button>
                 ))}
@@ -253,8 +284,8 @@ export default function PianoKeyboard({
                   <button
                     key={key.note}
                     {...keyProps(key.note)}
-                    style={{ left: key.x, width: key.w }}
-                    className={`absolute top-0 flex h-28 items-end short:h-[70px] justify-center rounded-b-md border border-t-0 border-line pb-1.5 text-[10px] font-semibold text-ink-muted ${keyColor(
+                    style={{ left: key.x, width: key.w, height: blackKeyHeightPx(height, short) }}
+                    className={`absolute top-0 flex items-end justify-center rounded-b-md border border-t-0 border-line pb-1.5 text-[10px] font-semibold text-ink-muted ${keyColor(
                       key.note,
                       true,
                       lit,

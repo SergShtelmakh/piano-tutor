@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  fixedRange,
   keyLayout,
   MIN_WHITE_KEY_WIDTH,
   PIANO_HIGH,
@@ -176,5 +177,54 @@ describe('shownRange with include', () => {
   it('adds octaves around the covered range as before when the screen is wide', () => {
     const wide = shownRange(2560, 3, { low: base.low, high: base.high });
     expect(wide).toEqual({ low: PIANO_LOW, high: PIANO_HIGH });
+  });
+});
+
+describe('fixedRange', () => {
+  const C4 = 60;
+
+  it('is whole octaves from a C to a C', () => {
+    for (const octaves of [2, 3, 4]) {
+      const range = fixedRange(octaves, 4, { low: 55, high: 72 });
+      expect(range.low % 12).toBe(0);
+      expect(range.high - range.low).toBe(12 * Math.max(octaves, 2));
+      expect(whiteKeyCount(range)).toBe(7 * octaves + 1);
+    }
+  });
+
+  it('is centred on the notes of the lesson', () => {
+    const range = fixedRange(2, 4, { low: C4, high: C4 + 12 });
+    expect(range).toEqual({ low: C4 - 12, high: C4 + 12 });
+    expect(range.low).toBeLessThanOrEqual(C4);
+    expect(range.high).toBeGreaterThanOrEqual(C4 + 12);
+  });
+
+  it('without notes it is centred on the computer-keyboard range', () => {
+    const range = fixedRange(2, 4);
+    const base = keyboardRange(4);
+    const middle = (base[0] + base[base.length - 1]) / 2;
+    expect(range.low).toBeLessThanOrEqual(middle);
+    expect(range.high).toBeGreaterThanOrEqual(middle);
+  });
+
+  it('grows by whole octaves to cover a wider lesson', () => {
+    const range = fixedRange(2, 4, { low: 40, high: 90 });
+    expect(range.low).toBeLessThanOrEqual(40);
+    expect(range.high).toBeGreaterThanOrEqual(90);
+    expect(range.low % 12).toBe(0);
+    expect(range.high % 12).toBe(0);
+  });
+
+  it('stays inside A0–C8 and keeps the octave count near the ends', () => {
+    expect(fixedRange(3, 4, { low: 21, high: 30 })).toEqual({ low: 21, high: 60 });
+    expect(fixedRange(3, 4, { low: 100, high: 108 })).toEqual({ low: 72, high: 108 });
+  });
+
+  it('has keys of at least the minimum width through keyLayout', () => {
+    const range = fixedRange(4, 4, { low: 60, high: 72 });
+    const layout = keyLayout(range, 360);
+    expect(layout.whiteWidth).toBeGreaterThanOrEqual(40);
+    expect(layout.scrolls).toBe(true);
+    expect(keyLayout(fixedRange(2, 4, { low: 60, high: 72 }), 1440).scrolls).toBe(false);
   });
 });

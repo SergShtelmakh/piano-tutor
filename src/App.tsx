@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import CourseScreen from './components/CourseScreen.tsx';
 import FreePlayScreen from './components/FreePlayScreen.tsx';
 import HomeScreen from './components/HomeScreen.tsx';
+import LayoutEditorScreen from './components/LayoutEditorScreen.tsx';
 import LessonScreen from './components/LessonScreen.tsx';
 import LessonsScreen from './components/LessonsScreen.tsx';
 import PlayerScreen from './components/PlayerScreen.tsx';
@@ -36,6 +37,8 @@ function Shell() {
   const { progress, setLastLesson } = useProgress();
   const { markPlayed } = useMyLessons();
   const [screen, setScreen] = useState<Screen>('home');
+  // The lesson layout editor, opened from Settings: a full-window screen like a lesson.
+  const [layoutEditorOpen, setLayoutEditorOpen] = useState(false);
   // The id of the open lesson; while set, it replaces every other screen (and the navigation).
   const [lessonId, setLessonId] = useState<string | null>(null);
 
@@ -101,6 +104,10 @@ function Shell() {
     );
   }
 
+  if (layoutEditorOpen) {
+    return <LayoutEditorScreen onExit={() => setLayoutEditorOpen(false)} />;
+  }
+
   const titleKeys: Record<Exclude<Screen, 'home'>, MessageKey> = {
     lessons: 'screenLessons',
     library: 'screenLibrary',
@@ -121,7 +128,9 @@ function Shell() {
             {screen === 'lessons' && <LessonsScreen onStart={openLesson} onNavigate={navigate} />}
             {screen === 'library' && <PlayerScreen />}
             {screen === 'free' && <FreePlayScreen />}
-            {screen === 'settings' && <SettingsScreen />}
+            {screen === 'settings' && (
+              <SettingsScreen onEditLayout={() => setLayoutEditorOpen(true)} />
+            )}
           </>
         )}
       </AppShell>

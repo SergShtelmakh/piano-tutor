@@ -4,6 +4,12 @@
 import { baseOctaveFor } from './course.ts';
 import type { Lesson } from './lesson.ts';
 import { evenPages } from './lessons.ts';
+import {
+  DEFAULT_LESSON_LAYOUT,
+  parseLayout,
+  type LessonLayout,
+  type Orientation,
+} from './lessonLayout.ts';
 import { UNITS_PER_QUARTER } from './score.ts';
 
 export const TEMPO = { min: 40, max: 200, step: 5, default: 80 } as const;
@@ -142,13 +148,35 @@ export interface LessonSettings {
   metronome: boolean;
   /** A ring on the key(s) to play now. */
   hint: boolean;
+  /** How a lesson looks, for each orientation of the screen (Phase 21). */
+  layouts: Record<Orientation, LessonLayout>;
 }
 
 export const DEFAULT_LESSON_SETTINGS: LessonSettings = {
   tempo: TEMPO.default,
   metronome: false,
   hint: false,
+  layouts: { portrait: DEFAULT_LESSON_LAYOUT, landscape: DEFAULT_LESSON_LAYOUT },
 };
+
+/** Both layouts from saved data; missing data (Phase 20 saved none) or junk gives the defaults. */
+function parseLayouts(value: unknown): Record<Orientation, LessonLayout> {
+  const record =
+    typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
+  return {
+    portrait: parseLayout(record.portrait),
+    landscape: parseLayout(record.landscape),
+  };
+}
+
+/** The settings with one orientation's layout and the hint back at their defaults (Reset). */
+export function resetLayout(settings: LessonSettings, orientation: Orientation): LessonSettings {
+  return {
+    ...settings,
+    hint: DEFAULT_LESSON_SETTINGS.hint,
+    layouts: { ...settings.layouts, [orientation]: DEFAULT_LESSON_LAYOUT },
+  };
+}
 
 /** Reads the saved settings; anything invalid falls back to the default, field by field. */
 export function parseLessonSettings(text: string | null): LessonSettings {
@@ -162,6 +190,7 @@ export function parseLessonSettings(text: string | null): LessonSettings {
       tempo: typeof record.tempo === 'number' ? clampTempo(record.tempo) : TEMPO.default,
       metronome: record.metronome === true,
       hint: record.hint === true,
+      layouts: parseLayouts(record.layouts),
     };
   } catch {
     return DEFAULT_LESSON_SETTINGS;

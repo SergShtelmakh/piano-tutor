@@ -5,8 +5,11 @@ import { ROW_LEFT, ROW_RIGHT, SECOND_SHIFT, staffRow, type RowStep } from '../co
 import { useLocale, useT } from '../i18n/context.ts';
 import { noteLabelFor } from '../i18n/noteNames.ts';
 import { BASS_CLEF_PATH, TREBLE_CLEF_PATH } from './clefPaths.ts';
+import { useShortScreen } from './useWindowSize.ts';
 
 // Layout in SVG units. One staff index step (a line to the next space) is half a line gap.
+const MAX_WIDTH = 576; // px: the row's width at the usual size
+const SHORT_MAX_HEIGHT = 160; // px: its height on a short screen
 const LINE_GAP = 10;
 const STEP = LINE_GAP / 2;
 const TOP = 36; // y of the top treble line (index 10); room above for ledger lines
@@ -60,6 +63,8 @@ interface StaffViewProps {
   flash?: StaffFlash | null;
   /** The notes named in the accessible label (the current target). */
   labelNotes: readonly number[];
+  /** The size of the row (the lesson layout's row height); 1 is the usual size. */
+  scale?: number;
 }
 
 /**
@@ -72,8 +77,10 @@ export default function StaffView({
   playedNotes = [],
   flash,
   labelNotes,
+  scale = 1,
 }: StaffViewProps) {
   const t = useT();
+  const short = useShortScreen();
   const { locale } = useLocale();
   const row = useMemo(() => staffRow(steps), [steps]);
   const label =
@@ -98,7 +105,11 @@ export default function StaffView({
       viewBox={`0 0 ${row.width} ${HEIGHT}`}
       role="img"
       aria-label={label}
-      className="h-auto w-full max-w-xl text-ink short:max-h-40"
+      style={{
+        maxWidth: MAX_WIDTH * scale,
+        maxHeight: short ? SHORT_MAX_HEIGHT * scale : undefined,
+      }}
+      className="h-auto w-full text-ink"
     >
       <g stroke="currentColor" strokeWidth={1} className="text-staff" aria-hidden="true">
         {(

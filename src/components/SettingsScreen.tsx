@@ -2,9 +2,10 @@ import type { ReactNode } from 'react';
 import { useT } from '../i18n/context.ts';
 import type { MessageKey } from '../i18n/locales/en.ts';
 import BuildInfo from './BuildInfo.tsx';
+import { SlidersIcon } from './icons.tsx';
 import LanguageSelector from './LanguageSelector.tsx';
 import MidiStatus from './MidiStatus.tsx';
-import { card, sectionLabel } from './ui.ts';
+import { buttonOutline, card, sectionLabel } from './ui.ts';
 import VolumeControl from './VolumeControl.tsx';
 
 function Section({ titleKey, children }: { titleKey: MessageKey; children: ReactNode }) {
@@ -17,8 +18,9 @@ function Section({ titleKey, children }: { titleKey: MessageKey; children: React
   );
 }
 
-/** Language, the MIDI keyboard, sound, and the build line. */
-export default function SettingsScreen() {
+/** Language, the MIDI keyboard, sound, the lesson layout, and the build line. */
+export default function SettingsScreen({ onEditLayout }: { onEditLayout: () => void }) {
+  const t = useT();
   return (
     <div className="flex w-full max-w-3xl flex-col gap-5">
       <Section titleKey="languageLabel">
@@ -29,6 +31,13 @@ export default function SettingsScreen() {
       </Section>
       <Section titleKey="settingsSound">
         <VolumeControl />
+      </Section>
+      <Section titleKey="layoutSectionTitle">
+        <p className="text-ink-muted">{t('layoutSectionText')}</p>
+        <button type="button" onClick={onEditLayout} className={`${buttonOutline} self-start`}>
+          <SlidersIcon size={20} />
+          {t('layoutEdit')}
+        </button>
       </Section>
       <Section titleKey="settingsAbout">
         <BuildInfo />
