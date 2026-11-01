@@ -1,7 +1,7 @@
 # Tech Stack
 
 > Part of the project **constitution**. This file answers **how it is built** and lists the technical rules every feature spec must respect.
-> Status: **confirmed** in Phase 1 (2026-10-25); input and audio confirmed in Phase 2; deployment set up in Phase 3, hosting decided (both hosts kept); PWA confirmed in Phase 7; audio changed to recorded samples in Phase 17; dark theme, self-hosted font, and the screen shell added in Phase 18; IndexedDB for kept files added in Phase 19; the metronome click and the lesson controls in Phase 20; the lesson layout (per orientation) in Phase 21. This file is the single place where those decisions are recorded. Change it before the code.
+> Status: **confirmed** in Phase 1 (2026-10-25); input and audio confirmed in Phase 2; deployment set up in Phase 3, hosting decided (both hosts kept); PWA confirmed in Phase 7; audio changed to recorded samples in Phase 17; dark theme, self-hosted font, and the screen shell added in Phase 18; IndexedDB for kept files added in Phase 19; the metronome click and the lesson controls in Phase 20; the lesson layout (per orientation) in Phase 21; paper sheet music (a token scope) in Phase 22. This file is the single place where those decisions are recorded. Change it before the code.
 
 ## Stack
 
