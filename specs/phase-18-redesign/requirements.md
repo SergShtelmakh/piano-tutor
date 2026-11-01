@@ -65,7 +65,7 @@ Font: **Manrope** 400–800. Radii: 12–14 px small controls, 16–20 px cards 
 - User-facing text goes through the translations module (English default; add keys for `uk`, `de`, `fr` too). New strings: screen names, the Home heading, the Continue label, the tile subtitles, the Settings section titles.
 - Works with the on-screen and computer keyboard (no MIDI device required).
 - No perceptible added input latency; no change to the note pipeline, judging, scoring, or saved data (all `localStorage` keys and formats unchanged).
-- Accessibility: text contrast at least 4.5:1 against its background (3:1 for text 24 px and larger and for control outlines); a visible focus ring on every control; touch targets at least 44 × 44 px; real `<button>` / `<a>` / `<select>` elements; icon-only buttons have an `aria-label`.
+- Accessibility: text contrast at least 4.5:1 against its background (3:1 for text 24 px and larger and for graphics such as the focus ring and staff lines); a visible focus ring on every control; touch targets at least 44 × 44 px; real `<button>` / `<a>` / `<select>` elements; icon-only buttons have an `aria-label`.
 - No horizontal page scroll at 360 px wide; the phone landscape lesson (844 × 390) should fit the header, the staff, and the piano without vertical page scroll.
 - Icons are inline stroke SVGs in the app's own code (no icon library, no emoji).
 - No new runtime dependencies.

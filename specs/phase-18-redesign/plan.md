@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 18 — Redesign: visual system and navigation
 > Branch: `feature/redesign`
-> Status: Draft
+> Status: Implemented; automated gates and the headless render pass done, manual validation open
 
 ## Goal
 
@@ -12,12 +12,12 @@ The app gets the dark, card-based look of the user's design canvas and a clear s
 
 - **Constitution first (`specs/tech-stack.md`)**: the Styling row gets "dark theme tokens in `src/index.css` (`@theme`), Manrope self-hosted"; the project layout gets a paragraph on the shell (`AppShell`, screens, `icons.tsx`) and the theme; a **font licence** line next to the other asset policies (OFL fonts only, recorded in `licenses/`).
 - **Theme tokens (`src/index.css`)**: Tailwind 4 `@theme` defines the palette from `requirements.md` as `--color-*` tokens (`bg`, `surface`, `surface-raised`, `rail`, `line`, `line-strong`, `ink`, `ink-muted`, `staff`, `accent`, `accent-ink`, `accent-soft`, `warm`, `wrong`, `key-black`), the font (`--font-sans: 'Manrope', system-ui, …`), and the radii. Components use them as utilities (`bg-surface`, `text-ink-muted`, `border-line`, `fill-…`). A `wrong` colour is added (the canvas has none): a coral of different lightness than the teal, picked with the contrast test below. `body` gets `bg-bg text-ink`, plus a base `:focus-visible` ring in the accent colour.
-- **Contrast is tested, not eyeballed**: a pure `src/core/contrast.ts` (WCAG relative luminance and contrast ratio, unit-tested with known pairs), and `config/themeContrast.test.ts`, which reads the `@theme` block of `src/index.css` and checks a list of pairs (text on bg / surface ≥ 4.5, muted text on bg / surface ≥ 4.5, accent-ink on accent ≥ 4.5, accent on bg ≥ 3, wrong vs. accent lightness differ, etc.). If a canvas colour fails, the test fails and the token is adjusted minimally (and noted in the spec).
+- **Contrast is tested, not eyeballed (the canvas's staff colour `#5b6375` gave 2.86:1 on the card, so the `staff` token is `#6b7389`; `key-label` `#4b5265` was added for labels on the ivory keys)**: a pure `src/core/contrast.ts` (WCAG relative luminance and contrast ratio, unit-tested with known pairs), and `config/themeContrast.test.ts`, which reads the `@theme` block of `src/index.css` and checks a list of pairs (text on bg / surface ≥ 4.5, muted text on bg / surface ≥ 4.5, accent-ink on accent ≥ 4.5, accent on bg ≥ 3, wrong vs. accent lightness differ, etc.). If a canvas colour fails, the test fails and the token is adjusted minimally (and noted in the spec).
 - **Font**: download the Manrope variable woff2 subsets (latin, latin-ext, cyrillic, cyrillic-ext) once from the Google Fonts css2 API, put them in `src/assets/fonts/` with `@font-face` rules (`unicode-range`, `font-display: swap`, weight 400–800) in `index.css`. Vite hashes them; `woff2` is added to the Workbox `globPatterns` so they are precached. `licenses/manrope.md` records the source, the OFL 1.1 text, and the check date; README credits in all four languages. `config/fontFiles.test.ts` checks the files exist, are small, and the licence record names OFL.
 - **Logo and icons**: `public/icon.svg` becomes logo 13 on the `bg` colour (square, rounded, enough padding for maskable); `bun run icons` regenerates the PNG / ICO files (committed). The same mark is a `Logo` component (inline SVG, unique gradient ids via `useId`). `vite.config.ts` manifest: `theme_color: '#0E1117'`, `background_color: '#0E1117'`; `index.html` `theme-color` the same.
 - **Shell and navigation (`src/App.tsx`, new `src/components/shell/`)**:
   - `Screen = 'home' | 'lessons' | 'library' | 'free' | 'settings'` replaces `Mode`; `ModeSwitch` is removed. Course and lesson state stay as today (`course.source`, `lessonId`), and their Back targets are unchanged (a course opened from Library returns to Library, from Lessons to Lessons).
-  - `AppShell` renders a `NavRail` (≥ 768 px, `md:`) or `Sidebar` (≥ 1280 px, `xl:`) beside the content, and nothing while a lesson is open (FR-8). Both come from one `NAV_ITEMS` list (screen, label key, icon). On phones top-level screens get a `ScreenHeader` (Back + title); on wide screens the header shows the title only.
+  - `AppShell` renders one `Navigation` component beside the content: a rail from 768 px (`wide:` variant, which also needs height > 500 px, so a phone in landscape gets none) that becomes a sidebar from 1280 px (`sidebar:`); nothing while a lesson is open (FR-8). It reads one `NAV_ITEMS` list (screen, label key, icon). On phones top-level screens get a `ScreenHeader` (Back + title); on wide screens the header shows the title only.
   - `icons.tsx`: the dozen inline stroke icons the canvas uses (note, library, sliders, keyboard, home, back, play, plus, check, close, volume, mute, chevron), `aria-hidden`, `currentColor`.
 - **Screens (thin components, no game rules)**:
   - `HomeScreen`: logo + name, heading, `ContinueCard` (from `nextLessonId(LESSON_CATALOG, progress.lessons)`), a compact `StatsBar`, `InstallCard`, the storage note, and `HomeTiles` (Lessons main tile with the finished count, Library, Free play, Settings). A `landscape` layout via a height media query (`[@media(max-height:500px)]`) puts them side by side.
@@ -32,25 +32,25 @@ The app gets the dark, card-based look of the user's design canvas and a clear s
 ## Task groups
 
 1. **Theme, font, logo** (no screen changes yet beyond the global background)
-   - [ ] Update `specs/tech-stack.md` (Styling row, layout paragraph, font licence line).
-   - [ ] `src/core/contrast.ts` + tests; `@theme` tokens, base styles, and focus ring in `src/index.css`; `config/themeContrast.test.ts`; adjust any failing token and note it in `requirements.md`.
-   - [ ] Manrope woff2 subsets in `src/assets/fonts/`, `@font-face` rules, `woff2` in the precache; `licenses/manrope.md`; `config/fontFiles.test.ts`; README credits in all four READMEs.
-   - [ ] `public/icon.svg` = logo 13; `bun run icons`; `Logo` component; manifest and `index.html` colours.
+   - [x] Update `specs/tech-stack.md` (Styling row, layout paragraph, font licence line).
+   - [x] `src/core/contrast.ts` + tests; `@theme` tokens, base styles, and focus ring in `src/index.css`; `config/themeContrast.test.ts`; adjust any failing token and note it in `requirements.md`.
+   - [x] Manrope woff2 subsets in `src/assets/fonts/`, `@font-face` rules, `woff2` in the precache; `licenses/manrope.md`; `config/fontFiles.test.ts`; README credits in all four READMEs.
+   - [x] `public/icon.svg` = logo 13; `bun run icons`; `Logo` component; manifest and `index.html` colours.
 2. **Shell and navigation**
-   - [ ] `icons.tsx`, `NAV_ITEMS`, `NavRail`, `Sidebar`, `ScreenHeader`, `AppShell`; `Screen` state in `App.tsx`; remove `ModeSwitch` and the stacked header controls.
-   - [ ] `MidiProvider` (connection survives leaving Settings); `SettingsScreen` with Language, MIDI keyboard, Sound, About.
-   - [ ] `HomeScreen` (Continue card, stats strip, tiles, landscape layout) and `LessonsScreen`; `FreePlayScreen`; `MuteButton`.
-   - [ ] Translation keys (en, uk, de, fr); remove unused keys.
+   - [x] `icons.tsx`, `NAV_ITEMS`, `Navigation`, `ScreenHeader`, `AppShell`; `Screen` state in `App.tsx`; remove `ModeSwitch` and the stacked header controls.
+   - [x] `MidiProvider` (connection survives leaving Settings); `SettingsScreen` with Language, MIDI keyboard, Sound, About.
+   - [x] `HomeScreen` (Continue card, stats strip, tiles, landscape layout) and `LessonsScreen`; `FreePlayScreen`; `MuteButton`.
+   - [x] Translation keys (en, uk, de, fr); remove unused keys.
 3. **Screens restyled**
-   - [ ] Cards and lists: `LessonCard`, `StarRating`, `StatsBar`, `LearningPieces`, `CourseScreen`, `ResetProgress`, `InstallCard`.
-   - [ ] Library / Player: `PlayerScreen`, `LibraryPanel`, `PieceInfo`, `MarkToggles`, `DifficultyDots`, `Portrait`; panel open by default.
-   - [ ] Lesson: focused `LessonScreen` layout, `LessonSummary`, keyboard-range notice; `KeyboardSizeControl`, `VolumeControl`, `OctaveControl`, notices (`UpdateBanner`, `OfflineReadyNote`, `PwaNotices`).
+   - [x] Cards and lists: `LessonCard`, `StarRating`, `StatsBar`, `LearningPieces`, `CourseScreen`, `ResetProgress`, `InstallCard`.
+   - [x] Library / Player: `PlayerScreen`, `LibraryPanel`, `PieceInfo`, `MarkToggles`, `DifficultyDots`, `Portrait`; panel open by default.
+   - [x] Lesson: focused `LessonScreen` layout, `LessonSummary`, keyboard-range notice; `KeyboardSizeControl`, `VolumeControl`, `OctaveControl`, notices (`UpdateBanner`, `OfflineReadyNote`, `PwaNotices`).
 4. **Notation and piano on dark**
-   - [ ] `StaffView` and `ScoreView` (+ `NotationView`) colours per FR-16 / FR-4, cursor to accent.
-   - [ ] `PianoKeyboard` per FR-17 (keys, felt strip, pressed / flash / dimmed, ruler).
+   - [x] `StaffView` and `ScoreView` (+ `NotationView`) colours per FR-16 / FR-4, cursor to accent.
+   - [x] `PianoKeyboard` per FR-17 (keys, felt strip, pressed / flash / dimmed, ruler).
 5. **Gates and checks**
-   - [ ] All automated gates.
-   - [ ] Render every screen with headless Chrome at 360 × 800, 844 × 390, 1024 × 768, and 1440 × 900 and compare with the canvas; fix overflow.
+   - [x] All automated gates.
+   - [x] Render every screen with headless Chrome at 360 × 800, 844 × 390, 1024 × 768, and 1440 × 900 and compare with the canvas; fix overflow.
    - [ ] Manual pass from `validation.md` (keyboard-only navigation, MIDI on a real device, offline font).
 
 ## Files touched
@@ -66,7 +66,7 @@ The app gets the dark, card-based look of the user's design canvas and a clear s
 | `public/icon.svg`, generated icons                                                                                                                                                          | Logo 13                                                |
 | `index.html`, `vite.config.ts`                                                                                                                                                              | Theme colours, `woff2` precache                        |
 | `src/App.tsx`                                                                                                                                                                               | `Screen` state, `AppShell`, providers                  |
-| `src/components/shell/` (new): `AppShell`, `NavRail`, `Sidebar`, `ScreenHeader`, `navItems.ts`                                                                                              | Navigation                                             |
+| `src/components/shell/` (new): `AppShell`, `Navigation`, `ScreenHeader`, `navItems.ts`                                                                                                      | Navigation                                             |
 | `src/components/icons.tsx`, `Logo.tsx` (new)                                                                                                                                                | Icons, logo                                            |
 | `src/components/HomeScreen.tsx`, `LessonsScreen.tsx` (new), `FreePlayScreen.tsx` (new), `SettingsScreen.tsx` (new), `MuteButton.tsx` (new), `ContinueCard.tsx` (new), `HomeTiles.tsx` (new) | Screens                                                |
 | `src/components/ModeSwitch.tsx`                                                                                                                                                             | Removed                                                |

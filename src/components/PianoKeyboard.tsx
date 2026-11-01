@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import { codeForNote, QWERTY_LABELS } from '../core/computerKeymap.ts';
 import { keyLayout, scrollTarget, shownRange } from '../core/keyboardLayout.ts';
 import { isOutside } from '../core/keyboardRange.ts';
@@ -11,11 +11,8 @@ import { useKeyboardRange } from '../keyboard/context.ts';
 import { useElementWidth } from './useElementWidth.ts';
 
 const SCREEN_VELOCITY = 90;
-/** Space kept free on each side of the full-width piano. */
-const GUTTER = 16;
-
-/** The piano is as wide as the window (minus the scrollbar), not as wide as the text column. */
-const getRoot = () => document.documentElement;
+/** Space kept free on each side of the piano; the screens already pad their content. */
+const GUTTER = 0;
 
 /** A key that briefly flashes after it was judged in a lesson. */
 export interface KeyFeedback {
@@ -31,13 +28,12 @@ function keyColor(
   feedback?: KeyFeedback,
 ) {
   if (feedback?.note === note) {
-    if (feedback.kind === 'right') return black ? 'bg-green-600' : 'bg-green-400';
-    return black ? 'bg-red-600' : 'bg-red-400';
+    return feedback.kind === 'right' ? 'bg-accent' : 'bg-wrong';
   }
-  if (lit.has(note)) return black ? 'bg-sky-500' : 'bg-sky-300';
+  if (lit.has(note)) return black ? 'bg-accent' : 'bg-accent-strong';
   // Keys the learner's real keyboard doesn't have are dimmed, but still play and light up.
-  if (outside) return black ? 'bg-slate-500' : 'bg-slate-200';
-  return black ? 'bg-slate-800' : 'bg-white';
+  if (outside) return black ? 'bg-line-strong' : 'bg-staff';
+  return black ? 'bg-key-black' : 'bg-key-white';
 }
 
 export default function PianoKeyboard({
@@ -67,8 +63,11 @@ export default function PianoKeyboard({
   // pointerId -> note, so several fingers can hold several keys
   const pressed = useRef(new Map<number, number>());
   const scroller = useRef<HTMLDivElement>(null);
+  // The piano is as wide as the space its screen gives it (the window, or the window minus the navigation).
+  const root = useRef<HTMLDivElement>(null);
+  const getRoot = useCallback(() => root.current, []);
 
-  const viewportWidth = useElementWidth(getRoot, getRoot().clientWidth);
+  const viewportWidth = useElementWidth(getRoot, document.documentElement.clientWidth);
   const width = Math.max(0, viewportWidth - 2 * GUTTER);
   const includeLow = include?.low;
   const includeHigh = include?.high;
@@ -179,10 +178,10 @@ export default function PianoKeyboard({
   const feedbackOrUndefined = feedback ?? undefined;
 
   return (
-    <div className="flex w-full justify-center">
+    <div ref={root} className="flex w-full justify-center">
       <div
         style={{ width }}
-        className="shrink-0 overflow-hidden rounded-b-lg bg-slate-400 ring-1 ring-slate-400"
+        className="shrink-0 overflow-hidden rounded-b-xl bg-line-strong ring-1 ring-line"
       >
         <div
           ref={scroller}
@@ -193,7 +192,7 @@ export default function PianoKeyboard({
               <div
                 role="group"
                 aria-label={t('pianoScrollLabel')}
-                className="relative h-7 touch-pan-x select-none border-b border-slate-400 bg-slate-100"
+                className="relative h-7 touch-pan-x select-none border-b border-line bg-surface-raised"
               >
                 {layout.keys
                   .filter((key) => !key.black && pitchClass(key.note) === 0)
@@ -201,7 +200,7 @@ export default function PianoKeyboard({
                     <span
                       key={key.note}
                       style={{ left: key.x }}
-                      className="absolute top-0 flex h-full items-center border-l border-slate-400 pl-1 text-xs font-semibold text-slate-600"
+                      className="absolute top-0 flex h-full items-center border-l border-line-strong pl-1 text-xs font-bold text-ink-muted"
                     >
                       {noteLabelFor(locale, key.note)}
                     </span>
@@ -211,7 +210,7 @@ export default function PianoKeyboard({
             <div
               role="group"
               aria-label={t('pianoLabel')}
-              className="relative h-44 w-full touch-none select-none"
+              className="relative h-44 w-full touch-none select-none short:h-28"
             >
               {layout.keys
                 .filter((key) => !key.black)
@@ -220,7 +219,7 @@ export default function PianoKeyboard({
                     key={key.note}
                     {...keyProps(key.note)}
                     style={{ left: key.x, width: key.w }}
-                    className={`absolute top-0 flex h-full flex-col items-center justify-end gap-0.5 border-r border-slate-300 pb-1.5 text-slate-700 ${keyColor(
+                    className={`absolute top-0 flex h-full flex-col items-center justify-end gap-0.5 border-r border-key-black/25 pb-1.5 text-key-label ${keyColor(
                       key.note,
                       false,
                       lit,
@@ -228,7 +227,7 @@ export default function PianoKeyboard({
                       feedbackOrUndefined,
                     )}`}
                   >
-                    <span className="text-[10px] font-semibold text-slate-500">
+                    <span className="text-[10px] font-semibold text-key-label">
                       {computerKey(key.note)}
                     </span>
                     <span className="text-[10px] leading-none sm:text-xs">
@@ -245,7 +244,7 @@ export default function PianoKeyboard({
                     key={key.note}
                     {...keyProps(key.note)}
                     style={{ left: key.x, width: key.w }}
-                    className={`absolute top-0 flex h-28 items-end justify-center rounded-b-md pb-1.5 text-[10px] font-semibold text-slate-200 ${keyColor(
+                    className={`absolute top-0 flex h-28 items-end short:h-[70px] justify-center rounded-b-md border border-t-0 border-line pb-1.5 text-[10px] font-semibold text-ink-muted ${keyColor(
                       key.note,
                       true,
                       lit,

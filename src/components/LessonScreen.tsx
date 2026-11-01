@@ -13,11 +13,11 @@ import { useProgress } from '../progress/context.ts';
 
 import LessonSummary from './LessonSummary.tsx';
 import NotationView from './NotationView.tsx';
+import { BackIcon } from './icons.tsx';
+import MuteButton from './MuteButton.tsx';
 import PianoKeyboard from './PianoKeyboard.tsx';
 import StaffView, { type StaffFlash } from './StaffView.tsx';
-
-const buttonClass =
-  'rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100';
+import { buttonIcon, buttonOutline, buttonSmall, card, notice } from './ui.ts';
 
 export default function LessonScreen({
   entry,
@@ -73,80 +73,120 @@ export default function LessonScreen({
         ? { step: state.stepIndex - start, kind: 'wrong' }
         : null;
 
+  const subtitle = [
+    lesson.pieceTitle,
+    t('lessonProgress', {
+      current: Math.min(state.stepIndex + 1, lesson.steps.length),
+      total: lesson.steps.length,
+    }),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  const done = state.finished ? lesson.steps.length : state.stepIndex;
+
   return (
-    <div className="flex w-full flex-col items-center gap-4">
-      {lesson.pieceTitle && <p className="text-sm text-slate-600">{lesson.pieceTitle}</p>}
-      <h2 className="text-xl font-bold">{heading}</h2>
+    <div className="flex min-h-screen flex-col bg-bg text-ink">
+      <header className="flex items-center gap-3 border-b border-line px-3 py-3 short:py-1.5 wide:px-5">
+        <button type="button" onClick={onExit} aria-label={t(backKey)} className={buttonIcon}>
+          <BackIcon size={24} />
+        </button>
+        <div className="flex min-w-0 flex-col gap-0.5 text-left">
+          <h1 className="truncate text-lg font-extrabold">{heading}</h1>
+          <p className="truncate text-sm font-semibold text-ink-muted">{subtitle}</p>
+        </div>
+        <div
+          role="progressbar"
+          aria-label={t('lessonProgressLabel')}
+          aria-valuemin={0}
+          aria-valuemax={lesson.steps.length}
+          aria-valuenow={done}
+          className="mx-2 hidden h-1.5 min-w-20 max-w-64 flex-1 overflow-hidden rounded-full bg-line sm:block"
+        >
+          <div
+            className="h-full rounded-full bg-warm"
+            style={{ width: `${(done / lesson.steps.length) * 100}%` }}
+          />
+        </div>
+        <div className="flex-1" />
+        {!state.finished && (
+          <button
+            type="button"
+            onClick={startAgain}
+            className={`${buttonOutline} ${buttonSmall} hidden short:inline-flex`}
+          >
+            {t('lessonRestart')}
+          </button>
+        )}
+        <MuteButton />
+      </header>
 
-      {state.finished ? (
-        <LessonSummary
-          state={state}
-          reward={reward}
-          onAgain={startAgain}
-          onExit={onExit}
-          exitKey={backKey}
-        />
-      ) : (
-        <>
-          <p className="text-slate-700">
-            {t(hasChords(lesson) ? 'lessonInstructionChords' : 'lessonInstructionNotes')}
-          </p>
-          {outside.count > 0 && (
-            <p role="note" className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-900">
-              {tp(
-                outside.lowest !== undefined && outside.highest !== undefined
-                  ? 'lessonOutsideBoth'
-                  : outside.lowest !== undefined
-                    ? 'lessonOutsideLow'
-                    : 'lessonOutsideHigh',
-                outside.count,
-                {
-                  lowest: outside.lowest === undefined ? '' : noteLabelFor(locale, outside.lowest),
-                  highest:
-                    outside.highest === undefined ? '' : noteLabelFor(locale, outside.highest),
-                },
-              )}
+      <main className="flex flex-1 flex-col items-center justify-center gap-4 px-3 py-4 short:gap-2 short:py-2 wide:px-8">
+        {state.finished ? (
+          <LessonSummary
+            state={state}
+            reward={reward}
+            onAgain={startAgain}
+            onExit={onExit}
+            exitKey={backKey}
+          />
+        ) : (
+          <>
+            <p className="text-center text-ink-muted short:hidden">
+              {t(hasChords(lesson) ? 'lessonInstructionChords' : 'lessonInstructionNotes')}
             </p>
-          )}
-          {lesson.notation ? (
-            <NotationView
-              notation={lesson.notation}
-              stepIndex={state.stepIndex}
-              targets={targets}
-            />
-          ) : (
-            <div className="flex w-full justify-center rounded-lg bg-white p-3 shadow-sm">
-              <StaffView
-                steps={pageSteps}
-                current={state.stepIndex - start}
-                playedNotes={state.playedInStep}
-                flash={flash}
-                labelNotes={targets}
+            {outside.count > 0 && (
+              <p role="note" className={notice}>
+                {tp(
+                  outside.lowest !== undefined && outside.highest !== undefined
+                    ? 'lessonOutsideBoth'
+                    : outside.lowest !== undefined
+                      ? 'lessonOutsideLow'
+                      : 'lessonOutsideHigh',
+                  outside.count,
+                  {
+                    lowest:
+                      outside.lowest === undefined ? '' : noteLabelFor(locale, outside.lowest),
+                    highest:
+                      outside.highest === undefined ? '' : noteLabelFor(locale, outside.highest),
+                  },
+                )}
+              </p>
+            )}
+            {lesson.notation ? (
+              <NotationView
+                notation={lesson.notation}
+                stepIndex={state.stepIndex}
+                targets={targets}
               />
+            ) : (
+              <div className={`${card} flex w-full justify-center p-3`}>
+                <StaffView
+                  steps={pageSteps}
+                  current={state.stepIndex - start}
+                  playedNotes={state.playedInStep}
+                  flash={flash}
+                  labelNotes={targets}
+                />
+              </div>
+            )}
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-ink-muted short:hidden">
+              <span>{tp('correctCount', state.correct)}</span>
+              <span>{tp('mistakesCount', state.mistakes)}</span>
+              <button
+                type="button"
+                onClick={startAgain}
+                className={`${buttonOutline} ${buttonSmall}`}
+              >
+                {t('lessonRestart')}
+              </button>
             </div>
-          )}
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm text-slate-700">
-            <span>
-              {t('lessonProgress', {
-                current: state.stepIndex + 1,
-                total: lesson.steps.length,
-              })}
-            </span>
-            <span>{tp('correctCount', state.correct)}</span>
-            <span>{tp('mistakesCount', state.mistakes)}</span>
-          </div>
-          <div className="flex gap-3">
-            <button type="button" onClick={startAgain} className={buttonClass}>
-              {t('lessonRestart')}
-            </button>
-            <button type="button" onClick={onExit} className={buttonClass}>
-              {t(backKey)}
-            </button>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </main>
 
-      <PianoKeyboard feedback={feedback} focusNotes={targets} include={range} />
+      <div className="px-2 pb-2">
+        <PianoKeyboard feedback={feedback} focusNotes={targets} include={range} />
+      </div>
     </div>
   );
 }

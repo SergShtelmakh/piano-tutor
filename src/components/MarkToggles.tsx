@@ -2,9 +2,9 @@ import type { LibraryPiece } from '../core/libraryCatalog.ts';
 import { useT } from '../i18n/context.ts';
 import { useLibraryMarks } from '../library/context.ts';
 
-const base = 'min-h-11 rounded-md border px-3 text-sm font-semibold';
-const on = 'border-sky-600 bg-sky-50 text-sky-800';
-const off = 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100';
+const base = 'min-h-11 rounded-xl border px-3 text-sm font-bold';
+const on = 'border-accent bg-accent-soft text-accent';
+const off = 'border-line bg-transparent text-ink hover:bg-surface-raised';
 
 /**
  * The favourite (★) and done (✓) toggles of a piece. The symbol changes with the state (filled or

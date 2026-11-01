@@ -8,8 +8,8 @@ export default function LanguageSelector() {
   const id = useId();
 
   return (
-    <div className="flex items-center gap-2">
-      <label htmlFor={id} className="text-sm text-slate-600">
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="sr-only">
         {t('languageLabel')}
       </label>
       <select
@@ -18,7 +18,7 @@ export default function LanguageSelector() {
         onChange={(e) => {
           if (isLocale(e.target.value)) setLocale(e.target.value);
         }}
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm"
+        className="h-14 w-full max-w-sm rounded-2xl border-[1.5px] border-line bg-bg px-4 text-base font-bold text-ink"
       >
         {SUPPORTED_LOCALES.map((code) => (
           <option key={code} value={code} lang={code}>

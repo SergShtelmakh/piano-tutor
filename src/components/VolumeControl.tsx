@@ -9,6 +9,7 @@ import {
 } from '../audio/settings.ts';
 import { useT } from '../i18n/context.ts';
 import { useSynth } from '../input/context.ts';
+import { buttonOutline, buttonSmall, chip, chipOn } from './ui.ts';
 
 export default function VolumeControl() {
   const t = useT();
@@ -20,68 +21,66 @@ export default function VolumeControl() {
   const loadStatus = useSyncExternalStore(synth.subscribeLoad, synth.loadStatus);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <label htmlFor={id} className="text-sm text-slate-600">
-        {t('volumeLabel')}
-      </label>
-      <input
-        id={id}
-        type="range"
-        min={0}
-        max={100}
-        value={volume}
-        onChange={(e) => {
-          const next = Number(e.target.value);
-          setVolume(next);
-          saveVolume(next);
-          synth.setVolume(next);
-        }}
-        className="w-28 accent-sky-600"
-      />
-      <button
-        type="button"
-        aria-pressed={muted}
-        onClick={() => {
-          setMuted(!muted);
-          saveMuted(!muted);
-          synth.setMuted(!muted);
-        }}
-        className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm hover:bg-slate-100"
-      >
-        {muted ? t('unmute') : t('mute')}
-      </button>
-      <button
-        type="button"
-        aria-pressed={reverb}
-        onClick={() => {
-          setReverb(!reverb);
-          saveReverb(!reverb);
-          synth.setReverb(!reverb);
-        }}
-        className={`rounded-md border px-2 py-1 text-sm ${
-          reverb
-            ? 'border-sky-600 bg-sky-50 text-sky-800 hover:bg-sky-100'
-            : 'border-slate-300 bg-white hover:bg-slate-100'
-        }`}
-      >
-        {t('reverb')}
-      </button>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        <label htmlFor={id} className="text-sm font-bold text-ink-muted">
+          {t('volumeLabel')}
+        </label>
+        <input
+          id={id}
+          type="range"
+          min={0}
+          max={100}
+          value={volume}
+          onChange={(e) => {
+            const next = Number(e.target.value);
+            setVolume(next);
+            saveVolume(next);
+            synth.setVolume(next);
+          }}
+          className="h-11 w-48 max-w-full accent-accent"
+        />
+        <button
+          type="button"
+          aria-pressed={muted}
+          onClick={() => {
+            setMuted(!muted);
+            saveMuted(!muted);
+            synth.setMuted(!muted);
+          }}
+          className={muted ? chipOn : chip}
+        >
+          {muted ? t('unmute') : t('mute')}
+        </button>
+        <button
+          type="button"
+          aria-pressed={reverb}
+          onClick={() => {
+            setReverb(!reverb);
+            saveReverb(!reverb);
+            synth.setReverb(!reverb);
+          }}
+          className={reverb ? chipOn : chip}
+        >
+          {t('reverb')}
+        </button>
+      </div>
       {loadStatus === 'loading' && (
-        <span role="status" className="text-sm text-slate-500">
+        <p role="status" className="text-sm text-ink-muted">
           {t('pianoLoading')}
-        </span>
+        </p>
       )}
       {loadStatus === 'failed' && (
-        <span role="alert" className="flex items-center gap-2 text-sm text-red-700">
+        <p role="alert" className="flex flex-wrap items-center gap-3 text-sm text-wrong">
           {t('pianoLoadFailed')}
           <button
             type="button"
             onClick={() => synth.retryLoad()}
-            className="rounded-md border border-slate-300 bg-white px-2 py-1 text-slate-800 hover:bg-slate-100"
+            className={`${buttonOutline} ${buttonSmall}`}
           >
             {t('pianoRetry')}
           </button>
-        </span>
+        </p>
       )}
     </div>
   );

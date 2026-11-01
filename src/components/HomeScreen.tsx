@@ -1,45 +1,49 @@
-import { LESSON_CATALOG, LESSON_UNITS, nextLessonId } from '../core/lessons.ts';
 import { useT } from '../i18n/context.ts';
 import { useProgress } from '../progress/context.ts';
+import ContinueCard from './ContinueCard.tsx';
+import HomeTiles from './HomeTiles.tsx';
 import InstallCard from './InstallCard.tsx';
-import LearningPieces from './LearningPieces.tsx';
-import LessonCard from './LessonCard.tsx';
-import ResetProgress from './ResetProgress.tsx';
+import Logo from './Logo.tsx';
+import type { Screen } from './shell/screens.ts';
 import StatsBar from './StatsBar.tsx';
+import { notice } from './ui.ts';
 
-export default function HomeScreen({ onStart }: { onStart: (lessonId: string) => void }) {
+export default function HomeScreen({
+  onStart,
+  onNavigate,
+}: {
+  onStart: (lessonId: string) => void;
+  onNavigate: (screen: Screen) => void;
+}) {
   const t = useT();
-  const { progress, storageAvailable } = useProgress();
-  const nextId = nextLessonId(LESSON_CATALOG, progress.lessons);
+  const { storageAvailable } = useProgress();
 
   return (
-    <div className="flex w-full flex-col items-center gap-4">
-      <InstallCard />
-      <StatsBar />
-      {!storageAvailable && (
-        <p role="status" className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-900">
-          {t('progressNotSaved')}
-        </p>
-      )}
-      <h2 className="text-xl font-bold">{t('homeLessonsTitle')}</h2>
-      {LESSON_UNITS.map((unit) => (
-        <section key={unit.id} className="flex w-full flex-col items-center gap-3">
-          <h3 className="w-full text-left text-lg font-semibold text-slate-800">
-            {t(unit.titleKey)}
-          </h3>
-          {unit.lessons.map((entry) => (
-            <LessonCard
-              key={entry.id}
-              id={entry.id}
-              title={t(entry.titleKey)}
-              isNext={entry.id === nextId}
-              onStart={() => onStart(entry.id)}
-            />
-          ))}
-        </section>
-      ))}
-      <LearningPieces />
-      <ResetProgress />
+    <div className="flex w-full flex-col gap-5 py-6 text-left wide:max-w-3xl wide:py-10 short:max-w-none short:flex-row short:gap-5 short:py-4">
+      <div className="flex flex-col gap-4 short:w-72 short:shrink-0">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3 wide:hidden">
+            <Logo />
+            <span className="text-xl font-extrabold tracking-tight">{t('appName')}</span>
+          </div>
+          <h1 className="text-3xl font-extrabold leading-tight tracking-tight short:text-2xl wide:text-4xl">
+            {t('homeHeading')}
+          </h1>
+        </div>
+        <ContinueCard onStart={onStart} />
+        <div className="short:hidden">
+          <StatsBar />
+        </div>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <InstallCard />
+        {!storageAvailable && (
+          <p role="status" className={notice}>
+            {t('progressNotSaved')}
+          </p>
+        )}
+        <HomeTiles onNavigate={onNavigate} />
+      </div>
     </div>
   );
 }
