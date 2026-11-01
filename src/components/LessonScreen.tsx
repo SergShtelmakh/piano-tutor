@@ -31,6 +31,7 @@ import MuteButton from './MuteButton.tsx';
 import PauseOverlay from './PauseOverlay.tsx';
 import { useOrientation } from './useWindowSize.ts';
 import PianoKeyboard from './PianoKeyboard.tsx';
+import { useSheetStyle } from '../display/useSheetStyle.ts';
 import StaffView, { type StaffFlash } from './StaffView.tsx';
 import { buttonIcon, buttonOutline, buttonSmall, card, notice } from './ui.ts';
 import type { PracticeMode } from '../lesson/useLesson.ts';
@@ -57,6 +58,7 @@ export default function LessonScreen({
   const { settings, setTempo, setMetronome, setHint } = useLessonSettings();
   // The layout of the screen's orientation; a rotation only redraws, the lesson goes on.
   const layout = settings.layouts[useOrientation()];
+  const sheet = useSheetStyle();
   const [reward, setReward] = useState<RunReward | null>(null);
   // A run with one hand only is practice: it shows a summary but is not recorded.
   const [practiceRun, setPracticeRun] = useState(false);
@@ -322,7 +324,9 @@ export default function LessonScreen({
                   scale={ROW_SCALES[layout.rowHeight]}
                 />
               ) : (
-                <div className={`${card} flex w-full justify-center p-3`}>
+                <div
+                  className={`${card} flex w-full justify-center p-3 ${sheet === 'paper' ? 'sheet-paper' : ''}`}
+                >
                   <StaffView
                     steps={pageSteps}
                     current={state.stepIndex - start}

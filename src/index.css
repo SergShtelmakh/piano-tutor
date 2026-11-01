@@ -63,6 +63,23 @@
   --color-key-black: #0a0c11;
   --color-key-label: #4b5265;
   --color-key-hint: #1c8f7c;
+
+  /* Paper sheet music (Phase 22): the notation card, its notes, and the state colours on it. */
+  --color-paper: #faf8f3;
+  --color-paper-ink: #16181d;
+  --color-paper-staff: #6b6f78;
+  --color-paper-accent: #0b7a68;
+  --color-paper-wrong: #b3261e;
+}
+
+/* The paper style: inside this scope the notation tokens take their paper values. */
+.sheet-paper {
+  --color-surface: var(--color-paper);
+  --color-line: var(--color-paper);
+  --color-ink: var(--color-paper-ink);
+  --color-staff: var(--color-paper-staff);
+  --color-accent: var(--color-paper-accent);
+  --color-wrong: var(--color-paper-wrong);
 }
 
 /* `wide`: room for the navigation rail (a phone in landscape is wide but short, so it gets none). */

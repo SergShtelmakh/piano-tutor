@@ -68,4 +68,15 @@ describe('theme contrast', () => {
     expect(ratio('key-white', 'key-black')).toBeGreaterThanOrEqual(7);
     expect(ratio('key-white', 'bg')).toBeGreaterThanOrEqual(7);
   });
+
+  it('reads black notes on the paper card (4.5:1), with its state colours visible (3:1)', () => {
+    expect(ratio('paper-ink', 'paper')).toBeGreaterThanOrEqual(4.5);
+    for (const fg of ['paper-staff', 'paper-accent', 'paper-wrong'])
+      expect(ratio(fg, 'paper'), fg).toBeGreaterThanOrEqual(3);
+    expect(ratio('paper', 'bg')).toBeGreaterThanOrEqual(7);
+  });
+
+  it('tells a right press from a wrong one on the paper by lightness too', () => {
+    expect(ratio('paper-accent', 'paper-wrong')).toBeGreaterThanOrEqual(1.2);
+  });
 });

@@ -267,6 +267,10 @@ export const fr: PartialTranslations = {
   lessonResume: 'Reprendre',
   summaryPractice:
     'Passage d’entraînement : les étoiles et l’XP sont enregistrées quand vous jouez des deux mains.',
+  sheetSectionTitle: 'Partition',
+  sheetSectionText: 'Les notes sont noires sur du papier, ou claires sur la carte sombre.',
+  sheetPaper: 'Papier',
+  sheetDark: 'Sombre',
   layoutSectionTitle: 'Disposition des leçons',
   layoutSectionText:
     "Choisissez l'aspect des leçons : le piano, les lignes de musique et les noms des notes, séparément en portrait et en paysage.",

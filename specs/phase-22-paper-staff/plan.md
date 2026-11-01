@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 22 — Paper sheet music
 > Branch: `feature/paper-staff`
-> Status: Draft
+> Status: Implemented (manual validation pending)
 
 ## Goal
 
@@ -34,23 +34,23 @@ Settings gets a **Sheet music** section before **Lesson layout**. It uses the ex
 ## Task groups
 
 1. **Tokens and scope**
-   - [ ] Add `paper` `#faf8f3`, `paper-ink` `#16181d`, `paper-staff` `#6b6f78`, `paper-accent` `#0b7a68`, `paper-wrong` `#b3261e` to the `@theme` block of `src/index.css`.
-   - [ ] Add the `.sheet-paper` scope (above) after the theme.
-   - [ ] `config/themeContrast.test.ts`: `paper-ink` on `paper` ≥ 4.5; `paper-staff`, `paper-accent`, `paper-wrong` on `paper` ≥ 3; `paper-accent` against `paper-wrong` ≥ 1.2; `paper` against `bg` ≥ 7 (the card stands out from the page).
+   - [x] Add `paper` `#faf8f3`, `paper-ink` `#16181d`, `paper-staff` `#6b6f78`, `paper-accent` `#0b7a68`, `paper-wrong` `#b3261e` to the `@theme` block of `src/index.css`.
+   - [x] Add the `.sheet-paper` scope (above) after the theme.
+   - [x] `config/themeContrast.test.ts`: `paper-ink` on `paper` ≥ 4.5; `paper-staff`, `paper-accent`, `paper-wrong` on `paper` ≥ 3; `paper-accent` against `paper-wrong` ≥ 1.2; `paper` against `bg` ≥ 7 (the card stands out from the page).
 2. **The setting**
-   - [ ] `src/display/sheetStyle.ts`: type `SheetStyle`, `DEFAULT_SHEET_STYLE = 'paper'`, load / save (best effort, as in `audio/settings.ts`), `setSheetStyle` (saves and notifies), `subscribe`, `getSheetStyle`.
-   - [ ] `src/display/useSheetStyle.ts`: `useSyncExternalStore(subscribe, getSheetStyle)`.
-   - [ ] `src/display/sheetStyle.test.ts`: default, round trip, unknown value, throwing storage, and that listeners are notified.
+   - [x] `src/display/sheetStyle.ts`: type `SheetStyle`, `DEFAULT_SHEET_STYLE = 'paper'`, load / save (best effort, as in `audio/settings.ts`), `setSheetStyle` (saves and notifies), `subscribe`, `getSheetStyle`.
+   - [x] `src/display/useSheetStyle.ts`: `useSyncExternalStore(subscribe, getSheetStyle)`.
+   - [x] `src/display/sheetStyle.test.ts`: default, round trip, unknown value, throwing storage, and that listeners are notified.
 3. **Apply it**
-   - [ ] `ScoreView`: add `sheet-paper` to the card when the style is paper.
-   - [ ] `StaffView` (built-in lessons): the card around it gets the class too.
-   - [ ] Check that no notation colour bypasses the tokens (no raw hex or `white` / `black` in `ScoreView`, `StaffView`, `NotationView`).
+   - [x] `ScoreView`: add `sheet-paper` to the card when the style is paper.
+   - [x] `StaffView` (built-in lessons): the card around it gets the class too.
+   - [x] Check that no notation colour bypasses the tokens (no raw hex or `white` / `black` in `ScoreView`, `StaffView`, `NotationView`).
 4. **Settings UI and strings**
-   - [ ] A `Sheet music` section in `SettingsScreen` with `SegmentedControl` Paper / Dark and a one-line description.
-   - [ ] Strings `sheetSectionTitle`, `sheetSectionText`, `sheetPaper`, `sheetDark` in `en`, then `uk`, `de`, `fr`.
+   - [x] A `Sheet music` section in `SettingsScreen` with `SegmentedControl` Paper / Dark and a one-line description.
+   - [x] Strings `sheetSectionTitle`, `sheetSectionText`, `sheetPaper`, `sheetDark` in `en`, then `uk`, `de`, `fr`.
 5. **Checks**
-   - [ ] `bun run lint`, `format:check`, `build`, `test`.
-   - [ ] Headless Chrome on `bun run preview` at 390 × 844, 844 × 390, and 1440 × 900, in both styles: a built-in lesson (with a right and a wrong press), a course lesson, the Player while it plays, and the layout editor. Look at the screenshots, then switch in Settings and reload.
+   - [x] `bun run lint`, `format:check`, `build`, `test`.
+   - [x] Headless Chrome on `bun run preview` at 390 × 844, 844 × 390, and 1440 × 900, in both styles: a built-in lesson (with a right and a wrong press), a course lesson, the Player while it plays, and the layout editor. Look at the screenshots, then switch in Settings and reload.
 
 ## Files touched
 
