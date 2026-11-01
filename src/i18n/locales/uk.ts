@@ -309,6 +309,10 @@ export const uk: PartialTranslations = {
   lessonPausedTitle: 'Пауза',
   lessonResume: 'Продовжити',
   summaryPractice: 'Тренування: зірки та XP зберігаються, коли ви граєте обома руками.',
+  sheetSectionTitle: 'Нотний запис',
+  sheetSectionText: 'Ноти чорні на папері або світлі на темній картці.',
+  sheetPaper: 'Папір',
+  sheetDark: 'Темний',
   layoutSectionTitle: 'Розташування уроку',
   layoutSectionText:
     'Оберіть, як виглядають уроки: піаніно, рядки нот і назви нот — окремо для вертикальної та горизонтальної орієнтації.',

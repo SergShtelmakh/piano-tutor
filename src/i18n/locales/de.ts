@@ -273,6 +273,10 @@ export const de: PartialTranslations = {
   lessonResume: 'Weiter',
   summaryPractice:
     'Übungsdurchgang: Sterne und XP werden gespeichert, wenn du mit beiden Händen spielst.',
+  sheetSectionTitle: 'Notenbild',
+  sheetSectionText: 'Noten erscheinen schwarz auf Papier oder hell auf der dunklen Karte.',
+  sheetPaper: 'Papier',
+  sheetDark: 'Dunkel',
   layoutSectionTitle: 'Lektionslayout',
   layoutSectionText:
     'Lege fest, wie Lektionen aussehen: Klavier, Notenzeilen und Notennamen, getrennt für Hoch- und Querformat.',

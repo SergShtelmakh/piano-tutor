@@ -22,6 +22,7 @@ import {
 } from '../core/scoreLayout.ts';
 import { keySignatureIndexes } from '../core/spelling.ts';
 import type { Clef } from '../core/staff.ts';
+import { useSheetStyle } from '../display/useSheetStyle.ts';
 import { BASS_CLEF_PATH, TREBLE_CLEF_PATH } from './clefPaths.ts';
 import {
   FLAG_EIGHTH_DOWN_PATH,
@@ -710,6 +711,7 @@ export default function ScoreView({
   zoom = 1,
   onSeek,
 }: ScoreViewProps) {
+  const sheet = useSheetStyle();
   const geometry = useMemo(() => measure(score), [score]);
   const scroller = useRef<HTMLDivElement>(null);
   // The clefs reserve CLEF_WIDTH in every system; a layout narrower than that cannot be drawn.
@@ -720,7 +722,7 @@ export default function ScoreView({
       ref={scroller}
       role="img"
       aria-label={label}
-      className="flex w-full flex-col overflow-x-auto rounded-2xl border border-line bg-surface p-2"
+      className={`flex w-full flex-col overflow-x-auto rounded-2xl border border-line bg-surface p-2 ${sheet === 'paper' ? 'sheet-paper' : ''}`}
     >
       {visible.map((index) => (
         <SystemView

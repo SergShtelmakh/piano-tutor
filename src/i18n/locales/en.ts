@@ -264,6 +264,10 @@ export const en = {
   lessonPausedTitle: 'Paused',
   lessonResume: 'Resume',
   summaryPractice: 'Practice run: stars and XP are saved when you play both hands.',
+  sheetSectionTitle: 'Sheet music',
+  sheetSectionText: 'Notes are drawn black on paper, or light on the dark card.',
+  sheetPaper: 'Paper',
+  sheetDark: 'Dark',
   layoutSectionTitle: 'Lesson layout',
   layoutSectionText:
     'Choose how lessons look: the piano, the rows of music, and the note names, separately for portrait and landscape.',
