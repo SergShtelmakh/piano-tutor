@@ -291,6 +291,7 @@ export const de: PartialTranslations = {
   layoutMusicSection: 'Noten',
   layoutOctaves: 'Oktaven auf dem Bildschirm',
   layoutOctavesAuto: 'Auto',
+  layoutOctaveOne: '1 Oktave',
   layoutOctaveCount: '{count} Oktaven',
   layoutRows: 'Notenzeilen',
   layoutRowsNote: 'Die Zeilen gelten für Kurslektionen; eingebaute Lektionen haben eine Zeile.',

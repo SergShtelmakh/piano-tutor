@@ -25,15 +25,18 @@ export function SegmentedControl<T extends string | number>({
   options,
   value,
   onChange,
+  hideTitle = false,
 }: {
   title: string;
   options: readonly SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
+  /** The group keeps its name for assistive technology; the label is not drawn. */
+  hideTitle?: boolean;
 }) {
   return (
     <div role="group" aria-label={title} className="flex flex-col gap-2">
-      <span className={sectionLabel}>{title}</span>
+      {!hideTitle && <span className={sectionLabel}>{title}</span>}
       <div className="flex gap-1 rounded-2xl bg-bg p-1">
         {options.map((option) => (
           <button

@@ -83,7 +83,22 @@ export function fixedRange(octaves: number, baseOctave: number, include?: NoteRa
     ? Math.round((include.low + include.high) / 2)
     : Math.round((base[0] + base[base.length - 1]) / 2);
   const span = octaves * OCTAVE;
-  // A C is a multiple of 12; the first C at or below the start that centres the window.
+  // A C is a multiple of 12. When the notes fit in the span, take the window of whole octaves
+  // that covers them and sits nearest to their middle (the lower one on a tie).
+  if (include && include.high - include.low <= span) {
+    let best: number | null = null;
+    for (let start = 2 * OCTAVE; start + span <= PIANO_HIGH; start += OCTAVE) {
+      if (start > include.low || start + span < include.high) continue;
+      if (
+        best === null ||
+        Math.abs(start + span / 2 - centre) < Math.abs(best + span / 2 - centre)
+      ) {
+        best = start;
+      }
+    }
+    if (best !== null) return { low: best, high: best + span };
+  }
+  // Otherwise the first C at or below the start that centres the window, grown below.
   let low = Math.floor((centre - span / 2) / OCTAVE) * OCTAVE;
   let high = low + span;
   if (low < PIANO_LOW) {

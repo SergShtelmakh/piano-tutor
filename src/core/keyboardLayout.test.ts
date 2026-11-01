@@ -192,6 +192,16 @@ describe('fixedRange', () => {
     }
   });
 
+  it('can be a single octave, and grows when the lesson needs more', () => {
+    const one = fixedRange(1, 4, { low: 62, high: 67 });
+    expect(whiteKeyCount(one)).toBe(8);
+    expect(one.low).toBeLessThanOrEqual(62);
+    expect(one.high).toBeGreaterThanOrEqual(67);
+    const wide = fixedRange(1, 4, { low: 48, high: 72 });
+    expect(wide.low).toBeLessThanOrEqual(48);
+    expect(wide.high).toBeGreaterThanOrEqual(72);
+  });
+
   it('is centred on the notes of the lesson', () => {
     const range = fixedRange(2, 4, { low: C4, high: C4 + 12 });
     expect(range).toEqual({ low: C4 - 12, high: C4 + 12 });

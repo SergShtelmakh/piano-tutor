@@ -285,6 +285,7 @@ export const fr: PartialTranslations = {
   layoutMusicSection: 'Musique',
   layoutOctaves: "Octaves à l'écran",
   layoutOctavesAuto: 'Auto',
+  layoutOctaveOne: '1 octave',
   layoutOctaveCount: '{count} octaves',
   layoutRows: 'Lignes de musique',
   layoutRowsNote:

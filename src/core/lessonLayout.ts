@@ -16,9 +16,9 @@ export type LayoutSize = 's' | 'm' | 'l' | 'xl';
 
 export const LAYOUT_SIZES: readonly LayoutSize[] = ['s', 'm', 'l', 'xl'];
 
-export type OctaveChoice = 'auto' | 2 | 3 | 4;
+export type OctaveChoice = 'auto' | 1 | 2 | 3 | 4;
 
-export const OCTAVE_CHOICES: readonly OctaveChoice[] = ['auto', 2, 3, 4];
+export const OCTAVE_CHOICES: readonly OctaveChoice[] = ['auto', 1, 2, 3, 4];
 
 export type RowCount = 1 | 2 | 3;
 

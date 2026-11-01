@@ -282,6 +282,7 @@ export const en = {
   layoutMusicSection: 'Music',
   layoutOctaves: 'Octaves on screen',
   layoutOctavesAuto: 'Auto',
+  layoutOctaveOne: '1 octave',
   layoutOctaveCount: '{count} octaves',
   layoutRows: 'Rows of music',
   layoutRowsNote: 'Rows apply to course lessons; the built-in lessons have one row.',

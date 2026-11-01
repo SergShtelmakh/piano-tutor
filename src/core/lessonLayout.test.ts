@@ -94,6 +94,12 @@ describe('parseLayout', () => {
     expect(parseLayout(layout)).toEqual(layout);
   });
 
+  it('accepts one octave and refuses none or five', () => {
+    expect(parseLayout({ octaves: 1 }).octaves).toBe(1);
+    expect(parseLayout({ octaves: 0 }).octaves).toBe('auto');
+    expect(parseLayout({ octaves: 5 }).octaves).toBe('auto');
+  });
+
   it('gives the defaults for junk', () => {
     expect(parseLayout(null)).toEqual(DEFAULT_LESSON_LAYOUT);
     expect(parseLayout(7)).toEqual(DEFAULT_LESSON_LAYOUT);
