@@ -245,7 +245,7 @@ Spec: [`specs/phase-20-lesson-controls/`](phase-20-lesson-controls/). Branch `fe
 
 ## Phase 21 — Lesson layout editor 🔨
 
-Goal: the canvas's layout editor: keyboard height (S–XL, also by dragging), octaves on screen, staff size, note names on keys, and the next-note hint, changed live while an example plays; saved on the device and used by every lesson. Phase 20 already has the hint toggle and a settings store for every lesson (`piano-tutor.lessonSettings`, `LessonSettingsProvider`); the editor adds its fields there and can play its example with the Phase 20 sequencer.
+Goal: the canvas's layout editor: keyboard height (S–XL, also by dragging), octaves on screen, the number of rows of music and their height (instead of the canvas's staff size), note names on keys, and the next-note hint, changed live while an example plays; kept separately for portrait and landscape, saved on the device, and used by every lesson. The editor also shows the current screen size. Phase 20 already has the hint toggle and a settings store for every lesson (`piano-tutor.lessonSettings`, `LessonSettingsProvider`); the editor adds its fields there and can play its example with the Phase 20 sequencer.
 
 Spec: [`specs/phase-21-lesson-layout-editor/`](phase-21-lesson-layout-editor/). Branch `feature/lesson-layout-editor`.
 
