@@ -278,8 +278,6 @@ export const fr: PartialTranslations = {
   layoutScreenSize: 'Écran {width} × {height} px · {orientation}',
   layoutPortrait: 'Portrait',
   layoutLandscape: 'Paysage',
-  layoutEditing: 'Disposition pour',
-  layoutShownAt: 'Affiché à la taille de cette fenêtre.',
   layoutKeyboardHeight: 'Hauteur du clavier',
   layoutKeyboardSection: 'Clavier · {size}',
   layoutMusicSection: 'Musique',

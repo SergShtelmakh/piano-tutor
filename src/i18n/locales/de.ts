@@ -284,8 +284,6 @@ export const de: PartialTranslations = {
   layoutScreenSize: 'Bildschirm {width} × {height} px · {orientation}',
   layoutPortrait: 'Hochformat',
   layoutLandscape: 'Querformat',
-  layoutEditing: 'Layout für',
-  layoutShownAt: 'Gezeigt in der Größe dieses Fensters.',
   layoutKeyboardHeight: 'Klaviaturhöhe',
   layoutKeyboardSection: 'Klaviatur · {size}',
   layoutMusicSection: 'Noten',

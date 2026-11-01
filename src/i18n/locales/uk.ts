@@ -320,8 +320,6 @@ export const uk: PartialTranslations = {
   layoutScreenSize: 'Екран {width} × {height} px · {orientation}',
   layoutPortrait: 'Вертикально',
   layoutLandscape: 'Горизонтально',
-  layoutEditing: 'Розташування для',
-  layoutShownAt: 'Показано в розмірі цього вікна.',
   layoutKeyboardHeight: 'Висота клавіатури',
   layoutKeyboardSection: 'Клавіатура · {size}',
   layoutMusicSection: 'Ноти',
