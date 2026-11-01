@@ -429,8 +429,26 @@ export function courseLessons(course: Course): CourseLesson[] {
   return course.stages.flatMap((stage) => stage.lessons);
 }
 
-function isFinished(records: Readonly<Record<string, LessonRecord>>, id: string): boolean {
+export function isFinished(records: Readonly<Record<string, LessonRecord>>, id: string): boolean {
   return (records[id]?.completions ?? 0) > 0;
+}
+
+/**
+ * The lesson to continue with in a course: the first one (in course order) without a finished
+ * run, else `lastId` when it is still a lesson of the course, else the first lesson.
+ */
+export function nextCourseLesson(
+  course: Course,
+  records: Readonly<Record<string, LessonRecord>>,
+  lastId: string | null,
+): CourseLesson | null {
+  const lessons = courseLessons(course);
+  return (
+    lessons.find((lesson) => !isFinished(records, lesson.id)) ??
+    lessons.find((lesson) => lesson.id === lastId) ??
+    lessons[0] ??
+    null
+  );
 }
 
 /** How many lessons of the course have at least one finished run. */

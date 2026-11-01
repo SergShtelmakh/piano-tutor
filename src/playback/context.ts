@@ -14,10 +14,12 @@ export interface LoadedPiece {
   library?: LibraryPiece;
   /** `file-<hash>`, set when the piece came from a file on the learner's disk. */
   fileId?: string;
+  /** The file itself, set when the piece came from a file on the learner's disk. */
+  file?: File;
 }
 
-/** Why a piece could not be shown. `network` is a library file that could not be fetched. */
-export type PlayerError = ParseError | 'network';
+/** Why a piece could not be shown. `network` is a library file that could not be fetched; `missingFile` is a kept file that is gone from the device. */
+export type PlayerError = ParseError | 'network' | 'missingFile';
 
 export interface PlayerValue {
   player: Player;

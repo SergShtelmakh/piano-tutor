@@ -101,6 +101,42 @@ export function browse(
     .filter((section) => section.pieces.length > 0);
 }
 
+/** Lower case with accents removed, for comparing a search with titles and names. */
+export function normaliseSearch(text: string): string {
+  return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * The pieces whose title or composer name (in the learner's language) contains `query`, as one
+ * flat list ordered by title. The difficulty and favourites filters apply as in `browse`. An empty
+ * query matches every piece that passes the filters.
+ */
+export function searchPieces(
+  pieces: readonly LibraryPiece[],
+  composers: readonly LibraryComposer[],
+  query: string,
+  options: BrowseOptions,
+  favourites: readonly string[],
+  nameOf: (composer: LibraryComposer) => string,
+  locale: string,
+): LibraryPiece[] {
+  const collator = new Intl.Collator(locale);
+  const starred = new Set(favourites);
+  const needle = normaliseSearch(query);
+  const names = new Map(
+    composers.map((composer) => [composer.id, normaliseSearch(nameOf(composer))]),
+  );
+  return pieces
+    .filter(
+      (piece) =>
+        (options.difficulty === null || piece.difficulty === options.difficulty) &&
+        (!options.favouritesOnly || starred.has(piece.id)) &&
+        (normaliseSearch(piece.title).includes(needle) ||
+          (names.get(piece.composer) ?? '').includes(needle)),
+    )
+    .sort((a, b) => collator.compare(a.title, b.title));
+}
+
 /** A duration in seconds as `m:ss`. */
 export function formatDuration(seconds: number): string {
   const whole = Math.max(0, Math.round(seconds));

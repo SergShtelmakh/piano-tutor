@@ -4,15 +4,18 @@ import ContinueCard from './ContinueCard.tsx';
 import HomeTiles from './HomeTiles.tsx';
 import InstallCard from './InstallCard.tsx';
 import Logo from './Logo.tsx';
+import type { MyLessonEntry } from '../core/myLessons.ts';
 import type { Screen } from './shell/screens.ts';
 import StatsBar from './StatsBar.tsx';
 import { notice } from './ui.ts';
 
 export default function HomeScreen({
   onStart,
+  onContinuePiece,
   onNavigate,
 }: {
   onStart: (lessonId: string) => void;
+  onContinuePiece: (entry: MyLessonEntry, lastLessonId: string) => void;
   onNavigate: (screen: Screen) => void;
 }) {
   const t = useT();
@@ -30,7 +33,7 @@ export default function HomeScreen({
             {t('homeHeading')}
           </h1>
         </div>
-        <ContinueCard onStart={onStart} />
+        <ContinueCard onStart={onStart} onContinuePiece={onContinuePiece} />
         <div className="short:hidden">
           <StatsBar />
         </div>

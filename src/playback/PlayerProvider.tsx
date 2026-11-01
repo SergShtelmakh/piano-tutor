@@ -20,9 +20,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   useEffect(() => () => player.dispose(), [player]);
 
   const show = useCallback(
-    (piece: Piece, name: string, library?: LibraryPiece, fileId?: string) => {
+    (piece: Piece, name: string, library?: LibraryPiece, file?: { id: string; file: File }) => {
       player.load(piece);
-      setLoaded({ name, piece, score: buildScore(piece), library, fileId });
+      setLoaded({
+        name,
+        piece,
+        score: buildScore(piece),
+        library,
+        fileId: file?.id,
+        file: file?.file,
+      });
       setError(null);
     },
     [player],
@@ -38,7 +45,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setError(result.error);
         return;
       }
-      show(result.piece, file.name.replace(/\.[^.]*$/, ''), undefined, result.id);
+      show(result.piece, file.name.replace(/\.[^.]*$/, ''), undefined, { id: result.id, file });
     },
     [show],
   );

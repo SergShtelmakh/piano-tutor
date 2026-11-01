@@ -7,6 +7,8 @@ export interface ProgressValue {
   storageAvailable: boolean;
   /** Records one finished run and returns its rewards. */
   recordRun: (lessonId: string, accuracy: number) => RunReward;
+  /** Remembers the lesson that was opened last (for the Continue card). */
+  setLastLesson: (lessonId: string) => void;
   reset: () => void;
 }
 

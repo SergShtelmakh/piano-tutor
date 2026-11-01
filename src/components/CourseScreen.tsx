@@ -3,6 +3,7 @@ import { nextLessonId } from '../core/lessons.ts';
 import { LIBRARY_COMPOSERS } from '../core/libraryCatalog.ts';
 import { useCourse } from '../course/context.ts';
 import { usePluralT, useT } from '../i18n/context.ts';
+import { useMyLessons } from '../myLessons/context.ts';
 import { usePlayerValue } from '../playback/context.ts';
 import { PLAYER_ERROR_KEYS } from '../playback/errorKeys.ts';
 import { useProgress } from '../progress/context.ts';
@@ -25,7 +26,8 @@ export default function CourseScreen({
   const t = useT();
   const tp = usePluralT();
   const { source, status, course, error, closeCourse, retry } = useCourse();
-  const { openLibraryPiece } = usePlayerValue();
+  const { openLibraryPiece, openFile } = usePlayerValue();
+  const { readFile, remove } = useMyLessons();
   const { progress } = useProgress();
   if (!source) return null;
 
@@ -37,10 +39,19 @@ export default function CourseScreen({
   const nextId = nextLessonId(lessons, progress.lessons);
   const finished = course ? finishedLessons(course, progress.lessons) : 0;
 
-  const openInPlayer = () => {
-    // A file is still open in the Player; only a library piece has to be opened again.
+  const openInPlayer = async () => {
+    // A file just opened is still in the Player; a library piece or a kept file is opened again.
     if (piece) void openLibraryPiece(piece);
+    else if (source.kind === 'stored') {
+      const result = await readFile(source.id);
+      if (result.ok) void openFile(result.file);
+    }
     onOpenInPlayer();
+  };
+
+  const removeKept = () => {
+    if (source.kind !== 'library') void remove(source.id);
+    closeCourse();
   };
 
   return (
@@ -54,7 +65,7 @@ export default function CourseScreen({
         >
           <BackIcon size={24} />
         </button>
-        <button type="button" className={buttonClass} onClick={openInPlayer}>
+        <button type="button" className={buttonClass} onClick={() => void openInPlayer()}>
           {t('courseOpenInPlayer')}
         </button>
       </div>
@@ -94,9 +105,15 @@ export default function CourseScreen({
           <p className="rounded-xl bg-wrong-soft px-4 py-3 text-sm text-wrong">
             {t(PLAYER_ERROR_KEYS[error])}
           </p>
-          <button type="button" className={buttonClass} onClick={retry}>
-            {t('courseRetry')}
-          </button>
+          {error === 'missingFile' ? (
+            <button type="button" className={buttonClass} onClick={removeKept}>
+              {t('courseRemove')}
+            </button>
+          ) : (
+            <button type="button" className={buttonClass} onClick={retry}>
+              {t('courseRetry')}
+            </button>
+          )}
         </div>
       )}
 

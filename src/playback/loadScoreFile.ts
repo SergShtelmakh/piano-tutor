@@ -6,6 +6,10 @@ import { CONTAINER_PATH, findScoreEntry, readZip, type ZipEntry } from '../core/
 /** The score inside a `.mxl` may be much larger than the archive; this bounds what is inflated. */
 export const MAX_XML_BYTES = 20 * 1024 * 1024;
 
+/** The `accept` list of every file picker that opens a score. */
+export const SCORE_FILE_ACCEPT =
+  '.mid,.midi,.mxl,.musicxml,.xml,audio/midi,audio/x-midi,application/vnd.recordare.musicxml,application/vnd.recordare.musicxml+xml,application/xml';
+
 export type LoadScoreResult =
   | {
       ok: true;
