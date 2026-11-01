@@ -11,6 +11,9 @@ const START_RAMP = 0.002; // avoids a click if a sample does not start at zero
 const ROOM_SECONDS = 1.5;
 const WET_LEVEL = 0.4;
 const REVERB_SWITCH_TIME_CONSTANT = 0.02; // ≈ 50 ms to switch
+const CLICK_HZ = 1600;
+const CLICK_PEAK = 0.35;
+const CLICK_SECONDS = 0.05;
 
 export interface Synth {
   /** Creates the audio context and starts loading the piano samples. Safe to call again. */
@@ -27,6 +30,11 @@ export interface Synth {
   subscribeLoad(listener: () => void): () => void;
   /** After a failed load, loads the files that are still missing. */
   retryLoad(): void;
+  /**
+   * A short metronome click `delay` seconds from now, on the audio clock. It goes through the
+   * master volume and mute, but is not a note: it is not judged, lit, or held.
+   */
+  click(delay?: number): void;
 }
 
 interface Voice {
@@ -175,6 +183,23 @@ export function createSynth(
         context.currentTime,
         REVERB_SWITCH_TIME_CONSTANT,
       );
+    },
+    click(delay = 0) {
+      const ctx = ensureContext();
+      if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
+      const at = ctx.currentTime + Math.max(0, delay);
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0.0001, at);
+      env.gain.linearRampToValueAtTime(CLICK_PEAK, at + START_RAMP);
+      env.gain.exponentialRampToValueAtTime(0.0001, at + CLICK_SECONDS);
+      env.connect(master!);
+      const tone = ctx.createOscillator();
+      tone.type = 'sine';
+      tone.frequency.value = CLICK_HZ;
+      tone.connect(env);
+      tone.onended = () => env.disconnect();
+      tone.start(at);
+      tone.stop(at + CLICK_SECONDS + 0.01);
     },
     loadStatus: () => loader?.status() ?? 'loading',
     subscribeLoad(listener) {

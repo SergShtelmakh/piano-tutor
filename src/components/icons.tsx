@@ -87,3 +87,23 @@ export const SearchIcon = icon(
     <path d="M20 20l-4.2-4.2" />
   </>,
 );
+export const PauseIcon = icon(
+  <>
+    <rect x="6" y="5" width="4" height="14" rx="1.2" />
+    <rect x="14" y="5" width="4" height="14" rx="1.2" />
+  </>,
+  { fill: true },
+);
+export const StopIcon = icon(<rect x="6" y="6" width="12" height="12" rx="2" />, { fill: true });
+export const MetronomeIcon = icon(
+  <>
+    <path d="M8.5 21l2-17h3l2 17z" />
+    <path d="M12 16L16 7M6 21h12" />
+  </>,
+);
+export const BulbIcon = icon(
+  <>
+    <path d="M9 18h6M10 21h4" />
+    <path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" />
+  </>,
+);

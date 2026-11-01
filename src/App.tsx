@@ -21,6 +21,7 @@ import type { MessageKey } from './i18n/locales/en.ts';
 import { MidiProvider } from './input/MidiProvider.tsx';
 import { NoteInputProvider } from './input/NoteInputProvider.tsx';
 import { KeyboardRangeProvider } from './keyboard/KeyboardRangeProvider.tsx';
+import { LessonSettingsProvider } from './lesson/LessonSettingsProvider.tsx';
 import { LibraryMarksProvider } from './library/LibraryMarksProvider.tsx';
 import { useMyLessons } from './myLessons/context.ts';
 import { MyLessonsProvider } from './myLessons/MyLessonsProvider.tsx';
@@ -139,7 +140,9 @@ export default function App() {
               <PlayerProvider>
                 <MyLessonsProvider>
                   <CourseProvider>
-                    <Shell />
+                    <LessonSettingsProvider>
+                      <Shell />
+                    </LessonSettingsProvider>
                   </CourseProvider>
                 </MyLessonsProvider>
               </PlayerProvider>

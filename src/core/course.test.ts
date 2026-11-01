@@ -676,3 +676,45 @@ describe('nextCourseLesson', () => {
     expect(nextCourseLesson(course, all, 'gone')?.id).toBe(lessons[0].id);
   });
 });
+
+describe('steps and lessons by hand', () => {
+  it('gives each step its start and its notes by staff', () => {
+    const score = scoreOf([
+      [60, 0, 4],
+      [48, 0, 4],
+      [62, 4, 8],
+      [60, 8, 12],
+      [50, 8, 12],
+    ]);
+    const steps = stepsOf(score.bars, 'both');
+    expect(steps.map((s) => s.unit)).toEqual([0, 4, 8]);
+    expect(steps.map((s) => s.right)).toEqual([[60], [62], [60]]);
+    expect(steps.map((s) => s.left)).toEqual([[48], [], [50]]);
+    expect(stepsOf(score.bars, 'left').map((s) => s.right)).toEqual([[], []]);
+  });
+
+  const course = buildCourse(scoreOf(twoHands(10)), PIECE);
+  const lessonOf = (hand: string, kind: string) =>
+    course.stages
+      .find((stage) => stage.hand === hand)!
+      .lessons.find((lesson) => lesson.kind === kind)!
+      .create(seeded(1));
+
+  it('keeps the rhythm of a part lesson and splits a both-hands lesson by hand', () => {
+    const lesson = lessonOf('both', 'part');
+    expect(lesson.stepUnits).toHaveLength(lesson.steps.length);
+    expect(lesson.stepUnits).toEqual([...lesson.stepUnits!].sort((a, b) => a - b));
+    expect(lesson.stepHands?.right).toHaveLength(lesson.steps.length);
+    expect(lesson.stepHands?.left).toHaveLength(lesson.steps.length);
+    lesson.steps.forEach((step, i) => {
+      const split = [...lesson.stepHands!.right[i], ...lesson.stepHands!.left[i]];
+      expect([...new Set(split)].sort((a, b) => a - b)).toEqual(step);
+    });
+  });
+
+  it('does not split a one-hand lesson, and a drill has no rhythm', () => {
+    expect(lessonOf('right', 'part').stepHands).toBeUndefined();
+    expect(lessonOf('right', 'part').stepUnits).toBeDefined();
+    expect(lessonOf('right', 'notes').stepUnits).toBeUndefined();
+  });
+});

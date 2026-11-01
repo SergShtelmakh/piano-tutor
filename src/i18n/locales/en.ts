@@ -247,6 +247,23 @@ export const en = {
   settingsSound: 'Sound',
   settingsAbout: 'About',
   lessonProgressLabel: 'Lesson progress',
+  lessonControlsLabel: 'Practice controls',
+  lessonListen: 'Listen',
+  lessonListenStop: 'Stop',
+  lessonTempoLabel: 'Tempo',
+  lessonTempoSlower: 'Slower',
+  lessonTempoFaster: 'Faster',
+  lessonTempoValue: '{bpm} bpm',
+  lessonMetronome: 'Metronome',
+  lessonHint: 'Hint',
+  lessonHandsLabel: 'Hands',
+  lessonHandLeft: 'Left',
+  lessonHandBoth: 'Both',
+  lessonHandRight: 'Right',
+  lessonPause: 'Pause',
+  lessonPausedTitle: 'Paused',
+  lessonResume: 'Resume',
+  summaryPractice: 'Practice run: stars and XP are saved when you play both hands.',
 } as const;
 
 type Entries = typeof en;

@@ -13,6 +13,8 @@ interface LessonSummaryProps {
   onExit: () => void;
   /** The label of the exit button: back (default) or back to the course. */
   exitKey?: MessageKey;
+  /** One hand was played: nothing was saved. */
+  practice?: boolean;
 }
 
 export default function LessonSummary({
@@ -21,6 +23,7 @@ export default function LessonSummary({
   onAgain,
   onExit,
   exitKey = 'lessonBack',
+  practice = false,
 }: LessonSummaryProps) {
   const t = useT();
   const tp = usePluralT();
@@ -38,6 +41,7 @@ export default function LessonSummary({
       )}
       <p className="text-ink">{tp('correctCount', state.correct)}</p>
       <p className="text-ink">{tp('mistakesCount', state.mistakes)}</p>
+      {practice && <p className="text-sm text-ink-muted">{t('summaryPractice')}</p>}
       {reward && (
         <div className="flex flex-col items-center gap-1 border-t border-line pt-3">
           <p className="text-xl font-extrabold text-warm">

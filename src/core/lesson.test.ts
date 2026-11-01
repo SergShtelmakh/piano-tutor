@@ -200,3 +200,26 @@ describe('pageOf', () => {
     expect(pageOf(paged, 5)).toEqual({ start: 5, length: 0 });
   });
 });
+
+describe('notes the app plays itself', () => {
+  const playback = (note: number): NoteEvent => ({
+    type: 'noteon',
+    note,
+    velocity: 90,
+    source: 'playback',
+  });
+
+  it('are not judged, right or wrong', () => {
+    const start = startLesson(scale);
+    expect(judge(scale, start, playback(60))).toEqual({ state: start, outcome: 'ignored' });
+    expect(judge(scale, start, playback(99))).toEqual({ state: start, outcome: 'ignored' });
+  });
+
+  it('do not disturb a chord the learner is holding', () => {
+    let state = judge(withChord, startLesson(withChord), on(60)).state;
+    state = judge(withChord, state, playback(62)).state;
+    state = judge(withChord, state, { type: 'noteoff', note: 60, source: 'playback' }).state;
+    expect(state.playedInStep).toEqual([60]);
+    expect(state.mistakes).toBe(0);
+  });
+});
