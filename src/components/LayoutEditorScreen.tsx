@@ -35,7 +35,7 @@ const ROW_COUNT_KEYS: Record<(typeof ROW_COUNTS)[number], MessageKey> = {
 };
 
 /** The settings the panel shows one at a time, so it takes little room over the layout. */
-type Section = 'orientation' | 'keyboard' | 'octaves' | 'rows' | 'rowHeight' | 'names' | 'hint';
+type Section = 'keyboard' | 'octaves' | 'rows' | 'rowHeight' | 'names' | 'hint';
 
 /**
  * The full-window editor of how lessons look. The bottom layer is the lesson itself, drawn as a
@@ -48,13 +48,8 @@ export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
   const t = useT();
   const { settings, setLayout, setHint, resetLayout } = useLessonSettings();
   const windowSize = useWindowSize();
-  // The orientation picked by hand holds only while the window stays in the orientation it was
-  // picked in: a rotation drops it, and the layout of the new orientation is edited by itself.
-  const [picked, setPicked] = useState<{ editing: Orientation; inWindow: Orientation } | null>(
-    null,
-  );
-  if (picked && picked.inWindow !== windowSize.orientation) setPicked(null);
-  const editing = picked ? picked.editing : windowSize.orientation;
+  // The layout being edited is the one of the window's orientation: a rotation switches it.
+  const editing = windowSize.orientation;
   const [optionsOpen, setOptionsOpen] = useState(true);
   const [section, setSection] = useState<Section>('keyboard');
   const layout: LessonLayout = settings.layouts[editing];
@@ -72,7 +67,6 @@ export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
   const keyboardName = t(SIZE_NAME_KEYS[layout.keyboardHeight]);
 
   const sections: { id: Section; label: string }[] = [
-    { id: 'orientation', label: t(ORIENTATION_KEYS[editing]) },
     { id: 'keyboard', label: t('layoutKeyboardHeight') },
     { id: 'octaves', label: t('layoutOctaves') },
     { id: 'rows', label: t('layoutRows') },
@@ -183,21 +177,6 @@ export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
             ))}
           </div>
 
-          {section === 'orientation' && (
-            <>
-              <SegmentedControl<Orientation>
-                title={t('layoutEditing')}
-                hideTitle
-                value={editing}
-                onChange={(next) => setPicked({ editing: next, inWindow: windowSize.orientation })}
-                options={(['portrait', 'landscape'] as const).map((orientation) => ({
-                  value: orientation,
-                  text: t(ORIENTATION_KEYS[orientation]),
-                }))}
-              />
-              <p className="text-xs text-ink-muted">{t('layoutShownAt')}</p>
-            </>
-          )}
           {section === 'keyboard' && (
             <SegmentedControl<LayoutSize>
               title={t('layoutKeyboardHeight')}

@@ -275,8 +275,6 @@ export const en = {
   layoutScreenSize: 'Screen {width} × {height} px · {orientation}',
   layoutPortrait: 'Portrait',
   layoutLandscape: 'Landscape',
-  layoutEditing: 'Layout for',
-  layoutShownAt: "Shown at this window's size.",
   layoutKeyboardHeight: 'Keyboard height',
   layoutKeyboardSection: 'Keyboard · {size}',
   layoutMusicSection: 'Music',
