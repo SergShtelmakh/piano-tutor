@@ -38,6 +38,11 @@ const CLEFS: Record<Hand, readonly Clef[]> = {
 export interface CourseStep {
   notes: number[];
   time: number;
+  /** Start, in sixteenths from the start of the piece. */
+  unit: number;
+  /** The same notes by staff: treble is the right hand, bass the left. A unison is in both. */
+  right: number[];
+  left: number[];
 }
 
 /**
@@ -46,23 +51,39 @@ export interface CourseStep {
  * one step.
  */
 export function stepsOf(bars: readonly ScoreBar[], hand: Hand): CourseStep[] {
-  const byUnit = new Map<number, { notes: Set<number>; time: number }>();
+  const byUnit = new Map<
+    number,
+    { notes: Set<number>; right: Set<number>; left: Set<number>; time: number }
+  >();
   for (const bar of bars) {
     for (const clef of CLEFS[hand]) {
       for (const column of bar.columns[clef]) {
         if (column.rest) continue;
         for (const note of column.notes) {
           if (note.tiePrev) continue;
-          const step = byUnit.get(column.unit) ?? { notes: new Set<number>(), time: column.time };
+          const step = byUnit.get(column.unit) ?? {
+            notes: new Set<number>(),
+            right: new Set<number>(),
+            left: new Set<number>(),
+            time: column.time,
+          };
           step.notes.add(note.note);
+          (clef === 'treble' ? step.right : step.left).add(note.note);
           byUnit.set(column.unit, step);
         }
       }
     }
   }
+  const sorted = (notes: Set<number>) => [...notes].sort((a, b) => a - b);
   return [...byUnit.entries()]
     .sort((a, b) => a[0] - b[0])
-    .map(([, step]) => ({ notes: [...step.notes].sort((a, b) => a - b), time: step.time }));
+    .map(([unit, step]) => ({
+      notes: sorted(step.notes),
+      time: step.time,
+      unit,
+      right: sorted(step.right),
+      left: sorted(step.left),
+    }));
 }
 
 export interface CoursePart {
@@ -272,8 +293,10 @@ function lessonFrom(
   pieceTitle: string,
   steps: readonly (readonly number[])[],
   notation: { score: Score; stepTimes: readonly number[] },
+  timing?: Pick<Lesson, 'stepUnits' | 'stepHands'>,
 ): Lesson {
   return {
+    ...timing,
     id: base.id,
     titleKey: base.titleKey,
     titleParams: base.titleParams,
@@ -323,6 +346,17 @@ function playLesson(
         pieceTitle,
         steps.map((step) => step.notes),
         { score: notationOf(bars), stepTimes: steps.map((step) => step.time) },
+        {
+          stepUnits: steps.map((step) => step.unit),
+          // Only a lesson of both hands can be practised one hand at a time.
+          stepHands:
+            hand === 'both'
+              ? {
+                  right: steps.map((step) => step.right),
+                  left: steps.map((step) => step.left),
+                }
+              : undefined,
+        },
       ),
   };
 }

@@ -59,6 +59,11 @@ describe('theme contrast', () => {
     expect(ratio('accent', 'wrong')).toBeGreaterThanOrEqual(1.2);
   });
 
+  it('shows the hint ring on a white key (3:1)', () => {
+    expect(ratio('key-hint', 'key-white')).toBeGreaterThanOrEqual(3);
+    expect(ratio('accent', 'key-black')).toBeGreaterThanOrEqual(3);
+  });
+
   it('keeps white keys apart from black keys and both from the page', () => {
     expect(ratio('key-white', 'key-black')).toBeGreaterThanOrEqual(7);
     expect(ratio('key-white', 'bg')).toBeGreaterThanOrEqual(7);

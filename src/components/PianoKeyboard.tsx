@@ -41,8 +41,11 @@ export default function PianoKeyboard({
   focusNotes,
   include,
   followPlayback = false,
+  hints,
 }: {
   feedback?: KeyFeedback | null;
+  /** Keys that get a ring: the notes to play now, when the learner asked for a hint. */
+  hints?: readonly number[];
   /** Notes the view should bring into sight when it scrolls (a lesson's current step). */
   focusNotes?: readonly number[];
   /** The notes of a piece being played: the piano shows at least this range (clipped to A0–C8). */
@@ -176,6 +179,7 @@ export default function PianoKeyboard({
   }
 
   const feedbackOrUndefined = feedback ?? undefined;
+  const hinted = new Set(hints);
 
   return (
     <div ref={root} className="flex w-full justify-center">
@@ -227,6 +231,12 @@ export default function PianoKeyboard({
                       feedbackOrUndefined,
                     )}`}
                   >
+                    {hinted.has(key.note) && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute bottom-10 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full border-[2.5px] border-key-hint"
+                      />
+                    )}
                     <span className="text-[10px] font-semibold text-key-label">
                       {computerKey(key.note)}
                     </span>
@@ -252,6 +262,12 @@ export default function PianoKeyboard({
                       feedbackOrUndefined,
                     )}`}
                   >
+                    {hinted.has(key.note) && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-1/2 top-3 h-3 w-3 -translate-x-1/2 rounded-full border-[2.5px] border-accent"
+                      />
+                    )}
                     {computerKey(key.note)}
                   </button>
                 ))}

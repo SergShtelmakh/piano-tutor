@@ -62,6 +62,7 @@
   --color-key-white: #f3f1ec;
   --color-key-black: #0a0c11;
   --color-key-label: #4b5265;
+  --color-key-hint: #1c8f7c;
 }
 
 /* `wide`: room for the navigation rail (a phone in landscape is wide but short, so it gets none). */

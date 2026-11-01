@@ -30,7 +30,7 @@ Facts from the code that shape the requirements:
 ### Pause
 
 - **FR-8** A round **Pause** button in the header must pause the lesson: Listen, the metronome, and the other hand's notes stop, every note the app holds is released, and nothing is judged while paused (keys still sound). An overlay shows **Resume**, **Restart**, and **Exit** (Exit = the lesson's Back). Resume continues from the same step.
-- **FR-9** The lesson must pause by itself when the page is hidden (another tab, the phone's home screen). **Space** must toggle pause, except while focus is in a text field.
+- **FR-9** The lesson must pause by itself when the page is hidden (another tab, the phone's home screen). **Space** must toggle pause when no control has focus (a control that Tab reaches handles Space itself, as usual; the piano keys don't count as controls).
 
 ### Hint
 
@@ -38,7 +38,7 @@ Facts from the code that shape the requirements:
 
 ### Layout
 
-- **FR-11** On screens from 768 px wide (and on a phone in landscape) all controls fit in the one header row, as on the canvas. On a narrow phone (portrait), the header keeps Back, the title, Pause, and Mute, and a second row holds Listen, tempo, Metronome, Hint, and the hand switch; nothing scrolls sideways at 360 px. The header is hidden behind nothing: the staff and the piano still fit at 844 × 390.
+- **FR-11** From 1024 px wide (and on a phone in landscape) all controls fit in the one header row, as on the canvas; on a phone in landscape Listen shows only its icon and the progress bar is hidden. On narrower screens (a phone in portrait, a small tablet) the header keeps Back, the title, Pause, and Mute, and a second row holds Listen, tempo, Metronome, Hint, and the hand switch; nothing scrolls sideways at 360 px. The header is hidden behind nothing: the staff and the piano still fit at 844 × 390.
 
 ## Non-functional requirements
 

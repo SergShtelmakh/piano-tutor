@@ -30,6 +30,16 @@ export interface Lesson {
   pieceTitle?: string;
   /** When set, the lesson is drawn with the piece's real notation instead of the plain note row. */
   notation?: LessonNotation;
+  /** Start of each step in sixteenths of the piece: the rhythm of a lesson made of a piece's bars. */
+  stepUnits?: readonly number[];
+  /**
+   * For a lesson of both hands: the notes of each step written for each hand. A pitch written in
+   * both staves at once is in both lists. `steps` holds every note of the step.
+   */
+  stepHands?: {
+    right: readonly (readonly number[])[];
+    left: readonly (readonly number[])[];
+  };
 }
 
 export interface LessonState {
@@ -86,6 +96,8 @@ export function currentTargets(lesson: Lesson, state: LessonState): readonly num
  */
 export function judge(lesson: Lesson, state: LessonState, event: NoteEvent): JudgeResult {
   if (state.finished || event.type === 'sustain') return { state, outcome: 'ignored' };
+  // Notes the app plays itself (Listen, the other hand, the Player) are never the learner's.
+  if (event.source === 'playback') return { state, outcome: 'ignored' };
 
   const note = event.note;
 

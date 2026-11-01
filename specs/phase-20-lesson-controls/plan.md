@@ -2,7 +2,7 @@
 
 > Roadmap phase: Phase 20 — Lesson controls
 > Branch: `feature/lesson-controls`
-> Status: Draft
+> Status: Implemented (manual validation pending)
 
 ## Goal
 
@@ -26,25 +26,25 @@ In a lesson the learner can hear the page played at a chosen tempo, practise wit
   - `src/lesson/useLesson.ts`: options `hand` (builds the lesson with `oneHandLesson` when it is `left` / `right`), `paused` (the listener ignores events while paused), `onStepDone(sourceIndex)` (for the accompaniment); returns `sourceIndex` so Listen can start from the right place in the full lesson. The finish callback receives whether the run was one-handed.
 - **UI**
   - `LessonScreen`: the header controls (`ListenButton`, `TempoControl`, metronome and hint toggles, `HandSwitch`, the Pause button) in one row from `wide` / `short`, two rows on a narrow phone; a `PauseOverlay` (Resume / Restart / Exit, focus moves into it and back); auto-pause on `visibilitychange`; Space toggles pause (ignored in text fields). The summary of a one-hand run shows the practice note and calls no `recordRun`.
-  - `PianoKeyboard`: a `hints` prop draws a ring on those keys (a theme token).
+  - `PianoKeyboard`: a `hints` prop draws a ring on those keys (the theme token `key-hint` on a white key, `accent` on a black one). The piano shows the range of the whole lesson, so the other hand's notes are on screen in a one-hand run.
   - New icons (pause, play, metronome, ear/listen, bulb/hint) in `icons.tsx`; new strings in all four locales.
 
 ## Task groups
 
 1. **Pure rules and tests**
-   - [ ] `judge` ignores `playback`; `Lesson.stepUnits` / `stepHands`; `stepsOf` and `lessonFrom` fill them (tests in `lesson.test.ts`, `course.test.ts`).
-   - [ ] `src/core/practice.ts` + `practice.test.ts`: tempo steps and clamping, `stepOffsets` (built-in and with units), `oneHandLesson` (kept steps, dropped empty steps, accompaniment chunks and offsets, leading other-hand steps not played, chords split by hand, a unison note in both hands), settings parser.
+   - [x] `judge` ignores `playback`; `Lesson.stepUnits` / `stepHands`; `stepsOf` and `lessonFrom` fill them (tests in `lesson.test.ts`, `course.test.ts`).
+   - [x] `src/core/practice.ts` + `practice.test.ts`: tempo steps and clamping, `stepOffsets` (built-in and with units), `oneHandLesson` (kept steps, dropped empty steps, accompaniment chunks and offsets, leading other-hand steps not played, chords split by hand, a unison note in both hands), settings parser.
 2. **Audio, sequencer, settings**
-   - [ ] `synth.click`; `src/lesson/sequencer.ts` (timers, `noteoff` for every `noteon`, `stop` releases all); `useMetronome`.
-   - [ ] `src/lesson/settings.ts`, `context.ts`, `LessonSettingsProvider.tsx`, wired in `App.tsx`.
+   - [x] `synth.click`; `src/lesson/sequencer.ts` (timers, `noteoff` for every `noteon`, `stop` releases all); `useMetronome`.
+   - [x] `src/lesson/settings.ts`, `context.ts`, `LessonSettingsProvider.tsx`, wired in `App.tsx`.
 3. **Lesson hook**
-   - [ ] `useLesson`: `hand`, `paused`, `onStepDone`, `sourceIndex`; one-hand runs reported as practice; restart on hand change.
-   - [ ] Accompaniment through the sequencer on each finished step; everything stopped on pause, restart, hand change, finish, and unmount.
+   - [x] `useLesson`: `hand`, `paused`, `onStepDone`, `sourceIndex`; one-hand runs reported as practice; restart on hand change.
+   - [x] Accompaniment through the sequencer on each finished step; everything stopped on pause, restart, hand change, finish, and unmount.
 4. **Lesson screen**
-   - [ ] Header controls and the two-row phone layout; Listen (page from the current step, Stop); tempo; metronome; hint ring in `PianoKeyboard`; hand switch for both-hands course lessons.
-   - [ ] Pause button, overlay, auto-pause when hidden, Space; one-hand summary note; icons; strings (`en`, `uk`, `de`, `fr`).
+   - [x] Header controls and the two-row phone layout; Listen (page from the current step, Stop); tempo; metronome; hint ring in `PianoKeyboard`; hand switch for both-hands course lessons.
+   - [x] Pause button, overlay, auto-pause when hidden, Space; one-hand summary note; icons; strings (`en`, `uk`, `de`, `fr`).
 5. **Wrap-up**
-   - [ ] `specs/tech-stack.md` (project layout: `practice.ts`, `src/lesson/` additions, `synth.click`; known debt); run `validation.md`.
+   - [x] `specs/tech-stack.md` (project layout: `practice.ts`, `src/lesson/` additions, `synth.click`; known debt); run `validation.md`.
 
 ## Files touched
 
