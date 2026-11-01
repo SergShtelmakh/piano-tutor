@@ -284,6 +284,12 @@ export const fr: PartialTranslations = {
   layoutOctaves: "Octaves à l'écran",
   layoutOctavesAuto: 'Auto',
   layoutOctaveOne: '1 octave',
+  layoutTabKeyboard: 'Clavier',
+  layoutTabOctaves: 'Octaves',
+  layoutTabRows: 'Lignes',
+  layoutTabRowHeight: 'Hauteur',
+  layoutTabNames: 'Noms',
+  layoutTabHint: 'Indice',
   layoutOctaveCount: '{count} octaves',
   layoutRows: 'Lignes de musique',
   layoutRowsNote:

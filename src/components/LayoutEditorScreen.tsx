@@ -67,12 +67,12 @@ export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
   const keyboardName = t(SIZE_NAME_KEYS[layout.keyboardHeight]);
 
   const sections: { id: Section; label: string }[] = [
-    { id: 'keyboard', label: t('layoutKeyboardHeight') },
-    { id: 'octaves', label: t('layoutOctaves') },
-    { id: 'rows', label: t('layoutRows') },
-    { id: 'rowHeight', label: t('layoutRowHeight') },
-    { id: 'names', label: t('layoutNoteNames') },
-    { id: 'hint', label: t('layoutHint') },
+    { id: 'keyboard', label: t('layoutTabKeyboard') },
+    { id: 'octaves', label: t('layoutTabOctaves') },
+    { id: 'rows', label: t('layoutTabRows') },
+    { id: 'rowHeight', label: t('layoutTabRowHeight') },
+    { id: 'names', label: t('layoutTabNames') },
+    { id: 'hint', label: t('layoutTabHint') },
   ];
 
   return (
@@ -159,11 +159,7 @@ export default function LayoutEditorScreen({ onExit }: { onExit: () => void }) {
           aria-label={t('layoutOptions')}
           className="absolute inset-x-2 top-16 z-10 flex max-h-[50dvh] flex-col gap-3 overflow-y-auto rounded-2xl border border-line bg-surface/95 p-3 shadow-xl backdrop-blur sm:left-auto sm:w-80 short:max-h-[calc(100dvh-4.5rem)]"
         >
-          <div
-            role="group"
-            aria-label={t('layoutSectionTitle')}
-            className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
+          <div role="group" aria-label={t('layoutSectionTitle')} className="flex flex-wrap gap-2">
             {sections.map((item) => (
               <button
                 key={item.id}
