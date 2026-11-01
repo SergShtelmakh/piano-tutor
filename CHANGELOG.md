@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format is based on 
 
 ## [Unreleased]
 
+## 2026-11-01 — Phase 22: paper sheet music
+
+### Added
+
+- **Settings → Sheet music**: choose **Paper** or **Dark** for the notation. The choice is saved on the device.
+
+### Changed
+
+- Sheet music now looks like printed music: black notes and grey staff lines on a warm-white card, in lessons, in the Library, and in the layout editor. The current note, the cursor, and a right press are dark teal, a wrong press is dark red. The rest of the app stays dark. Choose **Dark** in Settings to get the previous look.
+
 ## 2026-11-01 — Phase 21: lesson layout editor
 
 ### Added
