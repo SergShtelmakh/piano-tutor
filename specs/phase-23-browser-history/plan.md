@@ -84,4 +84,5 @@ None. A router library (React Router, TanStack Router, wouter) is not needed: th
 - **Entries from an older build.** History entries without our `app` marker (from before this phase, or from another page) are treated as foreign: they are replaced, never trusted.
 - **Leaving the app.** Whether Back on Home closes the installed app or goes to the previous site depends on the browser. The app does not try to change it.
 - **Forward into a layer** is undone with `go(-1)`. That can show a short flicker of the screen below. It is acceptable for a rare action.
+- **Found in review (left as tech debt):** a reload inside a lesson or the editor builds a fresh stack on that entry instead of going back to the route entry below, so the old session's entries stay below it and Back from Home walks through them before leaving the app.
 - Calling `history.pushState` is not a page load, so the service worker and both hosts need no change. The PWA `start_url` (no hash) opens Home.

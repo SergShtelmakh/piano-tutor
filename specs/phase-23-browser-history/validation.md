@@ -28,6 +28,6 @@ Run `bun run build && bun run preview` and open http://localhost:4173 in Chrome 
 
 ## Constitution follow-up
 
-- [ ] `specs/roadmap.md`: phase status updated, and the Phase 18 Backlog line on browser Back / history removed
-- [ ] `specs/tech-stack.md`: "Theme and shell" describes the hash routes, the history controller, and the layers (still no router)
-- [ ] `CHANGELOG.md` and README (all four) updated
+- [x] `specs/roadmap.md`: phase status updated, and the Phase 18 Backlog line on browser Back / history removed
+- [x] `specs/tech-stack.md`: "Theme and shell" describes the hash routes, the history controller, and the layers (still no router)
+- [x] `CHANGELOG.md` and README (all four) updated
